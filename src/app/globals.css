@@ -6,7 +6,8 @@
   --color-accent-sage: #7A9471;
   --color-accent-blue: #5B7F9E;
   --color-accent-clay: #B08968;
-  --color-ink: #1E1E1E;
+  --color-ink: #0D0D0D;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 @theme inline {
@@ -18,12 +19,13 @@
   --color-ink: var(--color-ink);
   --font-serif: var(--font-serif);
   --font-mono: var(--font-mono);
+  --font-sans: var(--font-sans);
 }
 
 body {
   background: var(--color-bg);
   color: var(--color-ink);
-  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-sans);
 }
 
 /* --- Custom cursor --- */
@@ -65,7 +67,6 @@ body {
 
 /* --- Wavy underline on emphasized phrases --- */
 .wavy {
-  font-style: italic;
   text-decoration-line: underline;
   text-decoration-style: wavy;
   text-decoration-color: var(--color-accent-orange);
@@ -75,10 +76,9 @@ body {
 
 /* --- Nav links --- */
 .nav-link {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  letter-spacing: 0;
   color: var(--color-ink);
   transition: color 200ms ease;
   white-space: nowrap;
