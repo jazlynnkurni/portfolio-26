@@ -46,7 +46,7 @@ export default function Footer() {
       className="w-full bg-accent-orange text-bg px-6 md:px-16 pt-7 md:pt-10 pb-10 md:pb-14"
     >
       <div className="flex flex-col md:flex-row md:justify-between gap-8 md:gap-0 max-w-7xl mx-auto">
-        <p className="font-serif font-semibold text-[12px] text-[#FFF5EF] not-italic leading-normal">
+        <p className="font-serif font-semibold text-[16px] text-[#FFF5EF] not-italic leading-normal">
           © made in NYC, with love from Indonesia
         </p>
         <div className="flex flex-col md:flex-row gap-8 md:gap-20">
