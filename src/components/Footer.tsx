@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import AsciiConstellation from "@/components/AsciiConstellation";
 
 type FooterLink = { label: string; href: string; external?: boolean };
 
@@ -43,9 +44,10 @@ export default function Footer() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.5 }}
-      className="w-full bg-accent-orange text-bg px-6 md:px-16 pt-7 md:pt-10 pb-10 md:pb-14"
+      className="relative overflow-hidden w-full bg-accent-orange text-bg px-6 md:px-16 pt-7 md:pt-10 pb-10 md:pb-14"
     >
-      <div className="flex flex-col md:flex-row md:justify-between gap-8 md:gap-0 max-w-7xl mx-auto">
+      <AsciiConstellation />
+      <div className="relative z-10 flex flex-col md:flex-row md:justify-between gap-8 md:gap-0 max-w-7xl mx-auto">
         <p className="font-serif font-semibold text-[16px] text-[#FFF5EF] not-italic leading-normal">
           © made in NYC, with love from Indonesia
         </p>
