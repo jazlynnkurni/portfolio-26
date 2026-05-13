@@ -56,6 +56,9 @@ const STARS: Star[] = [
 ];
 
 const BASELINE_OPACITY = 0.7;
+const WAVE_SWEEP_SECONDS = 2;
+const WAVE_CYCLE_SECONDS = 3;
+const WAVE_REST_SECONDS = 1;
 
 export default function AsciiConstellation() {
   const reducedMotion = useReducedMotion();
@@ -73,14 +76,46 @@ export default function AsciiConstellation() {
       }}
     >
       {STARS.map((star, i) => {
-        const initial: TargetAndTransition = star.bigDipper
-          ? { opacity: 0.3, scale: 0.9 }
-          : { opacity: 0.3 };
-        const animate: TargetAndTransition = reducedMotion
-          ? { opacity: 1, scale: 1 }
+        const waveDelay = (star.left / 100) * WAVE_SWEEP_SECONDS;
+        const peakOpacity = star.bigDipper ? 1.0 : 0.9;
+
+        const waveInitial: TargetAndTransition = star.bigDipper
+          ? { opacity: 0.2, scale: 0.9 }
+          : { opacity: 0.2 };
+
+        const waveAnimate: TargetAndTransition = reducedMotion
+          ? star.bigDipper
+            ? { opacity: 1, scale: 1 }
+            : { opacity: 1 }
           : star.bigDipper
-            ? { opacity: 1.0, scale: 1.1 }
-            : { opacity: 1.0 };
+            ? {
+                opacity: [0.2, peakOpacity, 0.2],
+                scale: [0.9, 1.1, 0.9],
+              }
+            : { opacity: [0.2, peakOpacity, 0.2] };
+
+        const waveTransition = reducedMotion
+          ? { duration: 0 }
+          : {
+              duration: WAVE_CYCLE_SECONDS,
+              delay: waveDelay,
+              repeat: Infinity,
+              repeatDelay: WAVE_REST_SECONDS,
+              ease: "easeInOut" as const,
+            };
+
+        const flickerAnimate: TargetAndTransition = reducedMotion
+          ? { opacity: 1 }
+          : { opacity: [1, 0.92, 1, 0.96, 1] };
+
+        const flickerTransition = reducedMotion
+          ? { duration: 0 }
+          : {
+              duration: star.duration + 3,
+              delay: star.delay,
+              repeat: Infinity,
+              ease: "easeInOut" as const,
+            };
 
         return (
           <motion.span
@@ -90,21 +125,18 @@ export default function AsciiConstellation() {
               top: `${star.top}%`,
               left: `${star.left}%`,
             }}
-            initial={initial}
-            animate={animate}
-            transition={
-              reducedMotion
-                ? { duration: 0 }
-                : {
-                    delay: star.delay,
-                    duration: star.duration,
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                    ease: "easeInOut",
-                  }
-            }
+            initial={waveInitial}
+            animate={waveAnimate}
+            transition={waveTransition}
           >
-            {star.glyph}
+            <motion.span
+              style={{ display: "inline-block" }}
+              initial={{ opacity: 1 }}
+              animate={flickerAnimate}
+              transition={flickerTransition}
+            >
+              {star.glyph}
+            </motion.span>
           </motion.span>
         );
       })}
