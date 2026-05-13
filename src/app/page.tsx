@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import HeadlineDrift, {
   type HeadlineSegment,
 } from "@/components/HeadlineDrift";
+import SnookerScene from "@/components/snooker/SnookerScene";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 12 },
@@ -35,10 +36,10 @@ export default function Home() {
           initial="hidden"
           animate="show"
           transition={{ staggerChildren: 0.08, delayChildren: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-5 gap-12 items-center max-w-7xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-[11fr_9fr] gap-12 items-center max-w-7xl mx-auto"
         >
-          {/* LEFT COLUMN ~60% */}
-          <div className="md:col-span-3 flex flex-col">
+          {/* LEFT COLUMN ~55% */}
+          <div className="flex flex-col">
             <motion.div
               variants={fadeUp}
               className="inline-flex items-center gap-2.5 self-start bg-[rgba(201,120,54,0.08)] py-2 px-4 rounded-full"
@@ -60,8 +61,13 @@ export default function Home() {
               variants={fadeUp}
               className="mt-8 font-mono text-[14px] text-ink/70 leading-relaxed"
             >
-              <p>Ambassador @ Lovable</p>
-              <p>Flibbertigibbeting @ Columbia University</p>
+              <p>
+                Ambassador @ Lovable
+                <span className="opacity-50 mx-3" aria-hidden>
+                  |
+                </span>
+                Flibbertigibbeting @ Columbia University
+              </p>
             </motion.div>
 
             <motion.div
@@ -99,20 +105,10 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* RIGHT COLUMN ~40% — snooker placeholder */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="md:col-span-2 flex justify-center"
-          >
-            <div className="w-full max-w-[340px] aspect-[1/2] border-2 border-dashed border-accent-orange rounded-3xl flex flex-col items-center justify-center transition-transform duration-[400ms] hover:rotate-[0.5deg]">
-              <em className="font-serif text-3xl text-accent-orange">snooker</em>
-              <p className="mt-2 font-mono text-xs text-accent-orange/60">
-                coming soon (prompt 3)
-              </p>
-            </div>
-          </motion.div>
+          {/* RIGHT COLUMN ~45% — snooker scene */}
+          <div className="flex justify-center">
+            <SnookerScene />
+          </div>
         </motion.div>
       </main>
 
