@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import CustomCursor from "@/components/CustomCursor";
 import "./globals.css";
 
 const instrumentSerif = Instrument_Serif({
@@ -29,7 +30,10 @@ export default function RootLayout({
       lang="en"
       className={`${instrumentSerif.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <CustomCursor />
+      </body>
     </html>
   );
 }
