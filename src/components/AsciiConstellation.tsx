@@ -73,11 +73,14 @@ export default function AsciiConstellation() {
       }}
     >
       {STARS.map((star, i) => {
+        const initial: TargetAndTransition = star.bigDipper
+          ? { opacity: 0.3, scale: 0.9 }
+          : { opacity: 0.3 };
         const animate: TargetAndTransition = reducedMotion
-          ? { opacity: 1 }
+          ? { opacity: 1, scale: 1 }
           : star.bigDipper
-            ? { opacity: [0.3, 1.0], scale: [0.9, 1.1] }
-            : { opacity: [0.3, 1.0] };
+            ? { opacity: 1.0, scale: 1.1 }
+            : { opacity: 1.0 };
 
         return (
           <motion.span
@@ -87,7 +90,7 @@ export default function AsciiConstellation() {
               top: `${star.top}%`,
               left: `${star.left}%`,
             }}
-            initial={false}
+            initial={initial}
             animate={animate}
             transition={
               reducedMotion
