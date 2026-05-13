@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -50,10 +51,17 @@ export default function Nav() {
     >
       <Link
         href="/"
-        className="font-serif italic text-[28px] leading-none text-ink"
         aria-label="Jazlynn Kurniandra — Home"
+        className="block transition-opacity duration-200 hover:opacity-80 cursor-pointer"
       >
-        JK
+        <Image
+          src="/images/logo.png"
+          alt="Jazlynn Kurniandra"
+          width={56}
+          height={56}
+          priority
+          className="h-14 w-auto"
+        />
       </Link>
 
       <div className="hidden md:flex items-center gap-6 bg-white rounded-full py-2.5 px-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">

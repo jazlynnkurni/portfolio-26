@@ -3,7 +3,9 @@
 import { motion, type Variants } from "framer-motion";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import HeadlineDrift from "@/components/HeadlineDrift";
+import HeadlineDrift, {
+  type HeadlineSegment,
+} from "@/components/HeadlineDrift";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 12 },
@@ -14,12 +16,21 @@ const fadeUp: Variants = {
   },
 };
 
+const headlineSegments: HeadlineSegment[] = [
+  { text: "Halo I’m Jazlynn, a " },
+  { text: "product designer", italic: true },
+  { text: " who builds " },
+  { text: "AI-native experiences", italic: true },
+  { text: " with " },
+  { text: "cognitive science, care, and taste.", italic: true },
+];
+
 export default function Home() {
   return (
     <>
       <Nav />
 
-      <main className="flex-1 px-6 md:px-16 py-12 md:py-20">
+      <main className="flex-1 px-6 md:px-16 pt-12 md:pt-20 pb-10 md:pb-16">
         <motion.div
           initial="hidden"
           animate="show"
@@ -39,36 +50,49 @@ export default function Home() {
             </motion.div>
 
             <motion.div variants={fadeUp} className="mt-8">
-              <HeadlineDrift>
-                <h1 className="font-serif italic text-3xl sm:text-5xl md:text-6xl leading-[1.15] text-ink">
-                  Halo I&apos;m Jazlynn, a{" "}
-                  <em className="wavy">product designer</em> who builds{" "}
-                  <em className="wavy">AI-native experiences</em> with{" "}
-                  <em className="wavy">
-                    cognitive science, care, and taste.
-                  </em>
-                </h1>
-              </HeadlineDrift>
+              <HeadlineDrift
+                segments={headlineSegments}
+                className="font-serif font-normal text-[28px] md:text-[34px] lg:text-[40px] leading-[1.3] text-ink max-w-[752px]"
+              />
             </motion.div>
 
             <motion.div
               variants={fadeUp}
-              className="mt-6 font-mono text-sm text-ink/70 leading-relaxed"
+              className="mt-8 font-mono text-[14px] text-ink/70 leading-relaxed"
             >
               <p>Ambassador @ Lovable</p>
               <p>Flibbertigibbeting @ Columbia University</p>
             </motion.div>
 
-            <motion.div variants={fadeUp} className="mt-9 flex flex-wrap gap-3">
+            <motion.div
+              variants={fadeUp}
+              className="flex flex-wrap items-center"
+              style={{ marginTop: "36px", gap: "25px" }}
+            >
               <button
                 type="button"
-                className="bg-accent-orange text-bg px-7 py-3 rounded-full font-mono uppercase tracking-wide text-[13px] transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_6px_20px_rgba(201,120,54,0.35)] cursor-pointer"
+                className="font-sans cursor-pointer transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_6px_20px_rgba(143,75,30,0.35)]"
+                style={{
+                  backgroundColor: "#8F4B1E",
+                  color: "#FFFFFF",
+                  padding: "10px 12px",
+                  borderRadius: "10px",
+                  fontSize: "14px",
+                }}
               >
                 Explore
               </button>
               <button
                 type="button"
-                className="border-[1.5px] border-accent-orange text-accent-orange bg-transparent px-7 py-3 rounded-full font-mono uppercase tracking-wide text-[13px] transition-colors duration-200 hover:bg-[rgba(201,120,54,0.08)] cursor-pointer"
+                className="font-sans cursor-pointer transition-colors duration-200 hover:bg-[rgba(143,75,30,0.08)]"
+                style={{
+                  backgroundColor: "transparent",
+                  color: "#8F4B1E",
+                  border: "1.5px solid #8F4B1E",
+                  padding: "10px 12px",
+                  borderRadius: "15px",
+                  fontSize: "14px",
+                }}
               >
                 Skip Intro
               </button>
