@@ -65,8 +65,8 @@ const BALL_RADIUS = (6.5 / 2 / 100) * PHYS_W; // ≈ 25
 const CUSHION_INSET_X = 56;
 const CUSHION_INSET_Y = 90;
 const CUSHION_THICKNESS = 200;
-const REST_VELOCITY_THRESHOLD = 0.05;
-const MAX_SHOT_SPEED = 28;
+const REST_VELOCITY_THRESHOLD = 0.08;
+const MAX_SHOT_SPEED = 42;
 const PULLBACK_MAX = 40;
 
 const POCKET_RADIUS = BALL_RADIUS * 1.4;
@@ -552,7 +552,7 @@ export default function SnookerScene() {
         {
           restitution: 0.9,
           friction: 0.001,
-          frictionAir: 0.015,
+          frictionAir: 0.008,
           density: 0.001,
           label: `ball-${b.number}`,
         }
@@ -565,7 +565,7 @@ export default function SnookerScene() {
       {
         restitution: 0.9,
         friction: 0.001,
-        frictionAir: 0.015,
+        frictionAir: 0.008,
         density: 0.001,
         label: "cue-ball",
       }
