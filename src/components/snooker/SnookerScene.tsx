@@ -44,12 +44,12 @@ const RACK: RackBall[] = [
 const CUE_BALL = { x: 50, y: 72 };
 
 const TAUNTS = [
-  "go on then",
-  "still thinking?",
-  "ur weak af",
-  "miss",
-  "took u long enough",
-  "haha",
+  "u weak af",
+  "js put the fries in the bag bro",
+  "even my mom plays better",
+  "jk i believe in u",
+  "words of affirmation",
+  "u gyat tht",
 ];
 
 export default function SnookerScene() {
@@ -72,12 +72,19 @@ export default function SnookerScene() {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
-      className="hidden md:flex items-center gap-2 w-full max-w-[500px]"
+      className="hidden md:block pb-12"
+      style={{
+        maxWidth: "min(400px, calc((100vh - 220px) / 1.79))",
+        width: "100%",
+      }}
     >
       <div
         ref={tableRef}
-        className="relative w-[72%] overflow-hidden"
-        style={{ aspectRatio: "768 / 1376" }}
+        className="relative mx-auto"
+        style={{
+          aspectRatio: "768 / 1376",
+          width: "100%",
+        }}
       >
         <Image
           src="/images/snooker-table.png"
@@ -110,6 +117,35 @@ export default function SnookerScene() {
         />
         <CueStick angle={cueAngle} pullback={pullback} />
         <Ball x={CUE_BALL.x} y={CUE_BALL.y} color="#FFF5EF" isCueBall />
+
+        {/* Avatar + bubble — peeking from behind the top edge of the table.
+            Anchored by the wrapper's BOTTOM so bubble height can grow upward
+            without shifting the avatar's overlap with the table. */}
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            bottom: "96%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "8px",
+            width: "25%",
+            zIndex: 5,
+          }}
+        >
+          <div style={{ zIndex: 40, position: "relative" }}>
+            <SpeechBubble
+              text={TAUNTS[tauntIndex]}
+              visible={bubbleVisible}
+            />
+          </div>
+          <Avatar onClick={handleTaunt} />
+        </div>
+
+        {/* Aim capture overlay — confined to table felt area only, so the
+            avatar peeking above the table remains directly clickable. */}
         <div
           aria-hidden
           style={{
@@ -120,11 +156,6 @@ export default function SnookerScene() {
           }}
           {...bind}
         />
-      </div>
-
-      <div className="w-[26%] flex flex-col items-center gap-2 self-center">
-        <SpeechBubble text={TAUNTS[tauntIndex]} visible={bubbleVisible} />
-        <Avatar onClick={handleTaunt} />
       </div>
     </motion.div>
   );
