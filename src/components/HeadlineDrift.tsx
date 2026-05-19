@@ -108,6 +108,8 @@ function Word({ token, ctx }: { token: Token; ctx: WordContext }) {
           y: sy,
           display: "inline-block",
           fontStyle: "italic",
+          color: "#C97836",
+          textDecoration: "none",
         }}
       >
         {content}
