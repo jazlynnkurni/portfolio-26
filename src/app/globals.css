@@ -29,16 +29,32 @@ body {
 }
 
 /* --- Custom cursor --- */
+/* Hide the native cursor everywhere so only .custom-cursor is visible.
+   The wildcard !important is necessary because Tailwind's cursor-pointer
+   and inline cursor styles (snooker scene, avatar button) would otherwise
+   beat a non-!important rule on individual elements. */
+html,
+body {
+  cursor: none;
+}
+* {
+  cursor: none !important;
+}
+
 .custom-cursor {
   position: fixed;
   top: 0;
   left: 0;
-  width: 8px;
-  height: 8px;
+  width: 22px;
+  height: 22px;
   background: var(--color-accent-orange);
   border-radius: 9999px;
   pointer-events: none;
   z-index: 9999;
+  box-shadow:
+    0 0 12px rgba(201, 120, 54, 0.7),
+    0 0 24px rgba(201, 120, 54, 0.4),
+    0 0 36px rgba(201, 120, 54, 0.2);
 }
 @media (hover: none) {
   .custom-cursor {

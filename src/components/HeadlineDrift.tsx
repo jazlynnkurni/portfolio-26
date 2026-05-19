@@ -8,6 +8,15 @@ import {
   useSpring,
   type MotionValue,
 } from "framer-motion";
+import { CURSOR_MODE_EVENT, type CursorMode } from "./CustomCursor";
+
+const EMAIL = "jazkurnz06@gmail.com";
+
+function setCursorMode(mode: CursorMode) {
+  window.dispatchEvent(
+    new CustomEvent(CURSOR_MODE_EVENT, { detail: { mode } })
+  );
+}
 
 const REPEL_RADIUS = 120;
 const MAX_OFFSET = 24;
@@ -205,8 +214,33 @@ export default function HeadlineDrift({ segments, className }: Props) {
     };
   }, [reducedMotion, tokens]);
 
+  const openMail = useCallback(() => {
+    window.location.href = `mailto:${EMAIL}`;
+  }, []);
+
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLHeadingElement>) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openMail();
+      }
+    },
+    [openMail]
+  );
+
   return (
-    <h1 className={className}>
+    <h1
+      className={className}
+      role="link"
+      tabIndex={0}
+      aria-label="send email to Jazlynn"
+      onMouseEnter={() => setCursorMode("email")}
+      onMouseLeave={() => setCursorMode("default")}
+      onFocus={() => setCursorMode("email")}
+      onBlur={() => setCursorMode("default")}
+      onClick={openMail}
+      onKeyDown={onKeyDown}
+    >
       {tokens.map((tok) => (
         <Word key={tok.key} token={tok} ctx={ctx} />
       ))}
