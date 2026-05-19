@@ -56,13 +56,12 @@ const TAUNTS = [
 // --- Physics constants (in painted-PNG coordinate space: 768 × 1376) ---
 const PHYS_W = 768;
 const PHYS_H = 1376;
-const BALL_RADIUS = (6.5 / 2 / 100) * PHYS_W; // Ball SIZE_PCT = 6.5% of width → radius in px = 24.96
-// Cushion inset (inside-edge of painted rails) — eyeballed for first pass, tune later.
+const BALL_RADIUS = (6.5 / 2 / 100) * PHYS_W; // ≈ 25
 const CUSHION_INSET_X = 56;
 const CUSHION_INSET_Y = 90;
 const CUSHION_THICKNESS = 200;
 const REST_VELOCITY_THRESHOLD = 0.05;
-const MAX_SHOT_SPEED = 28; // tunable: px/step at pullback max
+const MAX_SHOT_SPEED = 28;
 const PULLBACK_MAX = 40;
 
 const POCKET_RADIUS = BALL_RADIUS * 1.4;
@@ -80,6 +79,8 @@ const DROP_ANIM_MS = 200;
 type Vec = { x: number; y: number };
 type Positions = { balls: Vec[]; cueBall: Vec };
 type CueBallStatus = "active" | "dropping" | "respawning";
+type Turn = "player" | "avatar";
+const AVATAR_PLACEHOLDER_DELAY_MS = 1200;
 
 const INITIAL_POSITIONS: Positions = {
   balls: RACK.map((b) => ({ x: b.x, y: b.y })),
@@ -100,6 +101,9 @@ export default function SnookerScene() {
   const [cueBallStatus, setCueBallStatus] =
     useState<CueBallStatus>("active");
   const [gameOver, setGameOver] = useState(false);
+  const [gameOverShooter, setGameOverShooter] = useState<Turn | null>(null);
+  // Player ALWAYS breaks the rack. No coin flip.
+  const [turn, setTurn] = useState<Turn>("player");
 
   const tableRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<Matter.World | null>(null);
@@ -109,12 +113,15 @@ export default function SnookerScene() {
   const removedFromPhysicsRef = useRef<Set<number>>(new Set());
   const cueBallStatusRef = useRef<CueBallStatus>("active");
   const gameOverPendingRef = useRef(false);
+  const turnRef = useRef<Turn>("player");
   const dropTimeoutsRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(
     new Map()
   );
   const cueDropTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleShoot = useCallback(({ aimAngleDeg, pullback }: ShotInfo) => {
+    if (turnRef.current !== "player") return;
+    if (shotInFlightRef.current) return;
     const cueBall = cueBallBodyRef.current;
     if (!cueBall || cueBallStatusRef.current !== "active") return;
     const speed = (pullback / PULLBACK_MAX) * MAX_SHOT_SPEED;
@@ -126,6 +133,23 @@ export default function SnookerScene() {
     setCueVisible(false);
     shotInFlightRef.current = true;
   }, []);
+
+  // Avatar placeholder turn: when it's avatar's turn and game isn't over,
+  // wait ~1200ms then pass back to player. Real AI ships next prompt.
+  useEffect(() => {
+    if (turn !== "avatar" || gameOver) return;
+    const t = setTimeout(() => {
+      console.log("avatar would shoot now (placeholder)");
+      turnRef.current = "player";
+      setTurn("player");
+    }, AVATAR_PLACEHOLDER_DELAY_MS);
+    return () => clearTimeout(t);
+  }, [turn, gameOver]);
+
+  // Debug: log turn whenever it changes.
+  useEffect(() => {
+    console.log("[snooker]", `turn=${turn}`);
+  }, [turn]);
 
   const { cueAngle, aimAngle, pullback, isHovering, isAiming, bind } =
     useCueAim(
@@ -146,11 +170,10 @@ export default function SnookerScene() {
   // Matter.js engine setup
   useEffect(() => {
     const engine = Matter.Engine.create();
-    engine.gravity.scale = 0; // top-down table: no gravity
+    engine.gravity.scale = 0;
     const world = engine.world;
     worldRef.current = world;
 
-    // Create ball bodies in physics coords (PNG px space)
     const ballBodies = RACK.map((b) =>
       Matter.Bodies.circle(
         (b.x / 100) * PHYS_W,
@@ -180,7 +203,6 @@ export default function SnookerScene() {
     ballBodiesRef.current = ballBodies;
     cueBallBodyRef.current = cueBallBody;
 
-    // Cushions: 4 static rects at inside edges of the painted rails.
     const cushionOpts = { isStatic: true, restitution: 0.8, friction: 0.05 };
     const playW = PHYS_W - 2 * CUSHION_INSET_X;
     const playH = PHYS_H - 2 * CUSHION_INSET_Y;
@@ -272,6 +294,8 @@ export default function SnookerScene() {
         cueBallStatusRef.current = "respawning";
         setCueBallStatus("respawning");
         cueDropTimeoutRef.current = null;
+        // Actual respawn (teleport + re-add to world) happens in the RAF loop
+        // once all other balls have come to rest.
       }, DROP_ANIM_MS);
     };
 
@@ -284,6 +308,7 @@ export default function SnookerScene() {
         const aIsPocket = a.startsWith("pocket-");
         const bIsPocket = b.startsWith("pocket-");
         if (aIsPocket === bIsPocket) continue;
+        const pocketBody = aIsPocket ? bodyA : bodyB;
         const ballBody = aIsPocket ? bodyB : bodyA;
         const ballLabel = ballBody.label;
         if (ballLabel === "cue-ball") {
@@ -292,10 +317,13 @@ export default function SnookerScene() {
           const num = parseInt(ballLabel.slice(5), 10);
           pocketNumberedBall(num, ballBody);
         }
+        // Silence unused var warning
+        void pocketBody;
       }
     };
     Matter.Events.on(engine, "collisionStart", onCollisionStart);
 
+    // --- RAF loop ---
     let rafId = 0;
     let cancelled = false;
     let lastT = performance.now();
@@ -346,11 +374,18 @@ export default function SnookerScene() {
             respawnCueBall();
           }
           shotInFlightRef.current = false;
+          const shooter = turnRef.current;
+
           if (gameOverPendingRef.current) {
-            // 8-ball was pocketed this shot — overlay appears, cue stays
-            // hidden, table sits as-is until "rack 'em up again" reset.
+            // 8-ball was pocketed this shot — overlay text uses shooter.
+            setGameOverShooter(shooter);
             setGameOver(true);
           } else {
+            // Strict alternation: turn ALWAYS swaps after any non-game-over
+            // shot. No conditions.
+            const nextTurn: Turn = shooter === "player" ? "avatar" : "player";
+            turnRef.current = nextTurn;
+            setTurn(nextTurn);
             setCueVisible(true);
           }
         }
@@ -412,14 +447,21 @@ export default function SnookerScene() {
       setCueBallStatus("active");
     }
 
+    // Clear all pocket/shot/game-over state.
     removedFromPhysicsRef.current.clear();
     gameOverPendingRef.current = false;
     shotInFlightRef.current = false;
     setPocketedNumbers(new Set());
     setDroppingNumbers(new Set());
     setGameOver(false);
+    setGameOverShooter(null);
     setCueVisible(true);
+    // Player always breaks the rack.
+    turnRef.current = "player";
+    setTurn("player");
   }, []);
+
+  const showCueBall = cueBallStatus !== "respawning";
 
   return (
     <motion.div
@@ -479,9 +521,9 @@ export default function SnookerScene() {
           pullback={pullback}
           x={positions.cueBall.x}
           y={positions.cueBall.y}
-          visible={cueVisible}
+          visible={cueVisible && turn === "player" && !gameOver}
         />
-        {cueBallStatus !== "respawning" && (
+        {showCueBall && (
           <Ball
             x={positions.cueBall.x}
             y={positions.cueBall.y}
@@ -491,7 +533,7 @@ export default function SnookerScene() {
           />
         )}
 
-        {/* Avatar + bubble — peeking from behind the top edge of the table. */}
+        {/* Avatar + bubble */}
         <div
           style={{
             position: "absolute",
@@ -517,13 +559,19 @@ export default function SnookerScene() {
           <Avatar onClick={handleTaunt} />
         </div>
 
-        {/* Aim capture overlay */}
+        {/* Aim capture overlay — disabled when it's not the player's turn
+            or when the game-over overlay is showing. */}
         <div
           aria-hidden
           style={{
             position: "absolute",
             inset: 0,
-            cursor: isHovering ? "crosshair" : "default",
+            cursor:
+              turn === "player" && !gameOver && isHovering
+                ? "crosshair"
+                : "default",
+            pointerEvents:
+              turn === "player" && !gameOver ? "auto" : "none",
             zIndex: 50,
           }}
           {...bind}
@@ -575,7 +623,9 @@ export default function SnookerScene() {
                   textShadow: "0 2px 12px rgba(30, 30, 30, 0.4)",
                 }}
               >
-                you potted the 8 ball
+                {gameOverShooter === "avatar"
+                  ? "the avatar potted the 8 ball"
+                  : "you potted the 8 ball"}
               </p>
               <button
                 type="button"
