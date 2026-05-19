@@ -36,15 +36,14 @@ export default function Home() {
           initial="hidden"
           animate="show"
           transition={{ staggerChildren: 0.08, delayChildren: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-[11fr_9fr] gap-12 items-center max-w-7xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-16 items-center max-w-7xl mx-auto"
         >
           {/* LEFT COLUMN ~55% */}
           <div className="flex flex-col">
             <motion.div
               variants={fadeUp}
-              className="inline-flex items-center gap-2.5 self-start bg-[rgba(201,120,54,0.08)] py-2 px-4 rounded-full"
+              className="inline-flex items-center self-start bg-[rgba(201,120,54,0.08)] py-2 px-4 rounded-full"
             >
-              <span className="block w-2.5 h-2.5 bg-accent-orange rounded-full pulse-dot" />
               <span className="font-mono uppercase tracking-wide text-[13px] text-ink">
                 Open for full-time
               </span>
@@ -105,8 +104,8 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* RIGHT COLUMN ~45% — snooker scene */}
-          <div className="flex justify-center">
+          {/* RIGHT COLUMN — snooker scene, auto-sized to its natural width */}
+          <div>
             <SnookerScene />
           </div>
         </motion.div>
