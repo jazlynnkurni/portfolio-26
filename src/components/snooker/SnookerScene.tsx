@@ -527,6 +527,9 @@ export default function SnookerScene() {
     );
 
   const handleTaunt = () => {
+    // During the avatar's turn the auto-trigger owns the bubble — clicks
+    // are no-ops so they can't fight the timed show/hide.
+    if (turn === "avatar") return;
     if (!bubbleVisible) {
       setBubbleVisible(true);
     } else {
