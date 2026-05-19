@@ -1,33 +1,87 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-type Props = { text?: string };
+type Props = {
+  text: string;
+  visible: boolean;
+};
 
-const BUBBLE_BG = "rgba(255, 245, 239, 0.95)";
+const BUBBLE_BG = "#FFFAF4";
+const TYPE_INTERVAL_MS = 40;
 
-export default function SpeechBubble({ text = "go on then" }: Props) {
+export default function SpeechBubble({ text, visible }: Props) {
+  const [revealed, setRevealed] = useState(0);
+  const [showCursor, setShowCursor] = useState(false);
+
+  useEffect(() => {
+    if (!visible) {
+      setRevealed(0);
+      setShowCursor(false);
+      return;
+    }
+
+    setRevealed(0);
+    setShowCursor(true);
+
+    const interval = setInterval(() => {
+      setRevealed((r) => {
+        const next = r + 1;
+        if (next >= text.length) {
+          clearInterval(interval);
+          setShowCursor(false);
+          return text.length;
+        }
+        return next;
+      });
+    }, TYPE_INTERVAL_MS);
+
+    return () => clearInterval(interval);
+  }, [text, visible]);
+
   return (
     <motion.div
+      role="status"
+      aria-live="polite"
       initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+      animate={{ opacity: visible ? 1 : 0, scale: visible ? 1 : 0.9 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
       style={{
         position: "relative",
-        width: "fit-content",
+        width: "max-content",
+        maxWidth: "100%",
         backgroundColor: BUBBLE_BG,
         borderRadius: "18px",
-        padding: "8px 14px",
-        boxShadow: "0 4px 12px rgba(50, 30, 20, 0.15)",
-        fontFamily: "var(--font-mono), monospace",
-        fontSize: "11px",
-        color: "rgba(40, 30, 25, 0.75)",
-        letterSpacing: "0.02em",
-        whiteSpace: "nowrap",
+        padding: "10px 14px",
+        boxShadow:
+          "0 2px 4px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.04)",
+        fontFamily: "var(--font-sans), sans-serif",
+        fontSize: "13.5px",
+        fontWeight: 400,
+        lineHeight: 1.35,
+        color: "rgba(30, 30, 30, 0.85)",
+        pointerEvents: visible ? "auto" : "none",
         zIndex: 40,
       }}
     >
-      {text}
+      <span>{text.slice(0, revealed)}</span>
+      {showCursor && (
+        <motion.span
+          aria-hidden
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 0 }}
+          transition={{
+            duration: 0.5,
+            repeat: Infinity,
+            repeatType: "reverse",
+            ease: "linear",
+          }}
+          style={{ marginLeft: "1px", display: "inline-block" }}
+        >
+          |
+        </motion.span>
+      )}
       <span
         aria-hidden
         style={{
@@ -39,7 +93,7 @@ export default function SpeechBubble({ text = "go on then" }: Props) {
           backgroundColor: BUBBLE_BG,
           transform: "rotate(45deg)",
           borderRadius: "2px",
-          boxShadow: "2px 2px 6px rgba(50, 30, 20, 0.08)",
+          boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.04)",
           zIndex: -1,
         }}
       />

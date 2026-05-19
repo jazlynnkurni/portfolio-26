@@ -54,12 +54,17 @@ const TAUNTS = [
 
 export default function SnookerScene() {
   const [tauntIndex, setTauntIndex] = useState(0);
+  const [bubbleVisible, setBubbleVisible] = useState(false);
   const tableRef = useRef<HTMLDivElement>(null);
   const { cueAngle, aimAngle, pullback, isHovering, isAiming, bind } =
     useCueAim(tableRef, CUE_BALL.x, CUE_BALL.y);
 
   const handleTaunt = () => {
-    setTauntIndex((i) => (i + 1) % TAUNTS.length);
+    if (!bubbleVisible) {
+      setBubbleVisible(true);
+    } else {
+      setTauntIndex((i) => (i + 1) % TAUNTS.length);
+    }
   };
 
   return (
@@ -118,7 +123,7 @@ export default function SnookerScene() {
       </div>
 
       <div className="w-[26%] flex flex-col items-center gap-2 self-center">
-        <SpeechBubble key={tauntIndex} text={TAUNTS[tauntIndex]} />
+        <SpeechBubble text={TAUNTS[tauntIndex]} visible={bubbleVisible} />
         <Avatar onClick={handleTaunt} />
       </div>
     </motion.div>
