@@ -14,6 +14,12 @@ type Props = {
   pullback?: MotionValue<number>;
   /** Cue body length as % of container height. */
   length?: number;
+  /** Cue ball x position as % of container width (anchor for the cue tip). */
+  x?: number;
+  /** Cue ball y position as % of container height. */
+  y?: number;
+  /** Show or hide the cue stick (fades opacity over 150ms). */
+  visible?: boolean;
 };
 
 const FADE_MASK =
@@ -29,7 +35,14 @@ const FADE_MASK =
  * out via a linear mask so the cue dissolves into the page background
  * rather than ending with a hard edge.
  */
-export default function CueStick({ angle, pullback, length = 45 }: Props) {
+export default function CueStick({
+  angle,
+  pullback,
+  length = 45,
+  x = 50,
+  y = 72,
+  visible = true,
+}: Props) {
   const fallbackAngle = useMotionValue(0);
   const fallbackPullback = useMotionValue(0);
   const a = angle ?? fallbackAngle;
@@ -40,10 +53,12 @@ export default function CueStick({ angle, pullback, length = 45 }: Props) {
   return (
     <motion.div
       aria-hidden
+      animate={{ opacity: visible ? 1 : 0 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
       style={{
         position: "absolute",
-        left: "50%",
-        top: "72%",
+        left: `${x}%`,
+        top: `${y}%`,
         width: "3%",
         height: `${length}%`,
         transform,

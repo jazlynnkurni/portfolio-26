@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useCueAim } from "@/hooks/useCueAim";
+import Matter from "matter-js";
+import { useCueAim, type ShotInfo } from "@/hooks/useCueAim";
 import Ball from "./Ball";
 import CueStick from "./CueStick";
 import AimGuide from "./AimGuide";
@@ -41,7 +42,7 @@ const RACK: RackBall[] = [
   { number: 15, x: 63, y: 46.5, color: "#7B6293", isStriped: true },
 ];
 
-const CUE_BALL = { x: 50, y: 72 };
+const CUE_BALL_INITIAL = { x: 50, y: 72 };
 
 const TAUNTS = [
   "u weak af",
@@ -52,12 +53,57 @@ const TAUNTS = [
   "u gyat tht",
 ];
 
+// --- Physics constants (in painted-PNG coordinate space: 768 × 1376) ---
+const PHYS_W = 768;
+const PHYS_H = 1376;
+const BALL_RADIUS = (6.5 / 2 / 100) * PHYS_W; // Ball SIZE_PCT = 6.5% of width → radius in px = 24.96
+// Cushion inset (inside-edge of painted rails) — eyeballed for first pass, tune later.
+const CUSHION_INSET_X = 56;
+const CUSHION_INSET_Y = 90;
+const CUSHION_THICKNESS = 200;
+const REST_VELOCITY_THRESHOLD = 0.05;
+const MAX_SHOT_SPEED = 28; // tunable: px/step at pullback max
+const PULLBACK_MAX = 40;
+
+type Vec = { x: number; y: number };
+type Positions = { balls: Vec[]; cueBall: Vec };
+
+const INITIAL_POSITIONS: Positions = {
+  balls: RACK.map((b) => ({ x: b.x, y: b.y })),
+  cueBall: { x: CUE_BALL_INITIAL.x, y: CUE_BALL_INITIAL.y },
+};
+
 export default function SnookerScene() {
   const [tauntIndex, setTauntIndex] = useState(0);
   const [bubbleVisible, setBubbleVisible] = useState(false);
+  const [cueVisible, setCueVisible] = useState(true);
+  const [positions, setPositions] = useState<Positions>(INITIAL_POSITIONS);
+
   const tableRef = useRef<HTMLDivElement>(null);
+  const ballBodiesRef = useRef<Matter.Body[]>([]);
+  const cueBallBodyRef = useRef<Matter.Body | null>(null);
+  const shotInFlightRef = useRef(false);
+
+  const handleShoot = useCallback(({ aimAngleDeg, pullback }: ShotInfo) => {
+    const cueBall = cueBallBodyRef.current;
+    if (!cueBall) return;
+    const speed = (pullback / PULLBACK_MAX) * MAX_SHOT_SPEED;
+    const aimRad = (aimAngleDeg * Math.PI) / 180;
+    Matter.Body.setVelocity(cueBall, {
+      x: Math.cos(aimRad) * speed,
+      y: Math.sin(aimRad) * speed,
+    });
+    setCueVisible(false);
+    shotInFlightRef.current = true;
+  }, []);
+
   const { cueAngle, aimAngle, pullback, isHovering, isAiming, bind } =
-    useCueAim(tableRef, CUE_BALL.x, CUE_BALL.y);
+    useCueAim(
+      tableRef,
+      positions.cueBall.x,
+      positions.cueBall.y,
+      { onShoot: handleShoot }
+    );
 
   const handleTaunt = () => {
     if (!bubbleVisible) {
@@ -66,6 +112,131 @@ export default function SnookerScene() {
       setTauntIndex((i) => (i + 1) % TAUNTS.length);
     }
   };
+
+  // Matter.js engine setup
+  useEffect(() => {
+    const engine = Matter.Engine.create();
+    engine.gravity.scale = 0; // top-down table: no gravity
+    const world = engine.world;
+
+    // Create ball bodies in physics coords (PNG px space)
+    const ballBodies = RACK.map((b) =>
+      Matter.Bodies.circle(
+        (b.x / 100) * PHYS_W,
+        (b.y / 100) * PHYS_H,
+        BALL_RADIUS,
+        {
+          restitution: 0.9,
+          friction: 0.001,
+          frictionAir: 0.015,
+          density: 0.001,
+          label: `ball-${b.number}`,
+        }
+      )
+    );
+    const cueBallBody = Matter.Bodies.circle(
+      (CUE_BALL_INITIAL.x / 100) * PHYS_W,
+      (CUE_BALL_INITIAL.y / 100) * PHYS_H,
+      BALL_RADIUS,
+      {
+        restitution: 0.9,
+        friction: 0.001,
+        frictionAir: 0.015,
+        density: 0.001,
+        label: "cue-ball",
+      }
+    );
+    ballBodiesRef.current = ballBodies;
+    cueBallBodyRef.current = cueBallBody;
+
+    // Cushions: 4 static rects at inside edges of the painted rails.
+    const cushionOpts = { isStatic: true, restitution: 0.8, friction: 0.05 };
+    const playW = PHYS_W - 2 * CUSHION_INSET_X;
+    const playH = PHYS_H - 2 * CUSHION_INSET_Y;
+    const cushionTop = Matter.Bodies.rectangle(
+      PHYS_W / 2,
+      CUSHION_INSET_Y - CUSHION_THICKNESS / 2,
+      playW + CUSHION_THICKNESS * 2,
+      CUSHION_THICKNESS,
+      cushionOpts
+    );
+    const cushionBottom = Matter.Bodies.rectangle(
+      PHYS_W / 2,
+      PHYS_H - CUSHION_INSET_Y + CUSHION_THICKNESS / 2,
+      playW + CUSHION_THICKNESS * 2,
+      CUSHION_THICKNESS,
+      cushionOpts
+    );
+    const cushionLeft = Matter.Bodies.rectangle(
+      CUSHION_INSET_X - CUSHION_THICKNESS / 2,
+      PHYS_H / 2,
+      CUSHION_THICKNESS,
+      playH + CUSHION_THICKNESS * 2,
+      cushionOpts
+    );
+    const cushionRight = Matter.Bodies.rectangle(
+      PHYS_W - CUSHION_INSET_X + CUSHION_THICKNESS / 2,
+      PHYS_H / 2,
+      CUSHION_THICKNESS,
+      playH + CUSHION_THICKNESS * 2,
+      cushionOpts
+    );
+
+    Matter.World.add(world, [
+      ...ballBodies,
+      cueBallBody,
+      cushionTop,
+      cushionBottom,
+      cushionLeft,
+      cushionRight,
+    ]);
+
+    let rafId = 0;
+    let cancelled = false;
+    let lastT = performance.now();
+
+    const allBodies = [...ballBodies, cueBallBody];
+    const isAtRest = () =>
+      allBodies.every((b) => {
+        const v = b.velocity;
+        return Math.hypot(v.x, v.y) < REST_VELOCITY_THRESHOLD;
+      });
+
+    const tick = (now: number) => {
+      if (cancelled) return;
+      const dt = Math.min(now - lastT, 32);
+      lastT = now;
+      Matter.Engine.update(engine, dt);
+
+      setPositions({
+        balls: ballBodies.map((b) => ({
+          x: (b.position.x / PHYS_W) * 100,
+          y: (b.position.y / PHYS_H) * 100,
+        })),
+        cueBall: {
+          x: (cueBallBody.position.x / PHYS_W) * 100,
+          y: (cueBallBody.position.y / PHYS_H) * 100,
+        },
+      });
+
+      if (shotInFlightRef.current && isAtRest()) {
+        shotInFlightRef.current = false;
+        setCueVisible(true);
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(rafId);
+      Matter.World.clear(world, false);
+      Matter.Engine.clear(engine);
+      ballBodiesRef.current = [];
+      cueBallBodyRef.current = null;
+    };
+  }, []);
 
   return (
     <motion.div
@@ -99,28 +270,40 @@ export default function SnookerScene() {
             pointerEvents: "none",
           }}
         />
-        {RACK.map((b) => (
-          <Ball
-            key={b.number}
-            number={b.number}
-            x={b.x}
-            y={b.y}
-            color={b.color}
-            isStriped={b.isStriped}
-          />
-        ))}
+        {positions.balls.map((pos, i) => {
+          const meta = RACK[i];
+          return (
+            <Ball
+              key={meta.number}
+              number={meta.number}
+              x={pos.x}
+              y={pos.y}
+              color={meta.color}
+              isStriped={meta.isStriped}
+            />
+          );
+        })}
         <AimGuide
           aimAngle={aimAngle}
           visible={isAiming}
-          cueBallX={CUE_BALL.x}
-          cueBallY={CUE_BALL.y}
+          cueBallX={positions.cueBall.x}
+          cueBallY={positions.cueBall.y}
         />
-        <CueStick angle={cueAngle} pullback={pullback} />
-        <Ball x={CUE_BALL.x} y={CUE_BALL.y} color="#FFF5EF" isCueBall />
+        <CueStick
+          angle={cueAngle}
+          pullback={pullback}
+          x={positions.cueBall.x}
+          y={positions.cueBall.y}
+          visible={cueVisible}
+        />
+        <Ball
+          x={positions.cueBall.x}
+          y={positions.cueBall.y}
+          color="#FFF5EF"
+          isCueBall
+        />
 
-        {/* Avatar + bubble — peeking from behind the top edge of the table.
-            Anchored by the wrapper's BOTTOM so bubble height can grow upward
-            without shifting the avatar's overlap with the table. */}
+        {/* Avatar + bubble — peeking from behind the top edge of the table. */}
         <div
           style={{
             position: "absolute",
@@ -146,8 +329,7 @@ export default function SnookerScene() {
           <Avatar onClick={handleTaunt} />
         </div>
 
-        {/* Aim capture overlay — confined to table felt area only, so the
-            avatar peeking above the table remains directly clickable. */}
+        {/* Aim capture overlay */}
         <div
           aria-hidden
           style={{

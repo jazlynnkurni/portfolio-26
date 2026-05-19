@@ -31,10 +31,18 @@ export type CueAim = {
   };
 };
 
+export type ShotInfo = {
+  /** Direction the cue ball should travel, in degrees (atan2 of mouse from cue ball). */
+  aimAngleDeg: number;
+  /** Pullback distance in pixels at the moment of release (0-PULLBACK_MAX). */
+  pullback: number;
+};
+
 export function useCueAim(
   containerRef: RefObject<HTMLDivElement | null>,
   cueBallXPercent: number,
-  cueBallYPercent: number
+  cueBallYPercent: number,
+  options?: { onShoot?: (info: ShotInfo) => void }
 ): CueAim {
   const rawCueAngle = useMotionValue(0);
   const cueAngle = useSpring(rawCueAngle, SPRING);
@@ -131,6 +139,16 @@ export function useCueAim(
           e.currentTarget.releasePointerCapture(e.pointerId);
         } catch {
           /* ignore */
+        }
+        // Capture shot info BEFORE resetting pullback so consumers can fire physics.
+        if (isAimingRef.current && options?.onShoot) {
+          const currentPullback = pullback.get();
+          if (currentPullback > 0.5) {
+            options.onShoot({
+              aimAngleDeg: aimAngle.get(),
+              pullback: currentPullback,
+            });
+          }
         }
         isAimingRef.current = false;
         setIsAiming(false);
