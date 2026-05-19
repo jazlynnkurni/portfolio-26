@@ -92,11 +92,18 @@ const AVATAR_FADE_IN_MS = 200;        // cue stick fades in oriented
 const AVATAR_PULLBACK_MS = 800;       // pulls back proportional to force
 const AVATAR_PAUSE_MS = 200;          // brief pause at full pullback
 const AVATAR_SNAP_MS = 150;           // forward strike
-const POCKET_ALIGN_TOLERANCE_DEG = 25;
-const AIM_ERROR_DEG = 8;              // ±8° random aim noise
-const FORCE_VARIANCE = 0.15;          // ±15% force noise
-const MIN_FORCE_LEVEL = 0.4;          // minimum power even on short shots
-const MAX_FORCE_LEVEL = 1.0;          // cap on the avatar's strongest shot
+const POCKET_ALIGN_TOLERANCE_DEG = 15; // was 25 — borderline cuts were unmakeable
+const POCKET_SHARP_TOLERANCE_DEG = 8;  // within 8° = "sharp" alignment bonus
+const AIM_ERROR_DEG_ALIGNED = 2;       // ±2° on confident pocket-aligned shots
+const AIM_ERROR_DEG_SAFETY = 6;        // ±6° on fallback / safety shots
+const FORCE_VARIANCE = 0.10;           // ±10% force noise (was 15%)
+const MIN_FORCE_LEVEL = 0.45;          // minimum power even on short shots
+const MAX_FORCE_LEVEL = 1.0;           // cap on the avatar's strongest shot
+const SAFETY_FORCE_LEVEL = 0.45;       // gentle disturb-the-cluster shot
+// Target→pocket distance is weighted 2x in the travel calc to compensate for
+// ~50% energy loss in the cue→target collision, then a 1.3x safety margin on top.
+const POCKETING_SAFETY_MARGIN = 1.3;
+const POST_COLLISION_ENERGY_FACTOR = 2.0;
 const TABLE_DIAGONAL = Math.hypot(PHYS_W, PHYS_H);
 
 const INITIAL_POSITIONS: Positions = {
@@ -227,14 +234,21 @@ export default function SnookerScene() {
         return;
       }
 
-      // Score each candidate: distance penalty, obstruction penalty,
-      // pocket-alignment bonus. Best score wins, ties broken randomly.
+      // Score each candidate. Weights are deliberate:
+      //   - Pocket alignment dominates (was +50, now +150 base)
+      //   - Sharpness within ±10° adds an extra +75 on top
+      //   - Obstructions are a near-veto (-500 each, was -40)
+      //   - Distance penalty is gentle (-0.01/unit, was -0.05)
+      // Best score wins, ties broken randomly.
       type ShotPlan = {
         meta: RackBall;
         targetPos: Vec;
         distance: number;
         pocket: { x: number; y: number; label: string } | null;
+        pocketToTargetDistance: number; // 0 if no aligned pocket
+        bestPocketDiffDeg: number;
         pocketAligned: boolean;
+        obstructions: number;
         score: number;
       };
       const plans: ShotPlan[] = candidates.map((c) => {
@@ -261,6 +275,9 @@ export default function SnookerScene() {
           }
         }
         const pocketAligned = bestPocket !== null;
+        const pocketToTargetDistance = bestPocket
+          ? Math.hypot(bestPocket.x - tp.x, bestPocket.y - tp.y)
+          : 0;
 
         const obstructions = allOnTable.filter(
           (other) =>
@@ -272,16 +289,25 @@ export default function SnookerScene() {
         ).length;
 
         let score = 100;
-        score -= distance * 0.05;
-        score -= obstructions * 40;
-        if (pocketAligned) score += 50;
+        score -= distance * 0.01;             // gentle distance penalty
+        score -= obstructions * 500;          // hard veto
+        if (pocketAligned) {
+          score += 150;                        // dominant alignment bonus
+          if (bestPocketDiff < POCKET_SHARP_TOLERANCE_DEG) {
+            // Linear ramp: 0° → +75, 10° → 0
+            score += 75 * (1 - bestPocketDiff / POCKET_SHARP_TOLERANCE_DEG);
+          }
+        }
 
         return {
           meta: c.meta,
           targetPos: tp,
           distance,
           pocket: bestPocket,
+          pocketToTargetDistance,
+          bestPocketDiffDeg: bestPocketDiff,
           pocketAligned,
+          obstructions,
           score,
         };
       });
@@ -291,23 +317,50 @@ export default function SnookerScene() {
       const winners = plans.filter((p) => p.score >= topScore - 0.01);
       const chosen = winners[Math.floor(Math.random() * winners.length)];
 
+      // Top 3 candidates for visibility into scoring decisions.
+      const top3 = [...plans]
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3)
+        .map(
+          (p) =>
+            `#${p.meta.number}=${p.score.toFixed(1)} (aligned:${p.pocketAligned}, sharp:${p.bestPocketDiffDeg.toFixed(1)}°, obs:${p.obstructions})`
+        );
+      console.log(`[avatar] candidate scores: ${top3.join(" | ")}`);
+
       console.log(
         `[avatar] picking target: ball ${chosen.meta.number} (distance ${chosen.distance.toFixed(0)}, pocket-aligned: ${chosen.pocketAligned})`
       );
 
-      // Aim direction: ghost-ball method when a pocket is aligned, else
-      // straight at target center.
+      // Ghost ball position: where the cue ball center must arrive for the
+      // contact face to point straight at the pocket. Computed once and
+      // shared by both the aim vector and the force calc.
+      //
+      //   ghost = target + 2r * normalize(target - pocket)
+      //
+      // Only meaningful for pocket-aligned shots; for safety shots we aim
+      // at the target center.
+      let ghostBallPos: Vec | null = null;
+      let cueToGhostDistance = chosen.distance;
       let aimRad: number;
       if (chosen.pocket) {
         const targetToPocketAng = Math.atan2(
           chosen.pocket.y - chosen.targetPos.y,
           chosen.pocket.x - chosen.targetPos.x
         );
-        const ghostX =
-          chosen.targetPos.x - 2 * BALL_RADIUS * Math.cos(targetToPocketAng);
-        const ghostY =
-          chosen.targetPos.y - 2 * BALL_RADIUS * Math.sin(targetToPocketAng);
-        aimRad = Math.atan2(ghostY - cuePos.y, ghostX - cuePos.x);
+        ghostBallPos = {
+          x:
+            chosen.targetPos.x - 2 * BALL_RADIUS * Math.cos(targetToPocketAng),
+          y:
+            chosen.targetPos.y - 2 * BALL_RADIUS * Math.sin(targetToPocketAng),
+        };
+        cueToGhostDistance = Math.hypot(
+          ghostBallPos.x - cuePos.x,
+          ghostBallPos.y - cuePos.y
+        );
+        aimRad = Math.atan2(
+          ghostBallPos.y - cuePos.y,
+          ghostBallPos.x - cuePos.x
+        );
       } else {
         aimRad = Math.atan2(
           chosen.targetPos.y - cuePos.y,
@@ -315,8 +368,13 @@ export default function SnookerScene() {
         );
       }
 
-      // Random aim error (±AIM_ERROR_DEG)
-      const errorDeg = (Math.random() * 2 - 1) * AIM_ERROR_DEG;
+      // Random aim error applied to the (already-ghost-ball-corrected) aim.
+      // Tighter when the avatar has a clear pocket-aligned shot, looser on
+      // fallback / safety shots.
+      const aimErrorRange = chosen.pocketAligned
+        ? AIM_ERROR_DEG_ALIGNED
+        : AIM_ERROR_DEG_SAFETY;
+      const errorDeg = (Math.random() * 2 - 1) * aimErrorRange;
       const errorRad = (errorDeg * Math.PI) / 180;
       const aimWithErrorRad = aimRad + errorRad;
       const aimWithErrorDeg = (aimWithErrorRad * 180) / Math.PI;
@@ -325,15 +383,29 @@ export default function SnookerScene() {
         `[avatar] aim angle: ${aimWithErrorDeg.toFixed(1)} degrees (with ${errorDeg.toFixed(1)} degrees random error)`
       );
 
-      // Force: distance-scaled, with ±15% variance, clamped.
-      const baseForceLevel = Math.min(
-        MAX_FORCE_LEVEL,
-        Math.max(
-          MIN_FORCE_LEVEL,
+      // Force:
+      //   - Pocket-aligned: cue ball must travel cue→ghost, then transfer
+      //     enough energy that the target reaches the pocket. Energy transfer
+      //     in this physics model loses ~50% in the collision, so weight the
+      //     post-collision travel (target→pocket) 2x. Then a 1.3x safety
+      //     margin so the target isn't crawling when it reaches the pocket.
+      //   - Safety / fallback: gentle disturbance, don't blast the cluster.
+      let baseForceLevel: number;
+      if (chosen.pocketAligned) {
+        const totalTravel =
+          (cueToGhostDistance +
+            chosen.pocketToTargetDistance * POST_COLLISION_ENERGY_FACTOR) *
+          POCKETING_SAFETY_MARGIN;
+        baseForceLevel =
           MIN_FORCE_LEVEL +
-            (chosen.distance / TABLE_DIAGONAL) *
-              (MAX_FORCE_LEVEL - MIN_FORCE_LEVEL)
-        )
+          (totalTravel / TABLE_DIAGONAL) *
+            (MAX_FORCE_LEVEL - MIN_FORCE_LEVEL);
+      } else {
+        baseForceLevel = SAFETY_FORCE_LEVEL;
+      }
+      baseForceLevel = Math.min(
+        MAX_FORCE_LEVEL,
+        Math.max(MIN_FORCE_LEVEL, baseForceLevel)
       );
       const varianceMul = 1 + (Math.random() * 2 - 1) * FORCE_VARIANCE;
       const forceLevel = Math.min(
@@ -344,6 +416,11 @@ export default function SnookerScene() {
       const speed = forceLevel * MAX_SHOT_SPEED;
 
       console.log(`[avatar] force magnitude: ${speed.toFixed(2)}`);
+      if (ghostBallPos && chosen.pocket) {
+        console.log(
+          `[avatar] ghost ball at (${ghostBallPos.x.toFixed(0)}, ${ghostBallPos.y.toFixed(0)}), pocket at (${chosen.pocket.x.toFixed(0)}, ${chosen.pocket.y.toFixed(0)}), force=${speed.toFixed(2)}, expected travel target→pocket=${chosen.pocketToTargetDistance.toFixed(0)}`
+        );
+      }
 
       // Avatar cue stick uses the same orientation convention as the player's:
       // cueAngle = aim direction + 90° (cue body opposite the shot direction).
