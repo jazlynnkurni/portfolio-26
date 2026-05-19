@@ -47,7 +47,12 @@ export default function Nav() {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="sticky top-0 z-40 w-full flex justify-between items-center px-6 pt-5 bg-bg/95 backdrop-blur-sm"
+      className="sticky top-0 z-40 w-full flex justify-between items-center px-6 pt-5"
+      style={{
+        backgroundColor: "rgba(255, 245, 239, 0.6)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+      }}
     >
       <Link
         href="/"
