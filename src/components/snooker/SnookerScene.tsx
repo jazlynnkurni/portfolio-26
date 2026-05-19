@@ -540,7 +540,6 @@ export default function SnookerScene() {
               style={{
                 position: "absolute",
                 inset: 0,
-                backgroundColor: "rgba(30, 30, 30, 0.6)",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -548,6 +547,7 @@ export default function SnookerScene() {
                 gap: "14px",
                 padding: "24px",
                 zIndex: 60,
+                pointerEvents: "none",
               }}
             >
               <h2
@@ -559,6 +559,7 @@ export default function SnookerScene() {
                   letterSpacing: "0.02em",
                   margin: 0,
                   textAlign: "center",
+                  textShadow: "0 2px 12px rgba(30, 30, 30, 0.4)",
                 }}
               >
                 GAME OVER
@@ -571,6 +572,7 @@ export default function SnookerScene() {
                   opacity: 0.85,
                   margin: 0,
                   textAlign: "center",
+                  textShadow: "0 2px 12px rgba(30, 30, 30, 0.4)",
                 }}
               >
                 you potted the 8 ball
@@ -588,6 +590,7 @@ export default function SnookerScene() {
                   fontSize: "14px",
                   border: "none",
                   cursor: "pointer",
+                  pointerEvents: "auto",
                 }}
               >
                 rack &apos;em up again
