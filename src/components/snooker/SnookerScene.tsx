@@ -291,6 +291,10 @@ export default function SnookerScene() {
       const winners = plans.filter((p) => p.score >= topScore - 0.01);
       const chosen = winners[Math.floor(Math.random() * winners.length)];
 
+      console.log(
+        `[avatar] picking target: ball ${chosen.meta.number} (distance ${chosen.distance.toFixed(0)}, pocket-aligned: ${chosen.pocketAligned})`
+      );
+
       // Aim direction: ghost-ball method when a pocket is aligned, else
       // straight at target center.
       let aimRad: number;
@@ -317,6 +321,10 @@ export default function SnookerScene() {
       const aimWithErrorRad = aimRad + errorRad;
       const aimWithErrorDeg = (aimWithErrorRad * 180) / Math.PI;
 
+      console.log(
+        `[avatar] aim angle: ${aimWithErrorDeg.toFixed(1)} degrees (with ${errorDeg.toFixed(1)} degrees random error)`
+      );
+
       // Force: distance-scaled, with ±15% variance, clamped.
       const baseForceLevel = Math.min(
         MAX_FORCE_LEVEL,
@@ -334,6 +342,8 @@ export default function SnookerScene() {
       );
       const pullbackPx = forceLevel * PULLBACK_MAX;
       const speed = forceLevel * MAX_SHOT_SPEED;
+
+      console.log(`[avatar] force magnitude: ${speed.toFixed(2)}`);
 
       // Avatar cue stick uses the same orientation convention as the player's:
       // cueAngle = aim direction + 90° (cue body opposite the shot direction).
