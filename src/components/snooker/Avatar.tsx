@@ -11,11 +11,11 @@ export default function Avatar({ onClick }: Props) {
   const handleClick = () => {
     onClick?.();
     controls.start({
-      scale: [1, 1.15, 0.95, 1],
-      rotate: [0, -5, 5, 0],
+      rotate: [0, -8, 6, -3, 0],
+      x: [0, 2, -2, 1, 0],
       transition: {
-        duration: 0.45,
-        times: [0, 0.3, 0.65, 1],
+        duration: 0.4,
+        times: [0, 0.2, 0.5, 0.78, 1],
         ease: [0.34, 1.56, 0.64, 1],
       },
     });
@@ -39,8 +39,6 @@ export default function Avatar({ onClick }: Props) {
         type="button"
         onClick={handleClick}
         animate={controls}
-        whileHover={{ scale: 1.04 }}
-        whileTap={{ scale: 0.96 }}
         aria-label="poke the watcher"
         style={{
           cursor: "pointer",
@@ -50,6 +48,7 @@ export default function Avatar({ onClick }: Props) {
           display: "block",
           width: "100%",
           maxWidth: "120px",
+          transformOrigin: "50% 70%",
         }}
       >
         <Image
