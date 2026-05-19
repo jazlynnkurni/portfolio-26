@@ -9,18 +9,25 @@ import {
   useSpring,
 } from "framer-motion";
 
-export type CursorMode = "default" | "email";
+export type CursorMode = "default" | "email" | "case-study";
 
-// Dispatched by interactive elements (e.g. the headline) to morph the cursor.
-// Payload: { mode: "default" | "email" }
+// Dispatched by interactive elements (e.g. the headline, work cards) to morph
+// the cursor. Payload: { mode: CursorMode }.
 export const CURSOR_MODE_EVENT = "cursor-mode";
 
 const EMAIL_TEXT = "jazkurnz06@gmail.com";
+const CASE_STUDY_TEXT = "view case study →";
 const DOT_SIZE = 22;
 const PILL_HEIGHT = 36;
 const PILL_PADDING_X = 18;
-// Fallback width if the measurement ref hasn't resolved yet (rare).
-const PILL_WIDTH_FALLBACK = 200;
+// Fallback widths if a measurement ref hasn't resolved yet (rare).
+const PILL_WIDTH_FALLBACK_EMAIL = 200;
+const PILL_WIDTH_FALLBACK_CASE = 180;
+
+const LABEL_BY_MODE: Record<Exclude<CursorMode, "default">, string> = {
+  email: EMAIL_TEXT,
+  "case-study": CASE_STUDY_TEXT,
+};
 
 export default function CustomCursor() {
   const x = useMotionValue(-100);
@@ -32,17 +39,28 @@ export default function CustomCursor() {
   const transform = useMotionTemplate`translate3d(${springX}px, ${springY}px, 0) translate(-50%, -50%)`;
 
   const [mode, setMode] = useState<CursorMode>("default");
-  const [pillWidth, setPillWidth] = useState(PILL_WIDTH_FALLBACK);
-  const measureRef = useRef<HTMLSpanElement>(null);
+  const [emailWidth, setEmailWidth] = useState(PILL_WIDTH_FALLBACK_EMAIL);
+  const [caseWidth, setCaseWidth] = useState(PILL_WIDTH_FALLBACK_CASE);
+  const measureEmailRef = useRef<HTMLSpanElement>(null);
+  const measureCaseRef = useRef<HTMLSpanElement>(null);
 
-  // Measure the email text width once (after fonts load) so the pill ↔ dot
-  // animation has two numeric endpoints — animating from a number to "auto"
-  // doesn't reverse smoothly in framer-motion.
+  // Measure each pill label once (after fonts load) so morph animations have
+  // two numeric width endpoints — animating from a number to "auto" doesn't
+  // reverse smoothly in framer-motion.
   useEffect(() => {
     const measure = () => {
-      const el = measureRef.current;
-      if (!el) return;
-      setPillWidth(Math.ceil(el.getBoundingClientRect().width) + PILL_PADDING_X * 2);
+      const e = measureEmailRef.current;
+      const c = measureCaseRef.current;
+      if (e) {
+        setEmailWidth(
+          Math.ceil(e.getBoundingClientRect().width) + PILL_PADDING_X * 2
+        );
+      }
+      if (c) {
+        setCaseWidth(
+          Math.ceil(c.getBoundingClientRect().width) + PILL_PADDING_X * 2
+        );
+      }
     };
     measure();
     if (typeof document !== "undefined" && document.fonts?.ready) {
@@ -57,7 +75,11 @@ export default function CustomCursor() {
     };
     const onModeEvent = (e: Event) => {
       const detail = (e as CustomEvent<{ mode: CursorMode }>).detail;
-      if (detail?.mode === "default" || detail?.mode === "email") {
+      if (
+        detail?.mode === "default" ||
+        detail?.mode === "email" ||
+        detail?.mode === "case-study"
+      ) {
         setMode(detail.mode);
       }
     };
@@ -69,14 +91,17 @@ export default function CustomCursor() {
     };
   }, [x, y]);
 
-  const isEmail = mode === "email";
+  const isPill = mode !== "default";
+  const pillWidth =
+    mode === "email" ? emailWidth : mode === "case-study" ? caseWidth : DOT_SIZE;
+  const label = mode === "default" ? null : LABEL_BY_MODE[mode];
 
   return (
     <>
-      {/* Off-screen measurement span — never visible, used only to compute
-          the pill width so the morph animates between two numeric widths. */}
+      {/* Off-screen measurement spans — never visible, used only to compute
+          pill widths so the morph animates between numeric widths. */}
       <span
-        ref={measureRef}
+        ref={measureEmailRef}
         aria-hidden
         style={{
           position: "fixed",
@@ -93,13 +118,31 @@ export default function CustomCursor() {
       >
         {EMAIL_TEXT}
       </span>
+      <span
+        ref={measureCaseRef}
+        aria-hidden
+        style={{
+          position: "fixed",
+          top: -9999,
+          left: -9999,
+          visibility: "hidden",
+          fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+          fontSize: 14,
+          fontWeight: 500,
+          lineHeight: 1,
+          whiteSpace: "nowrap",
+          pointerEvents: "none",
+        }}
+      >
+        {CASE_STUDY_TEXT}
+      </span>
 
       <motion.div
         aria-hidden
         className="custom-cursor"
         animate={{
-          width: isEmail ? pillWidth : DOT_SIZE,
-          height: isEmail ? PILL_HEIGHT : DOT_SIZE,
+          width: isPill ? pillWidth : DOT_SIZE,
+          height: isPill ? PILL_HEIGHT : DOT_SIZE,
         }}
         transition={{ duration: 0.25, ease: "easeOut" }}
         style={{
@@ -111,26 +154,24 @@ export default function CustomCursor() {
           overflow: "hidden",
         }}
       >
-        <AnimatePresence>
-          {isEmail && (
+        <AnimatePresence mode="wait">
+          {isPill && label && (
             <motion.span
-              key="email-label"
+              key={mode}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{
-                duration: 0.15,
-                delay: isEmail ? 0.1 : 0,
-              }}
+              transition={{ duration: 0.15, delay: 0.1 }}
               style={{
                 color: "#FFF5EF",
-                fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                fontFamily:
+                  '"Helvetica Neue", Helvetica, Arial, sans-serif',
                 fontSize: 14,
                 fontWeight: 500,
                 lineHeight: 1,
               }}
             >
-              {EMAIL_TEXT}
+              {label}
             </motion.span>
           )}
         </AnimatePresence>
