@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Matter from "matter-js";
 import { useCueAim, type ShotInfo } from "@/hooks/useCueAim";
 import Ball from "./Ball";
@@ -99,6 +99,7 @@ export default function SnookerScene() {
   );
   const [cueBallStatus, setCueBallStatus] =
     useState<CueBallStatus>("active");
+  const [gameOver, setGameOver] = useState(false);
 
   const tableRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<Matter.World | null>(null);
@@ -107,6 +108,7 @@ export default function SnookerScene() {
   const shotInFlightRef = useRef(false);
   const removedFromPhysicsRef = useRef<Set<number>>(new Set());
   const cueBallStatusRef = useRef<CueBallStatus>("active");
+  const gameOverPendingRef = useRef(false);
   const dropTimeoutsRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(
     new Map()
   );
@@ -234,6 +236,9 @@ export default function SnookerScene() {
     const pocketNumberedBall = (num: number, body: Matter.Body) => {
       if (removedFromPhysicsRef.current.has(num)) return;
       removedFromPhysicsRef.current.add(num);
+      if (num === 8) {
+        gameOverPendingRef.current = true;
+      }
       Matter.Body.setVelocity(body, { x: 0, y: 0 });
       Matter.World.remove(world, body);
       setDroppingNumbers((prev) => {
@@ -341,7 +346,13 @@ export default function SnookerScene() {
             respawnCueBall();
           }
           shotInFlightRef.current = false;
-          setCueVisible(true);
+          if (gameOverPendingRef.current) {
+            // 8-ball was pocketed this shot — overlay appears, cue stays
+            // hidden, table sits as-is until "rack 'em up again" reset.
+            setGameOver(true);
+          } else {
+            setCueVisible(true);
+          }
         }
       }
 
@@ -359,12 +370,55 @@ export default function SnookerScene() {
       cueDropTimeoutRef.current = null;
       removedFromPhysicsRef.current.clear();
       cueBallStatusRef.current = "active";
+      gameOverPendingRef.current = false;
       Matter.World.clear(world, false);
       Matter.Engine.clear(engine);
       worldRef.current = null;
       ballBodiesRef.current = [];
       cueBallBodyRef.current = null;
     };
+  }, []);
+
+  const handleReset = useCallback(() => {
+    const world = worldRef.current;
+    const cueBall = cueBallBodyRef.current;
+    if (!world || !cueBall) return;
+
+    // Re-rack all 15 numbered balls at their original positions.
+    RACK.forEach((meta, i) => {
+      const body = ballBodiesRef.current[i];
+      if (!body) return;
+      Matter.Body.setPosition(body, {
+        x: (meta.x / 100) * PHYS_W,
+        y: (meta.y / 100) * PHYS_H,
+      });
+      Matter.Body.setVelocity(body, { x: 0, y: 0 });
+      Matter.Body.setAngularVelocity(body, 0);
+      if (removedFromPhysicsRef.current.has(meta.number)) {
+        Matter.World.add(world, body);
+      }
+    });
+
+    // Respawn cue ball at its original starting position.
+    Matter.Body.setPosition(cueBall, {
+      x: (CUE_BALL_INITIAL.x / 100) * PHYS_W,
+      y: (CUE_BALL_INITIAL.y / 100) * PHYS_H,
+    });
+    Matter.Body.setVelocity(cueBall, { x: 0, y: 0 });
+    Matter.Body.setAngularVelocity(cueBall, 0);
+    if (cueBallStatusRef.current !== "active") {
+      Matter.World.add(world, cueBall);
+      cueBallStatusRef.current = "active";
+      setCueBallStatus("active");
+    }
+
+    removedFromPhysicsRef.current.clear();
+    gameOverPendingRef.current = false;
+    shotInFlightRef.current = false;
+    setPocketedNumbers(new Set());
+    setDroppingNumbers(new Set());
+    setGameOver(false);
+    setCueVisible(true);
   }, []);
 
   return (
@@ -474,6 +528,73 @@ export default function SnookerScene() {
           }}
           {...bind}
         />
+
+        {/* GAME OVER overlay — appears when 8-ball is pocketed and balls rest */}
+        <AnimatePresence>
+          {gameOver && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              style={{
+                position: "absolute",
+                inset: 0,
+                backgroundColor: "rgba(30, 30, 30, 0.6)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "14px",
+                padding: "24px",
+                zIndex: 60,
+              }}
+            >
+              <h2
+                style={{
+                  fontFamily: "var(--font-serif), serif",
+                  fontSize: "32px",
+                  color: "#FFF5EF",
+                  fontWeight: 400,
+                  letterSpacing: "0.02em",
+                  margin: 0,
+                  textAlign: "center",
+                }}
+              >
+                GAME OVER
+              </h2>
+              <p
+                style={{
+                  fontFamily: "var(--font-sans), sans-serif",
+                  fontSize: "13px",
+                  color: "#FFF5EF",
+                  opacity: 0.85,
+                  margin: 0,
+                  textAlign: "center",
+                }}
+              >
+                you potted the 8 ball
+              </p>
+              <button
+                type="button"
+                onClick={handleReset}
+                style={{
+                  marginTop: "8px",
+                  fontFamily: "var(--font-sans), sans-serif",
+                  backgroundColor: "#C97836",
+                  color: "#FFF5EF",
+                  padding: "10px 16px",
+                  borderRadius: "10px",
+                  fontSize: "14px",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                rack &apos;em up again
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );
