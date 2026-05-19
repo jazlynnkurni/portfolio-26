@@ -2,7 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useMotionValue,
+} from "framer-motion";
 import Matter from "matter-js";
 import { useCueAim, type ShotInfo } from "@/hooks/useCueAim";
 import Ball from "./Ball";
@@ -80,12 +85,53 @@ type Vec = { x: number; y: number };
 type Positions = { balls: Vec[]; cueBall: Vec };
 type CueBallStatus = "active" | "dropping" | "respawning";
 type Turn = "player" | "avatar";
-const AVATAR_PLACEHOLDER_DELAY_MS = 1200;
+
+// --- Avatar AI constants ---
+const AVATAR_THINKING_MS = 400;       // pause before the cue stick appears
+const AVATAR_FADE_IN_MS = 200;        // cue stick fades in oriented
+const AVATAR_PULLBACK_MS = 800;       // pulls back proportional to force
+const AVATAR_PAUSE_MS = 200;          // brief pause at full pullback
+const AVATAR_SNAP_MS = 150;           // forward strike
+const POCKET_ALIGN_TOLERANCE_DEG = 25;
+const AIM_ERROR_DEG = 8;              // ±8° random aim noise
+const FORCE_VARIANCE = 0.15;          // ±15% force noise
+const MIN_FORCE_LEVEL = 0.4;          // minimum power even on short shots
+const MAX_FORCE_LEVEL = 1.0;          // cap on the avatar's strongest shot
+const TABLE_DIAGONAL = Math.hypot(PHYS_W, PHYS_H);
 
 const INITIAL_POSITIONS: Positions = {
   balls: RACK.map((b) => ({ x: b.x, y: b.y })),
   cueBall: { x: CUE_BALL_INITIAL.x, y: CUE_BALL_INITIAL.y },
 };
+
+const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+// Smallest signed angle (radians) between two angles in radians.
+function angleDiff(a: number, b: number): number {
+  let d = a - b;
+  while (d > Math.PI) d -= 2 * Math.PI;
+  while (d < -Math.PI) d += 2 * Math.PI;
+  return d;
+}
+
+// Does `ballPos` block a straight line from `cuePos` to `targetPos`? Treats
+// the corridor as 2 ball radii wide; the ball must also sit between the
+// shooter and the target (not behind either).
+function isObstructing(cuePos: Vec, targetPos: Vec, ballPos: Vec): boolean {
+  const dx = targetPos.x - cuePos.x;
+  const dy = targetPos.y - cuePos.y;
+  const len = Math.hypot(dx, dy);
+  if (len === 0) return false;
+  const ux = dx / len;
+  const uy = dy / len;
+  const bx = ballPos.x - cuePos.x;
+  const by = ballPos.y - cuePos.y;
+  const t = bx * ux + by * uy;
+  if (t < BALL_RADIUS || t > len - BALL_RADIUS) return false;
+  const perpX = bx - t * ux;
+  const perpY = by - t * uy;
+  return Math.hypot(perpX, perpY) < BALL_RADIUS * 2;
+}
 
 export default function SnookerScene() {
   const [tauntIndex, setTauntIndex] = useState(0);
@@ -104,6 +150,9 @@ export default function SnookerScene() {
   const [gameOverShooter, setGameOverShooter] = useState<Turn | null>(null);
   // Player ALWAYS breaks the rack. No coin flip.
   const [turn, setTurn] = useState<Turn>("player");
+  const [avatarCueVisible, setAvatarCueVisible] = useState(false);
+  const avatarCueAngle = useMotionValue(0);
+  const avatarCuePullback = useMotionValue(0);
 
   const tableRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<Matter.World | null>(null);
@@ -134,17 +183,219 @@ export default function SnookerScene() {
     shotInFlightRef.current = true;
   }, []);
 
-  // Avatar placeholder turn: when it's avatar's turn and game isn't over,
-  // wait ~1200ms then pass back to player. Real AI ships next prompt.
+  // Avatar AI: when it's avatar's turn, pick a target, animate the avatar's
+  // own cue stick (fade-in → pullback → pause → snap), apply the impulse to
+  // the cue ball. After the shot, the existing RAF rest-detection swaps the
+  // turn back to player. No physics is paused; cue ball gets a real shot.
   useEffect(() => {
     if (turn !== "avatar" || gameOver) return;
-    const t = setTimeout(() => {
-      console.log("avatar would shoot now (placeholder)");
-      turnRef.current = "player";
-      setTurn("player");
-    }, AVATAR_PLACEHOLDER_DELAY_MS);
-    return () => clearTimeout(t);
-  }, [turn, gameOver]);
+    let cancelled = false;
+
+    const run = async () => {
+      // Thinking pause before the cue appears
+      await delay(AVATAR_THINKING_MS);
+      if (cancelled) return;
+
+      const cueBallBody = cueBallBodyRef.current;
+      const world = worldRef.current;
+      if (!cueBallBody || !world) return;
+      const cuePos: Vec = {
+        x: cueBallBody.position.x,
+        y: cueBallBody.position.y,
+      };
+
+      // Gather candidate balls — exclude pocketed + cue ball, exclude 8-ball
+      // unless it's the only ball left.
+      const allOnTable = RACK.map((meta, i) => ({
+        meta,
+        body: ballBodiesRef.current[i],
+      })).filter(
+        (b) =>
+          b.body !== undefined &&
+          !removedFromPhysicsRef.current.has(b.meta.number)
+      );
+      const nonEightCandidates = allOnTable.filter(
+        (b) => b.meta.number !== 8
+      );
+      const candidates =
+        nonEightCandidates.length > 0 ? nonEightCandidates : allOnTable;
+
+      if (candidates.length === 0) {
+        // Nothing to shoot at — fall back to a turn swap.
+        turnRef.current = "player";
+        setTurn("player");
+        return;
+      }
+
+      // Score each candidate: distance penalty, obstruction penalty,
+      // pocket-alignment bonus. Best score wins, ties broken randomly.
+      type ShotPlan = {
+        meta: RackBall;
+        targetPos: Vec;
+        distance: number;
+        pocket: { x: number; y: number; label: string } | null;
+        pocketAligned: boolean;
+        score: number;
+      };
+      const plans: ShotPlan[] = candidates.map((c) => {
+        const tp: Vec = { x: c.body.position.x, y: c.body.position.y };
+        const distance = Math.hypot(tp.x - cuePos.x, tp.y - cuePos.y);
+
+        const cueToTargetAng = Math.atan2(
+          tp.y - cuePos.y,
+          tp.x - cuePos.x
+        );
+        let bestPocket: ShotPlan["pocket"] = null;
+        let bestPocketDiff = Infinity;
+        for (const p of POCKETS) {
+          const targetToPocketAng = Math.atan2(
+            p.y - tp.y,
+            p.x - tp.x
+          );
+          const diff = Math.abs(
+            (angleDiff(cueToTargetAng, targetToPocketAng) * 180) / Math.PI
+          );
+          if (diff < bestPocketDiff) {
+            bestPocketDiff = diff;
+            if (diff < POCKET_ALIGN_TOLERANCE_DEG) bestPocket = p;
+          }
+        }
+        const pocketAligned = bestPocket !== null;
+
+        const obstructions = allOnTable.filter(
+          (other) =>
+            other.meta.number !== c.meta.number &&
+            isObstructing(cuePos, tp, {
+              x: other.body.position.x,
+              y: other.body.position.y,
+            })
+        ).length;
+
+        let score = 100;
+        score -= distance * 0.05;
+        score -= obstructions * 40;
+        if (pocketAligned) score += 50;
+
+        return {
+          meta: c.meta,
+          targetPos: tp,
+          distance,
+          pocket: bestPocket,
+          pocketAligned,
+          score,
+        };
+      });
+
+      // Pick best, random tiebreaker.
+      const topScore = Math.max(...plans.map((p) => p.score));
+      const winners = plans.filter((p) => p.score >= topScore - 0.01);
+      const chosen = winners[Math.floor(Math.random() * winners.length)];
+
+      // Aim direction: ghost-ball method when a pocket is aligned, else
+      // straight at target center.
+      let aimRad: number;
+      if (chosen.pocket) {
+        const targetToPocketAng = Math.atan2(
+          chosen.pocket.y - chosen.targetPos.y,
+          chosen.pocket.x - chosen.targetPos.x
+        );
+        const ghostX =
+          chosen.targetPos.x - 2 * BALL_RADIUS * Math.cos(targetToPocketAng);
+        const ghostY =
+          chosen.targetPos.y - 2 * BALL_RADIUS * Math.sin(targetToPocketAng);
+        aimRad = Math.atan2(ghostY - cuePos.y, ghostX - cuePos.x);
+      } else {
+        aimRad = Math.atan2(
+          chosen.targetPos.y - cuePos.y,
+          chosen.targetPos.x - cuePos.x
+        );
+      }
+
+      // Random aim error (±AIM_ERROR_DEG)
+      const errorDeg = (Math.random() * 2 - 1) * AIM_ERROR_DEG;
+      const errorRad = (errorDeg * Math.PI) / 180;
+      const aimWithErrorRad = aimRad + errorRad;
+      const aimWithErrorDeg = (aimWithErrorRad * 180) / Math.PI;
+
+      // Force: distance-scaled, with ±15% variance, clamped.
+      const baseForceLevel = Math.min(
+        MAX_FORCE_LEVEL,
+        Math.max(
+          MIN_FORCE_LEVEL,
+          MIN_FORCE_LEVEL +
+            (chosen.distance / TABLE_DIAGONAL) *
+              (MAX_FORCE_LEVEL - MIN_FORCE_LEVEL)
+        )
+      );
+      const varianceMul = 1 + (Math.random() * 2 - 1) * FORCE_VARIANCE;
+      const forceLevel = Math.min(
+        MAX_FORCE_LEVEL,
+        Math.max(0.2, baseForceLevel * varianceMul)
+      );
+      const pullbackPx = forceLevel * PULLBACK_MAX;
+      const speed = forceLevel * MAX_SHOT_SPEED;
+
+      // Avatar cue stick uses the same orientation convention as the player's:
+      // cueAngle = aim direction + 90° (cue body opposite the shot direction).
+      const cueAngleDeg = aimWithErrorDeg + 90;
+      avatarCueAngle.set(cueAngleDeg);
+      avatarCuePullback.set(0);
+      setAvatarCueVisible(true);
+
+      // Phase: fade-in (handled by CueStick's opacity transition)
+      await delay(AVATAR_FADE_IN_MS);
+      if (cancelled) return;
+
+      // Phase: pull back over AVATAR_PULLBACK_MS with ease-out
+      const pullAnim = animate(avatarCuePullback, pullbackPx, {
+        duration: AVATAR_PULLBACK_MS / 1000,
+        ease: "easeOut",
+      });
+      await pullAnim;
+      if (cancelled) {
+        pullAnim.stop();
+        return;
+      }
+
+      // Phase: pause at full pullback
+      await delay(AVATAR_PAUSE_MS);
+      if (cancelled) return;
+
+      // Phase: snap forward into cue ball
+      const snapAnim = animate(avatarCuePullback, 0, {
+        duration: AVATAR_SNAP_MS / 1000,
+        ease: "easeIn",
+      });
+      await snapAnim;
+      if (cancelled) {
+        snapAnim.stop();
+        return;
+      }
+
+      // Contact: apply the impulse and hide the avatar cue.
+      const cueBallNow = cueBallBodyRef.current;
+      if (
+        cueBallNow &&
+        cueBallStatusRef.current === "active" &&
+        !shotInFlightRef.current
+      ) {
+        Matter.Body.setVelocity(cueBallNow, {
+          x: Math.cos(aimWithErrorRad) * speed,
+          y: Math.sin(aimWithErrorRad) * speed,
+        });
+        shotInFlightRef.current = true;
+      }
+      setAvatarCueVisible(false);
+    };
+
+    run();
+
+    return () => {
+      cancelled = true;
+      setAvatarCueVisible(false);
+      avatarCuePullback.set(0);
+    };
+  }, [turn, gameOver, avatarCueAngle, avatarCuePullback]);
 
   // Debug: log turn whenever it changes.
   useEffect(() => {
@@ -456,10 +707,13 @@ export default function SnookerScene() {
     setGameOver(false);
     setGameOverShooter(null);
     setCueVisible(true);
+    setAvatarCueVisible(false);
+    avatarCuePullback.set(0);
+    avatarCueAngle.set(0);
     // Player always breaks the rack.
     turnRef.current = "player";
     setTurn("player");
-  }, []);
+  }, [avatarCueAngle, avatarCuePullback]);
 
   const showCueBall = cueBallStatus !== "respawning";
 
@@ -522,6 +776,14 @@ export default function SnookerScene() {
           x={positions.cueBall.x}
           y={positions.cueBall.y}
           visible={cueVisible && turn === "player" && !gameOver}
+        />
+        <CueStick
+          angle={avatarCueAngle}
+          pullback={avatarCuePullback}
+          x={positions.cueBall.x}
+          y={positions.cueBall.y}
+          visible={avatarCueVisible && turn === "avatar" && !gameOver}
+          variant="avatar"
         />
         {showCueBall && (
           <Ball

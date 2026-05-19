@@ -7,6 +7,8 @@ import {
   type MotionValue,
 } from "framer-motion";
 
+type Variant = "player" | "avatar";
+
 type Props = {
   /** Cue rotation in degrees (0 = body straight down from cue ball). */
   angle?: MotionValue<number>;
@@ -20,10 +22,19 @@ type Props = {
   y?: number;
   /** Show or hide the cue stick (fades opacity over 150ms). */
   visible?: boolean;
+  /** Visual tone: player = warm clay, avatar = darker walnut. */
+  variant?: Variant;
 };
 
 const FADE_MASK =
   "linear-gradient(to bottom, black 0%, black 70%, transparent 100%)";
+
+const VARIANT_BG: Record<Variant, string> = {
+  player:
+    "linear-gradient(to bottom, #95704F 0%, #95704F 18%, #B08968 22%, #B08968 100%)",
+  avatar:
+    "linear-gradient(to bottom, #2E2014 0%, #2E2014 18%, #4A3422 22%, #5A4029 100%)",
+};
 
 /**
  * Cue stick anchored at the cue ball center, with its tip offset by the
@@ -42,6 +53,7 @@ export default function CueStick({
   x = 50,
   y = 72,
   visible = true,
+  variant = "player",
 }: Props) {
   const fallbackAngle = useMotionValue(0);
   const fallbackPullback = useMotionValue(0);
@@ -63,8 +75,7 @@ export default function CueStick({
         height: `${length}%`,
         transform,
         transformOrigin: "50% 0%",
-        background:
-          "linear-gradient(to bottom, #95704F 0%, #95704F 18%, #B08968 22%, #B08968 100%)",
+        background: VARIANT_BG[variant],
         borderRadius: "0 0 9999px 9999px",
         filter:
           "drop-shadow(2px 4px 6px rgba(50, 30, 20, 0.3)) blur(0.4px)",
