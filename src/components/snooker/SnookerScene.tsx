@@ -125,7 +125,7 @@ export default function SnookerScene() {
           style={{
             position: "absolute",
             left: "50%",
-            bottom: "96%",
+            bottom: "92%",
             transform: "translateX(-50%)",
             display: "flex",
             flexDirection: "column",
