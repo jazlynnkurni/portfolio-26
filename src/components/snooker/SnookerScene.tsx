@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useCueAim } from "@/hooks/useCueAim";
 import Ball from "./Ball";
 import CueStick from "./CueStick";
+import AimGuide from "./AimGuide";
 import Avatar from "./Avatar";
 import SpeechBubble from "./SpeechBubble";
 
@@ -52,6 +54,9 @@ const TAUNTS = [
 
 export default function SnookerScene() {
   const [tauntIndex, setTauntIndex] = useState(0);
+  const tableRef = useRef<HTMLDivElement>(null);
+  const { cueAngle, aimAngle, pullback, isHovering, isAiming, bind } =
+    useCueAim(tableRef, CUE_BALL.x, CUE_BALL.y);
 
   const handleTaunt = () => {
     setTauntIndex((i) => (i + 1) % TAUNTS.length);
@@ -65,6 +70,7 @@ export default function SnookerScene() {
       className="hidden md:flex items-center gap-2 w-full max-w-[500px]"
     >
       <div
+        ref={tableRef}
         className="relative w-[72%] overflow-hidden"
         style={{ aspectRatio: "768 / 1376" }}
       >
@@ -91,8 +97,24 @@ export default function SnookerScene() {
             isStriped={b.isStriped}
           />
         ))}
-        <CueStick />
+        <AimGuide
+          aimAngle={aimAngle}
+          visible={isAiming}
+          cueBallX={CUE_BALL.x}
+          cueBallY={CUE_BALL.y}
+        />
+        <CueStick angle={cueAngle} pullback={pullback} />
         <Ball x={CUE_BALL.x} y={CUE_BALL.y} color="#FFF5EF" isCueBall />
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: 0,
+            cursor: isHovering ? "crosshair" : "default",
+            zIndex: 50,
+          }}
+          {...bind}
+        />
       </div>
 
       <div className="w-[26%] flex flex-col items-center gap-2 self-center">
