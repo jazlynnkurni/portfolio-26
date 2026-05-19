@@ -174,6 +174,9 @@ export default function SnookerScene() {
     new Map()
   );
   const cueDropTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Tracks the last taunt the avatar said so we can re-roll a single
+  // duplicate per turn (per spec — one re-roll only, not infinite).
+  const lastAvatarTauntRef = useRef<number | null>(null);
 
   const handleShoot = useCallback(({ aimAngleDeg, pullback }: ShotInfo) => {
     if (turnRef.current !== "player") return;
@@ -488,6 +491,32 @@ export default function SnookerScene() {
   useEffect(() => {
     console.log("[snooker]", `turn=${turn}`);
   }, [turn]);
+
+  // Auto-taunt: avatar speaks a random line at the start of its turn and the
+  // bubble persists until ~500ms after the turn swaps back to the player.
+  // Skipped during gameOver — the GAME OVER overlay handles end-of-game UX.
+  useEffect(() => {
+    if (gameOver) return;
+    if (turn === "avatar") {
+      const showTimer = setTimeout(() => {
+        let pick = Math.floor(Math.random() * TAUNTS.length);
+        // Single re-roll if it matches the previous avatar taunt.
+        if (pick === lastAvatarTauntRef.current) {
+          pick = Math.floor(Math.random() * TAUNTS.length);
+        }
+        lastAvatarTauntRef.current = pick;
+        setTauntIndex(pick);
+        setBubbleVisible(true);
+      }, 300);
+      return () => clearTimeout(showTimer);
+    }
+    // turn === "player": fade the bubble out after a beat so the user has
+    // a moment to register the turn change. SpeechBubble handles the fade.
+    const hideTimer = setTimeout(() => {
+      setBubbleVisible(false);
+    }, 500);
+    return () => clearTimeout(hideTimer);
+  }, [turn, gameOver]);
 
   const { cueAngle, aimAngle, pullback, isHovering, isAiming, bind } =
     useCueAim(
