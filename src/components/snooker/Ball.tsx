@@ -1,3 +1,7 @@
+"use client";
+
+import { motion } from "framer-motion";
+
 type BallProps = {
   number?: number;
   x: number;
@@ -5,6 +9,10 @@ type BallProps = {
   color: string;
   isStriped?: boolean;
   isCueBall?: boolean;
+  /** When true, the ball animates scale 1→0 + opacity 1→0 over 200ms
+   *  (drop-into-pocket effect). Parent should remove it from render
+   *  after the animation completes. */
+  dropping?: boolean;
 };
 
 const SIZE_PCT = 6.5;
@@ -33,6 +41,7 @@ export default function Ball({
   color,
   isStriped,
   isCueBall,
+  dropping = false,
 }: BallProps) {
   const base = isCueBall ? "#FFF5EF" : color;
   const highlight = isCueBall ? "#FFFEFB" : lighten(base);
@@ -58,49 +67,63 @@ export default function Ball({
         width: `${SIZE_PCT}%`,
         aspectRatio: "1",
         transform: "translate(-50%, -50%)",
-        borderRadius: "50%",
-        background: `radial-gradient(circle at 30% 30%, ${highlight} 0%, ${base} 45%, ${shadow} 100%)`,
-        boxShadow: ballShadow,
-        filter: "blur(0.3px)",
-        overflow: "hidden",
         zIndex: 20,
         pointerEvents: "none",
       }}
     >
-      {isStriped && (
-        <div
-          style={{
-            position: "absolute",
-            top: "35%",
-            left: 0,
-            width: "100%",
-            height: "30%",
-            background:
-              "linear-gradient(to bottom, #FFFAF4 0%, #FFF5EF 50%, #F2E6D7 100%)",
-            opacity: 0.95,
-          }}
-        />
-      )}
-      {number !== undefined && !isCueBall && (
-        <span
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            fontFamily: "var(--font-mono), monospace",
-            fontSize: "10px",
-            fontWeight: 500,
-            color: numberColor,
-            textShadow: "0 0 2px rgba(255, 250, 244, 0.5)",
-            pointerEvents: "none",
-            lineHeight: 1,
-            letterSpacing: 0,
-          }}
-        >
-          {number}
-        </span>
-      )}
+      <motion.div
+        initial={false}
+        animate={{
+          scale: dropping ? 0 : 1,
+          opacity: dropping ? 0 : 1,
+        }}
+        transition={{ duration: 0.2, ease: "easeIn" }}
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          borderRadius: "50%",
+          background: `radial-gradient(circle at 30% 30%, ${highlight} 0%, ${base} 45%, ${shadow} 100%)`,
+          boxShadow: ballShadow,
+          filter: "blur(0.3px)",
+          overflow: "hidden",
+        }}
+      >
+        {isStriped && (
+          <div
+            style={{
+              position: "absolute",
+              top: "35%",
+              left: 0,
+              width: "100%",
+              height: "30%",
+              background:
+                "linear-gradient(to bottom, #FFFAF4 0%, #FFF5EF 50%, #F2E6D7 100%)",
+              opacity: 0.95,
+            }}
+          />
+        )}
+        {number !== undefined && !isCueBall && (
+          <span
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              fontFamily: "var(--font-mono), monospace",
+              fontSize: "10px",
+              fontWeight: 500,
+              color: numberColor,
+              textShadow: "0 0 2px rgba(255, 250, 244, 0.5)",
+              pointerEvents: "none",
+              lineHeight: 1,
+              letterSpacing: 0,
+            }}
+          >
+            {number}
+          </span>
+        )}
+      </motion.div>
     </div>
   );
 }

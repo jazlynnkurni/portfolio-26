@@ -65,8 +65,21 @@ const REST_VELOCITY_THRESHOLD = 0.05;
 const MAX_SHOT_SPEED = 28; // tunable: px/step at pullback max
 const PULLBACK_MAX = 40;
 
+const POCKET_RADIUS = BALL_RADIUS * 1.4;
+const POCKETS: Array<{ x: number; y: number; label: string }> = [
+  { x: 60, y: 100, label: "pocket-tl" },
+  { x: PHYS_W - 60, y: 100, label: "pocket-tr" },
+  { x: 60, y: PHYS_H / 2, label: "pocket-ml" },
+  { x: PHYS_W - 60, y: PHYS_H / 2, label: "pocket-mr" },
+  { x: 60, y: PHYS_H - 100, label: "pocket-bl" },
+  { x: PHYS_W - 60, y: PHYS_H - 100, label: "pocket-br" },
+];
+
+const DROP_ANIM_MS = 200;
+
 type Vec = { x: number; y: number };
 type Positions = { balls: Vec[]; cueBall: Vec };
+type CueBallStatus = "active" | "dropping" | "respawning";
 
 const INITIAL_POSITIONS: Positions = {
   balls: RACK.map((b) => ({ x: b.x, y: b.y })),
@@ -78,15 +91,30 @@ export default function SnookerScene() {
   const [bubbleVisible, setBubbleVisible] = useState(false);
   const [cueVisible, setCueVisible] = useState(true);
   const [positions, setPositions] = useState<Positions>(INITIAL_POSITIONS);
+  const [droppingNumbers, setDroppingNumbers] = useState<Set<number>>(
+    () => new Set()
+  );
+  const [pocketedNumbers, setPocketedNumbers] = useState<Set<number>>(
+    () => new Set()
+  );
+  const [cueBallStatus, setCueBallStatus] =
+    useState<CueBallStatus>("active");
 
   const tableRef = useRef<HTMLDivElement>(null);
+  const worldRef = useRef<Matter.World | null>(null);
   const ballBodiesRef = useRef<Matter.Body[]>([]);
   const cueBallBodyRef = useRef<Matter.Body | null>(null);
   const shotInFlightRef = useRef(false);
+  const removedFromPhysicsRef = useRef<Set<number>>(new Set());
+  const cueBallStatusRef = useRef<CueBallStatus>("active");
+  const dropTimeoutsRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(
+    new Map()
+  );
+  const cueDropTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleShoot = useCallback(({ aimAngleDeg, pullback }: ShotInfo) => {
     const cueBall = cueBallBodyRef.current;
-    if (!cueBall) return;
+    if (!cueBall || cueBallStatusRef.current !== "active") return;
     const speed = (pullback / PULLBACK_MAX) * MAX_SHOT_SPEED;
     const aimRad = (aimAngleDeg * Math.PI) / 180;
     Matter.Body.setVelocity(cueBall, {
@@ -118,6 +146,7 @@ export default function SnookerScene() {
     const engine = Matter.Engine.create();
     engine.gravity.scale = 0; // top-down table: no gravity
     const world = engine.world;
+    worldRef.current = world;
 
     // Create ball bodies in physics coords (PNG px space)
     const ballBodies = RACK.map((b) =>
@@ -182,6 +211,15 @@ export default function SnookerScene() {
       cushionOpts
     );
 
+    // Pocket sensors — invisible, do not block balls, just detect entry.
+    const pocketBodies = POCKETS.map((p) =>
+      Matter.Bodies.circle(p.x, p.y, POCKET_RADIUS, {
+        isStatic: true,
+        isSensor: true,
+        label: p.label,
+      })
+    );
+
     Matter.World.add(world, [
       ...ballBodies,
       cueBallBody,
@@ -189,7 +227,69 @@ export default function SnookerScene() {
       cushionBottom,
       cushionLeft,
       cushionRight,
+      ...pocketBodies,
     ]);
+
+    // --- Pocket helpers ---
+    const pocketNumberedBall = (num: number, body: Matter.Body) => {
+      if (removedFromPhysicsRef.current.has(num)) return;
+      removedFromPhysicsRef.current.add(num);
+      Matter.Body.setVelocity(body, { x: 0, y: 0 });
+      Matter.World.remove(world, body);
+      setDroppingNumbers((prev) => {
+        const next = new Set(prev);
+        next.add(num);
+        return next;
+      });
+      const t = setTimeout(() => {
+        setDroppingNumbers((prev) => {
+          const next = new Set(prev);
+          next.delete(num);
+          return next;
+        });
+        setPocketedNumbers((prev) => {
+          const next = new Set(prev);
+          next.add(num);
+          return next;
+        });
+        dropTimeoutsRef.current.delete(num);
+      }, DROP_ANIM_MS);
+      dropTimeoutsRef.current.set(num, t);
+    };
+
+    const pocketCueBall = (body: Matter.Body) => {
+      if (cueBallStatusRef.current !== "active") return;
+      cueBallStatusRef.current = "dropping";
+      Matter.Body.setVelocity(body, { x: 0, y: 0 });
+      Matter.World.remove(world, body);
+      setCueBallStatus("dropping");
+      cueDropTimeoutRef.current = setTimeout(() => {
+        cueBallStatusRef.current = "respawning";
+        setCueBallStatus("respawning");
+        cueDropTimeoutRef.current = null;
+      }, DROP_ANIM_MS);
+    };
+
+    // --- Collision detection ---
+    const onCollisionStart = (event: Matter.IEventCollision<Matter.Engine>) => {
+      for (const pair of event.pairs) {
+        const { bodyA, bodyB } = pair;
+        const a = bodyA.label;
+        const b = bodyB.label;
+        const aIsPocket = a.startsWith("pocket-");
+        const bIsPocket = b.startsWith("pocket-");
+        if (aIsPocket === bIsPocket) continue;
+        const ballBody = aIsPocket ? bodyB : bodyA;
+        const ballLabel = ballBody.label;
+        if (ballLabel === "cue-ball") {
+          pocketCueBall(ballBody);
+        } else if (ballLabel.startsWith("ball-")) {
+          const num = parseInt(ballLabel.slice(5), 10);
+          pocketNumberedBall(num, ballBody);
+        }
+      }
+    };
+    Matter.Events.on(engine, "collisionStart", onCollisionStart);
 
     let rafId = 0;
     let cancelled = false;
@@ -201,6 +301,19 @@ export default function SnookerScene() {
         const v = b.velocity;
         return Math.hypot(v.x, v.y) < REST_VELOCITY_THRESHOLD;
       });
+
+    const respawnCueBall = () => {
+      const cb = cueBallBodyRef.current;
+      if (!cb || !worldRef.current) return;
+      Matter.Body.setPosition(cb, {
+        x: (CUE_BALL_INITIAL.x / 100) * PHYS_W,
+        y: (CUE_BALL_INITIAL.y / 100) * PHYS_H,
+      });
+      Matter.Body.setVelocity(cb, { x: 0, y: 0 });
+      Matter.World.add(worldRef.current, cb);
+      cueBallStatusRef.current = "active";
+      setCueBallStatus("active");
+    };
 
     const tick = (now: number) => {
       if (cancelled) return;
@@ -220,8 +333,16 @@ export default function SnookerScene() {
       });
 
       if (shotInFlightRef.current && isAtRest()) {
-        shotInFlightRef.current = false;
-        setCueVisible(true);
+        const status = cueBallStatusRef.current;
+        if (status === "dropping") {
+          // Wait until the drop animation marks the cue ball as 'respawning'.
+        } else {
+          if (status === "respawning") {
+            respawnCueBall();
+          }
+          shotInFlightRef.current = false;
+          setCueVisible(true);
+        }
       }
 
       rafId = requestAnimationFrame(tick);
@@ -231,8 +352,16 @@ export default function SnookerScene() {
     return () => {
       cancelled = true;
       cancelAnimationFrame(rafId);
+      Matter.Events.off(engine, "collisionStart", onCollisionStart);
+      dropTimeoutsRef.current.forEach((t) => clearTimeout(t));
+      dropTimeoutsRef.current.clear();
+      if (cueDropTimeoutRef.current) clearTimeout(cueDropTimeoutRef.current);
+      cueDropTimeoutRef.current = null;
+      removedFromPhysicsRef.current.clear();
+      cueBallStatusRef.current = "active";
       Matter.World.clear(world, false);
       Matter.Engine.clear(engine);
+      worldRef.current = null;
       ballBodiesRef.current = [];
       cueBallBodyRef.current = null;
     };
@@ -272,6 +401,7 @@ export default function SnookerScene() {
         />
         {positions.balls.map((pos, i) => {
           const meta = RACK[i];
+          if (pocketedNumbers.has(meta.number)) return null;
           return (
             <Ball
               key={meta.number}
@@ -280,6 +410,7 @@ export default function SnookerScene() {
               y={pos.y}
               color={meta.color}
               isStriped={meta.isStriped}
+              dropping={droppingNumbers.has(meta.number)}
             />
           );
         })}
@@ -296,12 +427,15 @@ export default function SnookerScene() {
           y={positions.cueBall.y}
           visible={cueVisible}
         />
-        <Ball
-          x={positions.cueBall.x}
-          y={positions.cueBall.y}
-          color="#FFF5EF"
-          isCueBall
-        />
+        {cueBallStatus !== "respawning" && (
+          <Ball
+            x={positions.cueBall.x}
+            y={positions.cueBall.y}
+            color="#FFF5EF"
+            isCueBall
+            dropping={cueBallStatus === "dropping"}
+          />
+        )}
 
         {/* Avatar + bubble — peeking from behind the top edge of the table. */}
         <div
