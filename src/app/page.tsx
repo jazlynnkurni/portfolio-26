@@ -42,8 +42,9 @@ export default function Home() {
           <div className="flex flex-col">
             <motion.div
               variants={fadeUp}
-              className="inline-flex items-center self-start bg-[rgba(201,120,54,0.08)] py-2 px-4 rounded-full"
+              className="inline-flex items-center gap-2 self-start bg-[rgba(201,120,54,0.08)] py-2 px-4 rounded-full"
             >
+              <span className="pulse-dot" aria-hidden />
               <span className="font-mono uppercase tracking-wide text-[13px] text-ink">
                 Open for full-time
               </span>

@@ -65,6 +65,32 @@ body {
   color: var(--color-accent-orange);
 }
 
+/* --- "Live" pulse dot (used in the Open for full-time pill) --- */
+.pulse-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #C97836;
+  animation: pulse-glow 2s infinite ease-in-out;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+@keyframes pulse-glow {
+  0% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(201, 120, 54, 0.6);
+  }
+  70% {
+    opacity: 0.85;
+    box-shadow: 0 0 0 8px rgba(201, 120, 54, 0);
+  }
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(201, 120, 54, 0);
+  }
+}
+
 /* --- Footer links --- */
 .footer-link {
   position: relative;
