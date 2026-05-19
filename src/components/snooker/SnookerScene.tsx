@@ -135,12 +135,14 @@ export default function SnookerScene() {
             zIndex: 5,
           }}
         >
-          <div style={{ zIndex: 40, position: "relative" }}>
-            <SpeechBubble
-              text={TAUNTS[tauntIndex]}
-              visible={bubbleVisible}
-            />
-          </div>
+          {bubbleVisible && (
+            <div style={{ zIndex: 40, position: "relative" }}>
+              <SpeechBubble
+                text={TAUNTS[tauntIndex]}
+                visible={true}
+              />
+            </div>
+          )}
           <Avatar onClick={handleTaunt} />
         </div>
 
