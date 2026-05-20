@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import {
   AnimatePresence,
   motion,
@@ -30,6 +31,14 @@ const LABEL_BY_MODE: Record<Exclude<CursorMode, "default">, string> = {
 };
 
 export default function CustomCursor() {
+  const pathname = usePathname();
+  // Case-study pages (/work/<slug>) keep the plain orange circle — no morphs.
+  // The /work index itself still allows morphs (card hover, hero email).
+  const isCaseStudyRoute =
+    typeof pathname === "string" &&
+    pathname.startsWith("/work/") &&
+    pathname.length > "/work/".length;
+
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
   const springX = useSpring(x, { stiffness: 500, damping: 28, mass: 0.5 });
@@ -73,6 +82,17 @@ export default function CustomCursor() {
       x.set(e.clientX);
       y.set(e.clientY);
     };
+    window.addEventListener("mousemove", move);
+
+    // On case-study routes, skip the mode-morph listener entirely and reset
+    // any in-flight mode so the cursor stays a plain orange circle.
+    if (isCaseStudyRoute) {
+      setMode("default");
+      return () => {
+        window.removeEventListener("mousemove", move);
+      };
+    }
+
     const onModeEvent = (e: Event) => {
       const detail = (e as CustomEvent<{ mode: CursorMode }>).detail;
       if (
@@ -83,18 +103,24 @@ export default function CustomCursor() {
         setMode(detail.mode);
       }
     };
-    window.addEventListener("mousemove", move);
     window.addEventListener(CURSOR_MODE_EVENT, onModeEvent);
     return () => {
       window.removeEventListener("mousemove", move);
       window.removeEventListener(CURSOR_MODE_EVENT, onModeEvent);
     };
-  }, [x, y]);
+  }, [x, y, isCaseStudyRoute]);
 
-  const isPill = mode !== "default";
+  // Belt-and-suspenders: even if a stale mode briefly survives the route
+  // change, force the dot rendering on case-study pages.
+  const effectiveMode: CursorMode = isCaseStudyRoute ? "default" : mode;
+  const isPill = effectiveMode !== "default";
   const pillWidth =
-    mode === "email" ? emailWidth : mode === "case-study" ? caseWidth : DOT_SIZE;
-  const label = mode === "default" ? null : LABEL_BY_MODE[mode];
+    effectiveMode === "email"
+      ? emailWidth
+      : effectiveMode === "case-study"
+        ? caseWidth
+        : DOT_SIZE;
+  const label = effectiveMode === "default" ? null : LABEL_BY_MODE[effectiveMode];
 
   return (
     <>
