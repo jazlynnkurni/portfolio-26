@@ -1,21 +1,31 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 interface StackedDeckProps {
   cards: ReactNode[];
   cardWidth?: number;
   cardHeight?: number;
+  onTopCardChange?: (index: number) => void;
 }
 
 export default function StackedDeck({
   cards,
   cardWidth = 280,
   cardHeight = 320,
+  onTopCardChange,
 }: StackedDeckProps) {
   const [order, setOrder] = useState<number[]>(cards.map((_, i) => i));
   const [exitDirection, setExitDirection] = useState<number>(0);
+
+  // Always invoke the latest callback without re-running the effect when
+  // the caller passes a new arrow function each render.
+  const onTopCardChangeRef = useRef(onTopCardChange);
+  onTopCardChangeRef.current = onTopCardChange;
+  useEffect(() => {
+    onTopCardChangeRef.current?.(order[0]);
+  }, [order]);
 
   const cycleToNext = (direction: number = 1) => {
     setExitDirection(direction);
