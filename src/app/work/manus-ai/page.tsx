@@ -172,6 +172,7 @@ function CaseStudyNav() {
 
 export default function ManusAiPage() {
   const [openVideo, setOpenVideo] = useState<string | null>(null);
+  const [activeCaption, setActiveCaption] = useState(0);
 
   return (
     <>
@@ -533,9 +534,6 @@ export default function ManusAiPage() {
         </section>
 
         {/* Placeholder anchors for future sections (scroll-spy + smooth-scroll targets) */}
-        <div id="development" aria-hidden style={{ minHeight: 0 }} />
-        <div id="testing" aria-hidden style={{ minHeight: 0 }} />
-        <div id="solution" aria-hidden style={{ minHeight: 0 }} />
 
         {/* ============================================================ */}
         {/* SECTION 4: SOLUTION PREVIEW FLOW (white bg) — id="solution-preview" */}
@@ -2019,6 +2017,1307 @@ export default function ManusAiPage() {
               </div>
             </div>
 
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* SECTION 7: DEVELOPMENT (white bg) — id="development" */}
+        {/* ============================================================ */}
+        <section
+          id="development"
+          className="w-full"
+          style={{ backgroundColor: "#FFFFFF" }}
+        >
+          <div className="mx-auto max-w-[1228px] px-6 py-[80px]">
+
+            {/* SECTION HEADER */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-[80px]">
+              <div className="md:col-span-12">
+                <p
+                  className="uppercase"
+                  style={{
+                    fontFamily: "'Helvetica Neue', sans-serif",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    letterSpacing: "0.05em",
+                    color: "#1E1E1E",
+                    marginBottom: "12px",
+                  }}
+                >
+                  Development
+                </p>
+                <h2
+                  style={{
+                    fontFamily: FONTS.serif,
+                    fontSize: "24px",
+                    fontWeight: 600,
+                    lineHeight: "1.3",
+                    color: "#1E1E1E",
+                    margin: 0,
+                    maxWidth: "600px",
+                  }}
+                >
+                  Iterating Toward a System That Could Actually Scale.
+                </h2>
+              </div>
+            </div>
+
+            {/* SUBSECTION 1 — Lo-Fi Whiteboards */}
+            <div className="mb-[80px]">
+              <Image
+                src="/images/manus/development/whiteboard-sketches.png"
+                alt="Development subsection showing lo-fi whiteboard sketches across 4 iterations. Annotations indicate: search bar repurposed as AI interactive feature promoting AI-human collaboration; scalable explore and event CTA buttons added in version 2; gamification aspect introduced after status login; and a tradeoff from the engineering team on the Fellow Page — initial event submission flow was kept manual through Luma rather than building a fully automated integration, prioritizing reliability and speed to launch."
+                width={1228}
+                height={600}
+                className="w-full h-auto"
+                priority={false}
+              />
+            </div>
+
+            {/* SUBSECTION 2 — Hi-Fi Specs (image left, text right) */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+              {/* LEFT — HiFi image, cols 1-5 */}
+              <div className="md:col-span-5">
+                <Image
+                  src="/images/manus/development/second-approach-hifi-specs.png"
+                  alt="High-fidelity specs subsection showing phone and screen mockups of the second design approach across responsive breakpoints (1400+, 1200-1439, 992-1199, 768-991, 576-767, 320-575)."
+                  width={1210}
+                  height={640}
+                  className="w-full h-auto"
+                />
+                <p
+                  style={{
+                    fontFamily: "'Helvetica Neue', sans-serif",
+                    fontSize: "14px",
+                    fontWeight: 400,
+                    fontStyle: "italic",
+                    color: "#1E1E1E",
+                    opacity: 0.6,
+                    marginTop: "16px",
+                  }}
+                >
+                  Second Approach HiFi Specs
+                </p>
+              </div>
+
+              {/* RIGHT — Text blocks, cols 8-12 */}
+              <div className="md:col-span-5 md:col-start-8 flex flex-col gap-10">
+
+                {/* Block 1 — Problem with static scalability */}
+                <div>
+                  <h3
+                    style={{
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "18px",
+                      fontWeight: 600,
+                      color: "#1E1E1E",
+                      margin: 0,
+                      marginBottom: "16px",
+                    }}
+                  >
+                    Problem with static scalability →
+                  </h3>
+                  <p
+                    style={{
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 400,
+                      lineHeight: "1.5",
+                      color: "#1E1E1E",
+                      margin: 0,
+                    }}
+                  >
+                    After internally launching the static experience, we ran a third round of usability testing. 7 out of 10 users disengaged quickly. But the more revealing finding wasn&apos;t that they left, it was where they lingered before leaving.
+                  </p>
+                </div>
+
+                {/* Block 2 — Interactive Elements */}
+                <div>
+                  <h3
+                    style={{
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "18px",
+                      fontWeight: 600,
+                      color: "#1E1E1E",
+                      margin: 0,
+                      marginBottom: "16px",
+                    }}
+                  >
+                    Interactive Elements →
+                  </h3>
+                  <p
+                    style={{
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 400,
+                      lineHeight: "1.5",
+                      color: "#1E1E1E",
+                      margin: 0,
+                    }}
+                  >
+                    Users spent significantly less time on the role selector and the three-card feature section, and disproportionately more time on the Global Distribution map and the Next Hackathon countdown. Both were the only two elements with motion: the map was pulsing, the countdown was live.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* SECTION 8: INTERACTIVE ELEMENTS (white bg) — id="interactive-elements" */}
+        {/* ============================================================ */}
+        <section
+          id="interactive-elements"
+          className="w-full"
+          style={{ backgroundColor: "#FFFFFF" }}
+        >
+          <div className="mx-auto max-w-[1228px] px-6 py-[80px]">
+
+            {/* CONTENT ROW — Video left, Take away text right */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+
+              {/* LEFT — Video, cols 1-5 */}
+              <div className="md:col-span-5">
+                <div
+                  className="transition-transform duration-300 ease-out hover:scale-[1.02] cursor-pointer"
+                  style={{
+                    border: "1px solid #C97836",
+                    borderRadius: "16px",
+                    overflow: "hidden",
+                    boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
+                  }}
+                >
+                  <video
+                    src="/videos/manus/interaction-walkthrough.mp4"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="block w-full h-auto"
+                  />
+                </div>
+              </div>
+
+              {/* RIGHT — Take away text, cols 8-12 */}
+              <div className="md:col-span-5 md:col-start-8">
+                <h3
+                  style={{
+                    fontFamily: "'Helvetica Neue', sans-serif",
+                    fontSize: "18px",
+                    fontWeight: 600,
+                    color: "#1E1E1E",
+                    margin: 0,
+                    marginBottom: "16px",
+                  }}
+                >
+                  Take away →
+                </h3>
+                <p
+                  style={{
+                    fontFamily: "'Helvetica Neue', sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 400,
+                    lineHeight: "1.5",
+                    color: "#1E1E1E",
+                    margin: 0,
+                  }}
+                >
+                  This told me two things: the information architecture needed realignment and users were drawn to interactivity that felt personally relevant and alive. Immediately, I began another round of iteration for longer time-on-page.
+                </p>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* SECTION 9: TESTING (white bg) — id="testing" */}
+        {/* ============================================================ */}
+        <section
+          id="testing"
+          className="w-full"
+          style={{ backgroundColor: "#FFFFFF" }}
+        >
+          <div className="mx-auto max-w-[1228px] px-6 pt-[80px] pb-[20px]">
+
+            {/* SECTION HEADER */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-[40px]">
+              <div className="md:col-span-12">
+                <p
+                  className="uppercase"
+                  style={{
+                    fontFamily: "'Helvetica Neue', sans-serif",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    letterSpacing: "0.05em",
+                    color: "#1E1E1E",
+                    marginBottom: "12px",
+                  }}
+                >
+                  Testing
+                </p>
+                <h2
+                  style={{
+                    fontFamily: FONTS.serif,
+                    fontSize: "24px",
+                    fontWeight: 600,
+                    lineHeight: "1.3",
+                    color: "#1E1E1E",
+                    margin: 0,
+                    maxWidth: "600px",
+                  }}
+                >
+                  Testing our Personalized Journey Feature.
+                </h2>
+              </div>
+            </div>
+
+            {/* HORIZONTAL STORYBOARD — Second → Third v1 → Third v2 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+
+              {/* Column 1 — Second Prototype */}
+              <div className="flex flex-col">
+                <div className="mb-4">
+                  <span
+                    className="inline-block"
+                    style={{
+                      backgroundColor: "#C97836",
+                      color: "#FFFFFF",
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      padding: "6px 12px",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    Second Prototype
+                  </span>
+                </div>
+                <Image
+                  src="/images/manus/testing/your-path-second.png"
+                  alt="Second prototype iteration: simpler Choose your path with Manus role grid showing Fellow, Ambassador, Open Builder roles"
+                  width={856}
+                  height={313}
+                  className="w-full h-auto"
+                />
+              </div>
+
+              {/* Column 2 — Third Prototype v1 */}
+              <div className="flex flex-col">
+                <div className="mb-4">
+                  <span
+                    className="inline-block"
+                    style={{
+                      backgroundColor: "#C97836",
+                      color: "#FFFFFF",
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      padding: "6px 12px",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    Third Prototype — v1
+                  </span>
+                </div>
+                <Image
+                  src="/images/manus/testing/your-path-third-v1.png"
+                  alt="Third prototype iteration v1: Your Path card showing role, focus area, and current mode with Start My AI-Guided Path CTA"
+                  width={1246}
+                  height={401}
+                  className="w-full h-auto"
+                />
+              </div>
+
+              {/* Column 3 — Third Prototype v2 */}
+              <div className="flex flex-col">
+                <div className="mb-4">
+                  <span
+                    className="inline-block"
+                    style={{
+                      backgroundColor: "#C97836",
+                      color: "#FFFFFF",
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      padding: "6px 12px",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    Third Prototype — v2
+                  </span>
+                </div>
+                <Image
+                  src="/images/manus/testing/your-path-third-v2.png"
+                  alt="Third prototype iteration v2: expanded Your Path card with Recommended Next Steps showing NYC Hackathon, agent tooling PR review, and agent memory systems"
+                  width={1192}
+                  height={774}
+                  className="w-full h-auto"
+                />
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* SECTION 10: ADJUSTMENT TO PERSONALIZED PATH #1 — id="adjustment-1" */}
+        {/* ============================================================ */}
+        <section
+          id="adjustment-1"
+          className="w-full"
+          style={{ backgroundColor: "#FFFFFF" }}
+        >
+          <div className="mx-auto max-w-[1228px] px-6 pt-[20px] pb-[80px]">
+
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+              <div className="md:col-span-10">
+
+                <div
+                  style={{
+                    paddingLeft: "24px",
+                    borderLeft: "3px solid #C97836",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontFamily: FONTS.serif,
+                      fontSize: "24px",
+                      fontWeight: 600,
+                      lineHeight: "1.3",
+                      color: "#1E1E1E",
+                      margin: 0,
+                      marginBottom: "24px",
+                    }}
+                  >
+                    Adjustment to Personalized Path #1 →
+                  </h2>
+
+                  <p
+                    style={{
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 400,
+                      lineHeight: "1.6",
+                      color: "#1E1E1E",
+                      margin: 0,
+                    }}
+                  >
+                    Based on 8 usability tests, I found that &ldquo;Start My AI-Guided Path&rdquo; CTA had highest click-through of any version tested. This was telling to me, because I pulled inspiration from RPG-style gamification. Instead of assigning users a generic role, the system treats each user as a character with their own stats, focus areas, and progression mode, making the community feel like a world they&rsquo;re actively moving through, not a page they&rsquo;re passively browsing.{" "}
+                    <span style={{ color: "#8F4B1E" }}>
+                      The &ldquo;Powered by Manus&rdquo; tag was a detail the founder specifically liked, because it demonstrated the product&rsquo;s own intelligence working natively inside the community experience.
+                    </span>
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* SECTION 11: ADJUSTMENT TO PERSONALIZED PATH #2 — id="adjustment-2" */}
+        {/* ============================================================ */}
+        <section
+          id="adjustment-2"
+          className="w-full"
+          style={{ backgroundColor: "#FFFFFF" }}
+        >
+          <div className="mx-auto max-w-[1228px] px-6 pt-[80px] pb-[20px]">
+
+            {/* HORIZONTAL STORYBOARD — Second → Third Before → Third After */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+
+              {/* Column 1 — Second Prototype */}
+              <div className="flex flex-col">
+                <div className="mb-4">
+                  <span
+                    className="inline-block"
+                    style={{
+                      backgroundColor: "#C97836",
+                      color: "#FFFFFF",
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      padding: "6px 12px",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    Second Prototype
+                  </span>
+                </div>
+                <Image
+                  src="/images/manus/testing/hackathon-card-before.png"
+                  alt="Second prototype iteration: three post-it style recommendation cards showing Take this quiz, Join our newsletter, and Log in to view the leader board"
+                  width={1056}
+                  height={339}
+                  className="w-full"
+                  style={{
+                    maxHeight: "320px",
+                    objectFit: "contain",
+                    objectPosition: "top left",
+                    height: "auto",
+                    width: "100%",
+                  }}
+                />
+              </div>
+
+              {/* Column 2 — Third Prototype — Before */}
+              <div className="flex flex-col">
+                <div className="mb-4">
+                  <span
+                    className="inline-block"
+                    style={{
+                      backgroundColor: "#C97836",
+                      color: "#FFFFFF",
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      padding: "6px 12px",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    Third Prototype — Before
+                  </span>
+                </div>
+                <Image
+                  src="/images/manus/testing/hackathon-card-after-1.png"
+                  alt="Third prototype before iteration: single Join NYC Hackathon card with effort and duration metadata"
+                  width={778}
+                  height={461}
+                  className="w-full"
+                  style={{
+                    maxHeight: "320px",
+                    objectFit: "contain",
+                    objectPosition: "top left",
+                    height: "auto",
+                    width: "100%",
+                  }}
+                />
+              </div>
+
+              {/* Column 3 — Third Prototype — After */}
+              <div className="flex flex-col">
+                <div className="mb-4">
+                  <span
+                    className="inline-block"
+                    style={{
+                      backgroundColor: "#C97836",
+                      color: "#FFFFFF",
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      padding: "6px 12px",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    Third Prototype — After
+                  </span>
+                </div>
+                <Image
+                  src="/images/manus/testing/hackathon-card-after.png"
+                  alt="Third prototype after iteration: same Join NYC Hackathon card with added Why this matters CTA reveal"
+                  width={781}
+                  height={633}
+                  className="w-full"
+                  style={{
+                    maxHeight: "320px",
+                    objectFit: "contain",
+                    objectPosition: "top left",
+                    height: "auto",
+                    width: "100%",
+                  }}
+                />
+              </div>
+
+            </div>
+
+            {/* ADJUSTMENT TEXT BLOCK — single continuous left-border quote */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6" style={{ marginTop: "60px" }}>
+              <div className="md:col-span-10">
+                <div
+                  style={{
+                    paddingLeft: "24px",
+                    borderLeft: "3px solid #C97836",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontFamily: FONTS.serif,
+                      fontSize: "24px",
+                      fontWeight: 600,
+                      lineHeight: "1.3",
+                      color: "#1E1E1E",
+                      margin: 0,
+                      marginBottom: "24px",
+                    }}
+                  >
+                    Adjustment to Personalized Path #2 →
+                  </h2>
+
+                  <p
+                    style={{
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 400,
+                      lineHeight: "1.6",
+                      color: "#1E1E1E",
+                      margin: 0,
+                      marginBottom: "16px",
+                    }}
+                  >
+                    After presenting my previous design to my PM,{" "}
+                    <span style={{ color: "#8F4B1E" }}>
+                      she mentioned that they were planning to add more community roles in the future.
+                    </span>
+                    {" "}The system needed to be scalable. The original design used a fixed 3-card layout; one card per featured opportunity. It worked for the current three roles, but I realized it would break the moment the community team launched a new one.
+                  </p>
+
+                  <p
+                    style={{
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 400,
+                      lineHeight: "1.6",
+                      color: "#1E1E1E",
+                      margin: 0,
+                    }}
+                  >
+                    Every new role, Campus Leader, Ambassador, Regional Hub, would require a manual design update. I redesigned the recommendations layer to be role-agnostic and AI-driven, so that when users log into Manus, the &ldquo;Powered by Manus&rdquo; inference layer immediately surfaces what&rsquo;s relevant to them specifically, whether that&rsquo;s a hackathon, an ambassador program, or a role that doesn&rsquo;t exist yet. The system scales with the community.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* SECTION 12: JOURNEY FLOW MAP (white bg) — id="journey-flow" */}
+        {/* ============================================================ */}
+        <section
+          id="journey-flow"
+          className="w-full"
+          style={{ backgroundColor: "#FFFFFF" }}
+        >
+          <div className="mx-auto max-w-[1228px] px-6 pt-[80px] pb-[80px]">
+
+            {/* HEADING — Helvetica Neue Bold 18px */}
+            <h2
+              style={{
+                fontFamily: "'Helvetica Neue', sans-serif",
+                fontSize: "18px",
+                fontWeight: 700,
+                lineHeight: "1.4",
+                color: "#1E1E1E",
+                margin: 0,
+                marginBottom: "32px",
+                maxWidth: "900px",
+              }}
+            >
+              Mapping out a comprehensive user journey & shared APIs from PM and SWEs →
+            </h2>
+
+            {/* STATIC IMAGE — half width, left-aligned, brand border + shadow */}
+            <div
+              style={{
+                width: "100%",
+                maxWidth: "614px",
+                aspectRatio: "1610 / 1130",
+                border: "1px solid #C97836",
+                borderRadius: "16px",
+                overflow: "hidden",
+                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
+                position: "relative",
+              }}
+            >
+              <Image
+                src="/images/manus/adjustment/journey-flow.png"
+                alt="Comprehensive user journey flow map showing engineering team, community team, PM, and design opportunities with sticky-note-style annotations across multiple swimlanes"
+                fill
+                quality={95}
+                sizes="(max-width: 768px) 100vw, 614px"
+                style={{
+                  objectFit: "cover",
+                  objectPosition: "center 60%",
+                  transform: "scale(1.12)",
+                }}
+              />
+            </div>
+
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* SECTION 13: SOLUTION (white bg) — id="solution" */}
+        {/* ============================================================ */}
+        <section
+          id="solution"
+          className="w-full"
+          style={{ backgroundColor: "#FFFFFF" }}
+        >
+          <div className="mx-auto max-w-[1228px] px-6 py-[80px]">
+
+            {/* SECTION HEADER */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-[80px]">
+              <div className="md:col-span-12">
+                <p
+                  className="uppercase"
+                  style={{
+                    fontFamily: "'Helvetica Neue', sans-serif",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    letterSpacing: "0.05em",
+                    color: "#1E1E1E",
+                    marginBottom: "12px",
+                  }}
+                >
+                  Solution
+                </p>
+                <h2
+                  style={{
+                    fontFamily: FONTS.serif,
+                    fontSize: "24px",
+                    fontWeight: 600,
+                    lineHeight: "1.3",
+                    color: "#1E1E1E",
+                    margin: 0,
+                    maxWidth: "700px",
+                  }}
+                >
+                  An AI-Guided Community System That Adapts as Users Grow.
+                </h2>
+              </div>
+            </div>
+
+            {/* ROW 1 — Centralized Community Dashboard */}
+            <div className="mb-[120px]">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+
+                {/* LEFT: video at natural aspect */}
+                <div className="md:col-span-7">
+                  <div
+                    style={{
+                      width: "100%",
+                      border: "1px solid #C97836",
+                      borderRadius: "16px",
+                      overflow: "hidden",
+                      boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
+                      lineHeight: 0,
+                      fontSize: 0,
+                    }}
+                  >
+                    <video
+                      src="/videos/manus/solution-1-dashboard.mp4"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        display: "block",
+                        verticalAlign: "top",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* RIGHT: number + heading + body */}
+                <div className="md:col-span-5">
+                  <p
+                    style={{
+                      fontFamily: FONTS.serif,
+                      fontSize: "96px",
+                      fontWeight: 600,
+                      lineHeight: "1",
+                      color: "#D4A574",
+                      margin: 0,
+                      marginBottom: "32px",
+                    }}
+                  >
+                    1
+                  </p>
+                  <h3
+                    style={{
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "18px",
+                      fontWeight: 600,
+                      lineHeight: "1.4",
+                      color: "#1E1E1E",
+                      margin: 0,
+                      marginBottom: "16px",
+                    }}
+                  >
+                    Centralized Community Dashboard →
+                  </h3>
+                  <p
+                    style={{
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 400,
+                      lineHeight: "1.6",
+                      color: "#1E1E1E",
+                      margin: 0,
+                    }}
+                  >
+                    A single home for everything a Manus user needs to know, do, and track. Instead of navigating between scattered pages, users land on a dashboard that orients them immediately: their role, their active path, upcoming events, and pending contributions all visible in one place. Reminders surface when something needs attention. Nothing gets missed because nothing is buried.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            {/* ROW 2 — AI-Guided Personalized Paths */}
+            <div className="mb-[120px]">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+
+                {/* LEFT: video at natural aspect */}
+                <div className="md:col-span-7">
+                  <div
+                    style={{
+                      width: "100%",
+                      border: "1px solid #C97836",
+                      borderRadius: "16px",
+                      overflow: "hidden",
+                      boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
+                      lineHeight: 0,
+                      fontSize: 0,
+                    }}
+                  >
+                    <video
+                      src="/videos/manus/solution-2-paths.mp4"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        display: "block",
+                        verticalAlign: "top",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* RIGHT: number + heading + body */}
+                <div className="md:col-span-5">
+                  <p
+                    style={{
+                      fontFamily: FONTS.serif,
+                      fontSize: "96px",
+                      fontWeight: 600,
+                      lineHeight: "1",
+                      color: "#D4A574",
+                      margin: 0,
+                      marginBottom: "32px",
+                    }}
+                  >
+                    2
+                  </p>
+                  <h3
+                    style={{
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "18px",
+                      fontWeight: 600,
+                      lineHeight: "1.4",
+                      color: "#1E1E1E",
+                      margin: 0,
+                      marginBottom: "16px",
+                    }}
+                  >
+                    AI-Guided Personalized Paths →
+                  </h3>
+                  <p
+                    style={{
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 400,
+                      lineHeight: "1.6",
+                      color: "#1E1E1E",
+                      margin: 0,
+                    }}
+                  >
+                    The &ldquo;Your Path Powered by Manus&rdquo; feature infers each user&rsquo;s role, focus area, and current mode from their behavior, then generates a guided next step tailored to them specifically. Instead of browsing a generic feed, users are met with &ldquo;Recommended This Week. Prioritized by fit. Not engagement.&rdquo; Every recommendation surfaces with a &ldquo;Why this matters →&rdquo; explanation so users always know the reasoning behind what they&rsquo;re being shown.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            {/* ROW 3 — Scalable Role-Agnostic Recommendations */}
+            <div>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+
+                {/* LEFT: video at natural aspect */}
+                <div className="md:col-span-7">
+                  <div
+                    style={{
+                      width: "100%",
+                      border: "1px solid #C97836",
+                      borderRadius: "16px",
+                      overflow: "hidden",
+                      boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
+                      lineHeight: 0,
+                      fontSize: 0,
+                    }}
+                  >
+                    <video
+                      src="/videos/manus/solution-3-recommendations.mp4"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        display: "block",
+                        verticalAlign: "top",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* RIGHT: number + heading + body */}
+                <div className="md:col-span-5">
+                  <p
+                    style={{
+                      fontFamily: FONTS.serif,
+                      fontSize: "96px",
+                      fontWeight: 600,
+                      lineHeight: "1",
+                      color: "#D4A574",
+                      margin: 0,
+                      marginBottom: "32px",
+                    }}
+                  >
+                    3
+                  </p>
+                  <h3
+                    style={{
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "18px",
+                      fontWeight: 600,
+                      lineHeight: "1.4",
+                      color: "#1E1E1E",
+                      margin: 0,
+                      marginBottom: "16px",
+                    }}
+                  >
+                    Scalable Role-Agnostic Recommendations →
+                  </h3>
+                  <p
+                    style={{
+                      fontFamily: "'Helvetica Neue', sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 400,
+                      lineHeight: "1.6",
+                      color: "#1E1E1E",
+                      margin: 0,
+                    }}
+                  >
+                    The original design locked community opportunities into a fixed 3-card layout with one card per role. Every new role the community team launched would require a manual design update. The final system is role-agnostic and AI-driven: when users log into Manus, the inference layer immediately surfaces relevant opportunities whether they&rsquo;re interested in hackathons, ambassador programs, campus leadership, or roles that don&rsquo;t exist yet. The community scales without the design breaking.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            {/* THE RESULTS — sub-section of Solution */}
+            <div style={{ marginTop: "80px" }}>
+              <h3
+                style={{
+                  fontFamily: FONTS.sans,
+                  fontSize: "18px",
+                  fontWeight: 700,
+                  color: "#1E1E1E",
+                  margin: 0,
+                  marginBottom: "32px",
+                }}
+              >
+                The Results →
+              </h3>
+
+              {/* 3 stat cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                {/* CARD 1 — Line chart */}
+                <div
+                  style={{
+                    backgroundColor: "#FFF5EF",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
+                    borderRadius: "16px",
+                    padding: "32px",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <svg
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#C97836"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ marginBottom: "24px" }}
+                  >
+                    <path d="M3 3v18h18" />
+                    <path d="M7 14l4-4 4 4 5-5" />
+                  </svg>
+                  <p
+                    style={{
+                      fontFamily: FONTS.sans,
+                      fontSize: "16px",
+                      fontWeight: 400,
+                      lineHeight: "1.6",
+                      color: "#1E1E1E",
+                      margin: 0,
+                    }}
+                  >
+                    <strong>Retention increased</strong> from ~30% to 65-70% following rollout of the AI-guided architecture.
+                  </p>
+                </div>
+
+                {/* CARD 2 — Clock */}
+                <div
+                  style={{
+                    backgroundColor: "#FFF5EF",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
+                    borderRadius: "16px",
+                    padding: "32px",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <svg
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#C97836"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ marginBottom: "24px" }}
+                  >
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 7v5l3 2" />
+                  </svg>
+                  <p
+                    style={{
+                      fontFamily: FONTS.sans,
+                      fontSize: "16px",
+                      fontWeight: 400,
+                      lineHeight: "1.6",
+                      color: "#1E1E1E",
+                      margin: 0,
+                    }}
+                  >
+                    Time-on-site <strong>increased by ~2.1×</strong>, indicating deeper engagement with paths, events, and recommendations
+                  </p>
+                </div>
+
+                {/* CARD 3 — Thumbs up */}
+                <div
+                  style={{
+                    backgroundColor: "#FFF5EF",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
+                    borderRadius: "16px",
+                    padding: "32px",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <svg
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#C97836"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ marginBottom: "24px" }}
+                  >
+                    <path d="M7 10v11" />
+                    <path d="M7 10l4-7a2 2 0 0 1 3 2v4h5a2 2 0 0 1 2 2.3l-1.5 7A2 2 0 0 1 17.5 20H7" />
+                  </svg>
+                  <p
+                    style={{
+                      fontFamily: FONTS.sans,
+                      fontSize: "16px",
+                      fontWeight: 400,
+                      lineHeight: "1.6",
+                      color: "#1E1E1E",
+                      margin: 0,
+                    }}
+                  >
+                    <strong>80% of users</strong> reported <strong>improved clarity</strong> around where to start and how to contribute meaningfully.
+                  </p>
+                </div>
+
+              </div>
+
+              {/* Body paragraph below cards */}
+              <p
+                style={{
+                  fontFamily: FONTS.sans,
+                  fontSize: "16px",
+                  fontWeight: 400,
+                  lineHeight: "1.6",
+                  color: "#1E1E1E",
+                  margin: 0,
+                  marginTop: "48px",
+                }}
+              >
+                Following the rollout, users specifically cited personalized paths, contextual recommendations, and &ldquo;why this matters&rdquo; explanations as the primary reasons they felt motivated to stay and continue engaging.{" "}
+                <span style={{ color: "#8F4B1E" }}>75%</span>
+                {" "}described the experience as more &ldquo;personally relevant&rdquo; compared to the static version.
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* SECTION 14: FINAL THOUGHTS (white bg) — id="final-thoughts" */}
+        {/* ============================================================ */}
+        <section id="final-thoughts" style={{ paddingTop: 80, paddingBottom: 80 }}>
+          <div className="max-w-[1228px] mx-auto px-6">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+
+              {/* LEFT — StackedDeck spans cols 1-6 */}
+              <div className="md:col-span-6 flex justify-center">
+                <StackedDeck
+                  cardWidth={500}
+                  cardHeight={340}
+                  onTopCardChange={(idx) => setActiveCaption(idx)}
+                  cards={[
+                    <div
+                      key="group"
+                      onMouseEnter={() =>
+                        window.dispatchEvent(
+                          new CustomEvent("cursor-mode", {
+                            detail: { mode: "caption", text: "dream team" },
+                          })
+                        )
+                      }
+                      onMouseLeave={() =>
+                        window.dispatchEvent(
+                          new CustomEvent("cursor-mode", {
+                            detail: { mode: "default" },
+                          })
+                        )
+                      }
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: 16,
+                        overflow: "hidden",
+                        border: "1px solid #C97836",
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+                        lineHeight: 0,
+                        fontSize: 0,
+                      }}
+                    >
+                      <Image
+                        src="/images/manus/final-thoughts/photo-group.jpg"
+                        alt="Manus AI team"
+                        width={500}
+                        height={340}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          display: "block",
+                          verticalAlign: "top",
+                        }}
+                      />
+                    </div>,
+                    <div
+                      key="skyline"
+                      onMouseEnter={() =>
+                        window.dispatchEvent(
+                          new CustomEvent("cursor-mode", {
+                            detail: {
+                              mode: "caption",
+                              text: "fire office, felt surreal",
+                            },
+                          })
+                        )
+                      }
+                      onMouseLeave={() =>
+                        window.dispatchEvent(
+                          new CustomEvent("cursor-mode", {
+                            detail: { mode: "default" },
+                          })
+                        )
+                      }
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: 16,
+                        overflow: "hidden",
+                        border: "1px solid #C97836",
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+                        lineHeight: 0,
+                        fontSize: 0,
+                      }}
+                    >
+                      <Image
+                        src="/images/manus/final-thoughts/photo-skyline.jpg"
+                        alt="MBS skyline view from Manus office"
+                        width={500}
+                        height={340}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          display: "block",
+                          verticalAlign: "top",
+                        }}
+                      />
+                    </div>,
+                    <div
+                      key="laptop"
+                      onMouseEnter={() =>
+                        window.dispatchEvent(
+                          new CustomEvent("cursor-mode", {
+                            detail: {
+                              mode: "caption",
+                              text: "also worked on a shrek ballet simulator during recess with my coworkers lol",
+                            },
+                          })
+                        )
+                      }
+                      onMouseLeave={() =>
+                        window.dispatchEvent(
+                          new CustomEvent("cursor-mode", {
+                            detail: { mode: "default" },
+                          })
+                        )
+                      }
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: 16,
+                        overflow: "hidden",
+                        border: "1px solid #C97836",
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+                        lineHeight: 0,
+                        fontSize: 0,
+                      }}
+                    >
+                      <Image
+                        src="/images/manus/final-thoughts/photo-laptop.jpg"
+                        alt="Manus workspace setup"
+                        width={500}
+                        height={340}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          display: "block",
+                          verticalAlign: "top",
+                        }}
+                      />
+                    </div>,
+                  ]}
+                />
+              </div>
+
+              {/* RIGHT — text spans cols 7-12 */}
+              <div className="md:col-span-6">
+                <div
+                  style={{
+                    fontFamily: FONTS.sans,
+                    fontSize: 14,
+                    fontWeight: 500,
+                    letterSpacing: "0.05em",
+                    textTransform: "uppercase",
+                    color: "#1E1E1E",
+                    marginBottom: 12,
+                  }}
+                >
+                  Final Thoughts
+                </div>
+
+                <h2
+                  style={{
+                    fontFamily: FONTS.serif,
+                    fontWeight: 600,
+                    fontSize: 24,
+                    lineHeight: 1.3,
+                    color: "#1E1E1E",
+                    marginBottom: 32,
+                    maxWidth: 600,
+                  }}
+                >
+                  Key Takeaways and Next Steps.
+                </h2>
+
+                <ul
+                  style={{
+                    listStyle: "none",
+                    padding: 0,
+                    margin: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 20,
+                  }}
+                >
+                  <li
+                    style={{
+                      fontFamily: FONTS.sans,
+                      fontSize: 16,
+                      lineHeight: 1.6,
+                      color: "#1E1E1E",
+                      paddingLeft: 20,
+                      position: "relative",
+                    }}
+                  >
+                    <span style={{ position: "absolute", left: 0, top: 0 }}>•</span>
+                    Designing for community at scale is less about driving engagement and more about building trust through guidance and simplicity.
+                  </li>
+                  <li
+                    style={{
+                      fontFamily: FONTS.sans,
+                      fontSize: 16,
+                      lineHeight: 1.6,
+                      color: "#1E1E1E",
+                      paddingLeft: 20,
+                      position: "relative",
+                    }}
+                  >
+                    <span style={{ position: "absolute", left: 0, top: 0 }}>•</span>
+                    Pivoting early concepts through research was critical to finding the right way to solve problems.
+                  </li>
+                  <li
+                    style={{
+                      fontFamily: FONTS.sans,
+                      fontSize: 16,
+                      lineHeight: 1.6,
+                      color: "#1E1E1E",
+                      paddingLeft: 20,
+                      position: "relative",
+                    }}
+                  >
+                    <span style={{ position: "absolute", left: 0, top: 0 }}>•</span>
+                    The most important design decision is asking &quot;so what?&quot; before your users have to ask it themselves.
+                  </li>
+                </ul>
+              </div>
+
+            </div>
           </div>
         </section>
 

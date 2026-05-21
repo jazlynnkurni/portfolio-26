@@ -10,7 +10,7 @@ import {
   useSpring,
 } from "framer-motion";
 
-export type CursorMode = "default" | "email" | "case-study";
+export type CursorMode = "default" | "email" | "case-study" | "caption";
 
 // Dispatched by interactive elements (e.g. the headline, work cards) to morph
 // the cursor. Payload: { mode: CursorMode }.
@@ -25,7 +25,7 @@ const PILL_PADDING_X = 18;
 const PILL_WIDTH_FALLBACK_EMAIL = 200;
 const PILL_WIDTH_FALLBACK_CASE = 180;
 
-const LABEL_BY_MODE: Record<Exclude<CursorMode, "default">, string> = {
+const LABEL_BY_MODE: Record<Exclude<CursorMode, "default" | "caption">, string> = {
   email: EMAIL_TEXT,
   "case-study": CASE_STUDY_TEXT,
 };
@@ -48,6 +48,7 @@ export default function CustomCursor() {
   const transform = useMotionTemplate`translate3d(${springX}px, ${springY}px, 0) translate(-50%, -50%)`;
 
   const [mode, setMode] = useState<CursorMode>("default");
+  const [captionText, setCaptionText] = useState<string>("");
   const [emailWidth, setEmailWidth] = useState(PILL_WIDTH_FALLBACK_EMAIL);
   const [caseWidth, setCaseWidth] = useState(PILL_WIDTH_FALLBACK_CASE);
   const measureEmailRef = useRef<HTMLSpanElement>(null);
@@ -84,23 +85,29 @@ export default function CustomCursor() {
     };
     window.addEventListener("mousemove", move);
 
-    // On case-study routes, skip the mode-morph listener entirely and reset
-    // any in-flight mode so the cursor stays a plain orange circle.
-    if (isCaseStudyRoute) {
-      setMode("default");
-      return () => {
-        window.removeEventListener("mousemove", move);
-      };
-    }
-
     const onModeEvent = (e: Event) => {
-      const detail = (e as CustomEvent<{ mode: CursorMode }>).detail;
+      const detail = (e as CustomEvent<{ mode: CursorMode; text?: string }>)
+        .detail;
       if (
-        detail?.mode === "default" ||
-        detail?.mode === "email" ||
-        detail?.mode === "case-study"
+        detail?.mode !== "default" &&
+        detail?.mode !== "email" &&
+        detail?.mode !== "case-study" &&
+        detail?.mode !== "caption"
       ) {
-        setMode(detail.mode);
+        return;
+      }
+      // On case-study routes, only honor "caption" and "default" — block
+      // "email" and "case-study" morphs to preserve the distraction-free intent.
+      if (
+        isCaseStudyRoute &&
+        detail.mode !== "caption" &&
+        detail.mode !== "default"
+      ) {
+        return;
+      }
+      setMode(detail.mode);
+      if (detail.mode === "caption" && detail.text) {
+        setCaptionText(detail.text);
       }
     };
     window.addEventListener(CURSOR_MODE_EVENT, onModeEvent);
@@ -110,17 +117,22 @@ export default function CustomCursor() {
     };
   }, [x, y, isCaseStudyRoute]);
 
-  // Belt-and-suspenders: even if a stale mode briefly survives the route
-  // change, force the dot rendering on case-study pages.
-  const effectiveMode: CursorMode = isCaseStudyRoute ? "default" : mode;
-  const isPill = effectiveMode !== "default";
+  // On case-study routes, the only morph permitted is "caption" — block any
+  // residual "email" / "case-study" mode that might have survived navigation.
+  const effectiveMode: CursorMode =
+    isCaseStudyRoute && mode !== "caption" ? "default" : mode;
+  const isCaption = effectiveMode === "caption";
+  const isPill = effectiveMode === "email" || effectiveMode === "case-study";
   const pillWidth =
     effectiveMode === "email"
       ? emailWidth
       : effectiveMode === "case-study"
         ? caseWidth
         : DOT_SIZE;
-  const label = effectiveMode === "default" ? null : LABEL_BY_MODE[effectiveMode];
+  const label =
+    effectiveMode === "email" || effectiveMode === "case-study"
+      ? LABEL_BY_MODE[effectiveMode]
+      : null;
 
   return (
     <>
@@ -166,10 +178,14 @@ export default function CustomCursor() {
       <motion.div
         aria-hidden
         className="custom-cursor"
-        animate={{
-          width: isPill ? pillWidth : DOT_SIZE,
-          height: isPill ? PILL_HEIGHT : DOT_SIZE,
-        }}
+        animate={
+          isCaption
+            ? { width: "auto", height: "auto" }
+            : {
+                width: isPill ? pillWidth : DOT_SIZE,
+                height: isPill ? PILL_HEIGHT : DOT_SIZE,
+              }
+        }
         transition={{ duration: 0.25, ease: "easeOut" }}
         style={{
           transform,
@@ -177,11 +193,39 @@ export default function CustomCursor() {
           alignItems: "center",
           justifyContent: "center",
           whiteSpace: "nowrap",
-          overflow: "hidden",
+          overflow: isCaption ? "visible" : "hidden",
+          // Caption mode: strip the dot/pill visuals so only the text shows.
+          ...(isCaption && {
+            background: "transparent",
+            borderRadius: 0,
+            boxShadow: "none",
+            padding: 0,
+          }),
         }}
       >
         <AnimatePresence mode="wait">
-          {isPill && label && (
+          {isCaption ? (
+            <motion.span
+              key="caption"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              style={{
+                fontFamily:
+                  "var(--font-serif), 'Source Serif Pro', serif",
+                fontStyle: "italic",
+                fontSize: 18,
+                fontWeight: 400,
+                color: "#1E1E1E",
+                lineHeight: 1,
+                whiteSpace: "nowrap",
+                padding: 0,
+              }}
+            >
+              {captionText}
+            </motion.span>
+          ) : isPill && label ? (
             <motion.span
               key={mode}
               initial={{ opacity: 0 }}
@@ -199,7 +243,7 @@ export default function CustomCursor() {
             >
               {label}
             </motion.span>
-          )}
+          ) : null}
         </AnimatePresence>
       </motion.div>
     </>
