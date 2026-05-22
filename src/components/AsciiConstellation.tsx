@@ -60,7 +60,15 @@ const WAVE_SWEEP_SECONDS = 2;
 const WAVE_CYCLE_SECONDS = 3;
 const WAVE_REST_SECONDS = 1;
 
-export default function AsciiConstellation() {
+interface AsciiConstellationProps {
+  color?: string;
+  opacity?: number;
+}
+
+export default function AsciiConstellation({
+  color = "#FFF5EF",
+  opacity = BASELINE_OPACITY,
+}: AsciiConstellationProps = {}) {
   const reducedMotion = useReducedMotion();
 
   return (
@@ -68,8 +76,8 @@ export default function AsciiConstellation() {
       aria-hidden
       className="hidden md:block pointer-events-none select-none font-mono absolute inset-0"
       style={{
-        color: "#FFF5EF",
-        opacity: BASELINE_OPACITY,
+        color: color,
+        opacity: opacity,
         fontSize: "13px",
         lineHeight: 1,
         zIndex: 0,

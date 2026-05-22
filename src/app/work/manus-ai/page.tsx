@@ -3,8 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Footer from "@/components/Footer";
+import CaseStudyFooter from "@/components/CaseStudyFooter";
 import Lightbox from "@/components/Lightbox";
 import StackedDeck from "@/components/StackedDeck";
 
@@ -128,7 +129,7 @@ function CaseStudyNav() {
       transition={{ duration: 0.4, ease: "easeOut" }}
       className="sticky top-0 z-40 w-full flex justify-between items-center px-6 pt-5 pb-3"
       style={{
-        backgroundColor: "rgba(255, 245, 239, 0.6)",
+        backgroundColor: "transparent",
         backdropFilter: "blur(8px)",
         WebkitBackdropFilter: "blur(8px)",
       }}
@@ -173,6 +174,7 @@ function CaseStudyNav() {
 export default function ManusAiPage() {
   const [openVideo, setOpenVideo] = useState<string | null>(null);
   const [activeCaption, setActiveCaption] = useState(0);
+  const [thanksHovered, setThanksHovered] = useState(false);
 
   return (
     <>
@@ -187,7 +189,7 @@ export default function ManusAiPage() {
           <section
             id="hero"
             className="w-full"
-            style={{ backgroundColor: COLORS.cream }}
+            style={{ backgroundColor: COLORS.cream, scrollMarginTop: 100 }}
           >
             <div className="mx-auto max-w-[1246px] px-6 md:px-12 lg:px-24 pt-12 md:pt-16 pb-10 md:pb-12">
               <div className="flex flex-col items-center gap-[30px]">
@@ -241,7 +243,7 @@ export default function ManusAiPage() {
           <section
             id="at-a-glance"
             className="w-full"
-            style={{ backgroundColor: COLORS.cream }}
+            style={{ backgroundColor: COLORS.cream, scrollMarginTop: 100 }}
           >
             <div className="mx-auto max-w-[1228px] px-6 pt-[22px] pb-0">
               <div className="w-full">
@@ -465,7 +467,7 @@ export default function ManusAiPage() {
         <section
           id="problem"
           className="w-full"
-          style={{ backgroundColor: "#FFFFFF" }}
+          style={{ backgroundColor: "#FFFFFF", scrollMarginTop: 100 }}
         >
           <div className="mx-auto max-w-[1228px] px-6 py-[80px]">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -541,7 +543,7 @@ export default function ManusAiPage() {
         <section
           id="solution-preview"
           className="w-full"
-          style={{ backgroundColor: "#FFFFFF" }}
+          style={{ backgroundColor: "#FFFFFF", scrollMarginTop: 100 }}
         >
           <div className="mx-auto max-w-[1228px] px-6 py-[80px]">
             <p
@@ -658,7 +660,7 @@ export default function ManusAiPage() {
         <section
           id="initial-pivot"
           className="w-full"
-          style={{ backgroundColor: "#FFFFFF" }}
+          style={{ backgroundColor: "#FFFFFF", scrollMarginTop: 100 }}
         >
           <div className="mx-auto max-w-[1228px] px-6 py-[80px]">
 
@@ -832,7 +834,7 @@ export default function ManusAiPage() {
         <section
           id="research"
           className="w-full"
-          style={{ backgroundColor: "#FFFFFF" }}
+          style={{ backgroundColor: "#FFFFFF", scrollMarginTop: 100 }}
         >
           <div className="mx-auto max-w-[1228px] px-6 py-[80px]">
 
@@ -1555,7 +1557,7 @@ export default function ManusAiPage() {
         <section
           id="finding-the-gaps"
           className="w-full"
-          style={{ backgroundColor: "#FFFFFF" }}
+          style={{ backgroundColor: "#FFFFFF", scrollMarginTop: 100 }}
         >
           <div className="mx-auto max-w-[1228px] px-6 py-[80px]">
 
@@ -2026,7 +2028,7 @@ export default function ManusAiPage() {
         <section
           id="development"
           className="w-full"
-          style={{ backgroundColor: "#FFFFFF" }}
+          style={{ backgroundColor: "#FFFFFF", scrollMarginTop: 100 }}
         >
           <div className="mx-auto max-w-[1228px] px-6 py-[80px]">
 
@@ -2172,7 +2174,7 @@ export default function ManusAiPage() {
         <section
           id="interactive-elements"
           className="w-full"
-          style={{ backgroundColor: "#FFFFFF" }}
+          style={{ backgroundColor: "#FFFFFF", scrollMarginTop: 100 }}
         >
           <div className="mx-auto max-w-[1228px] px-6 py-[80px]">
 
@@ -2240,7 +2242,7 @@ export default function ManusAiPage() {
         <section
           id="testing"
           className="w-full"
-          style={{ backgroundColor: "#FFFFFF" }}
+          style={{ backgroundColor: "#FFFFFF", scrollMarginTop: 100 }}
         >
           <div className="mx-auto max-w-[1228px] px-6 pt-[80px] pb-[20px]">
 
@@ -2371,7 +2373,7 @@ export default function ManusAiPage() {
         <section
           id="adjustment-1"
           className="w-full"
-          style={{ backgroundColor: "#FFFFFF" }}
+          style={{ backgroundColor: "#FFFFFF", scrollMarginTop: 100 }}
         >
           <div className="mx-auto max-w-[1228px] px-6 pt-[20px] pb-[80px]">
 
@@ -2427,7 +2429,7 @@ export default function ManusAiPage() {
         <section
           id="adjustment-2"
           className="w-full"
-          style={{ backgroundColor: "#FFFFFF" }}
+          style={{ backgroundColor: "#FFFFFF", scrollMarginTop: 100 }}
         >
           <div className="mx-auto max-w-[1228px] px-6 pt-[80px] pb-[20px]">
 
@@ -2604,7 +2606,7 @@ export default function ManusAiPage() {
         <section
           id="journey-flow"
           className="w-full"
-          style={{ backgroundColor: "#FFFFFF" }}
+          style={{ backgroundColor: "#FFFFFF", scrollMarginTop: 100 }}
         >
           <div className="mx-auto max-w-[1228px] px-6 pt-[80px] pb-[80px]">
 
@@ -2660,7 +2662,7 @@ export default function ManusAiPage() {
         <section
           id="solution"
           className="w-full"
-          style={{ backgroundColor: "#FFFFFF" }}
+          style={{ backgroundColor: "#FFFFFF", scrollMarginTop: 100 }}
         >
           <div className="mx-auto max-w-[1228px] px-6 py-[80px]">
 
@@ -3091,7 +3093,7 @@ export default function ManusAiPage() {
         {/* ============================================================ */}
         {/* SECTION 14: FINAL THOUGHTS (white bg) — id="final-thoughts" */}
         {/* ============================================================ */}
-        <section id="final-thoughts" style={{ paddingTop: 80, paddingBottom: 80 }}>
+        <section id="final-thoughts" style={{ background: "#FFFFFF", paddingTop: 24, paddingBottom: 16, scrollMarginTop: 100 }}>
           <div className="max-w-[1228px] mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
 
@@ -3123,7 +3125,6 @@ export default function ManusAiPage() {
                         height: "100%",
                         borderRadius: 16,
                         overflow: "hidden",
-                        border: "1px solid #C97836",
                         boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
                         lineHeight: 0,
                         fontSize: 0,
@@ -3167,7 +3168,6 @@ export default function ManusAiPage() {
                         height: "100%",
                         borderRadius: 16,
                         overflow: "hidden",
-                        border: "1px solid #C97836",
                         boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
                         lineHeight: 0,
                         fontSize: 0,
@@ -3184,6 +3184,8 @@ export default function ManusAiPage() {
                           objectFit: "cover",
                           display: "block",
                           verticalAlign: "top",
+                          transform: "scale(1.25)",
+                          transformOrigin: "center",
                         }}
                       />
                     </div>,
@@ -3194,7 +3196,7 @@ export default function ManusAiPage() {
                           new CustomEvent("cursor-mode", {
                             detail: {
                               mode: "caption",
-                              text: "also worked on a shrek ballet simulator during recess with my coworkers lol",
+                              text: "also worked on a shrek ballet simulator\nwith my coworkers lol",
                             },
                           })
                         )
@@ -3211,7 +3213,6 @@ export default function ManusAiPage() {
                         height: "100%",
                         borderRadius: 16,
                         overflow: "hidden",
-                        border: "1px solid #C97836",
                         boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
                         lineHeight: 0,
                         fontSize: 0,
@@ -3228,6 +3229,8 @@ export default function ManusAiPage() {
                           objectFit: "cover",
                           display: "block",
                           verticalAlign: "top",
+                          transform: "scale(1.3)",
+                          transformOrigin: "center",
                         }}
                       />
                     </div>,
@@ -3321,8 +3324,294 @@ export default function ManusAiPage() {
           </div>
         </section>
 
+        {/* ============================================================ */}
+        {/* SECTION 15: NEXT STEPS (white bg) — 3-col icon row */}
+        {/* ============================================================ */}
+        <section style={{ background: "#FFFFFF", paddingTop: 0, paddingBottom: 80, scrollMarginTop: 100 }}>
+          <div className="max-w-[1228px] mx-auto px-6">
+
+            <div
+              style={{
+                fontFamily: FONTS.sans,
+                fontSize: 18,
+                fontWeight: 700,
+                color: "#1E1E1E",
+                marginBottom: 48,
+              }}
+            >
+              Next Steps →
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+              {/* Col 1 — folder-up */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  style={{
+                    width: 96,
+                    height: 96,
+                    marginBottom: 24,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Image
+                    src="/images/manus/next-steps/icon-folder-up.svg"
+                    alt="Folder upload"
+                    width={96}
+                    height={96}
+                    style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                  />
+                </div>
+                <p
+                  style={{
+                    fontFamily: FONTS.sans,
+                    fontSize: 16,
+                    lineHeight: 1.6,
+                    color: "#1E1E1E",
+                    maxWidth: 320,
+                    margin: 0,
+                  }}
+                >
+                  Increase transparency in AI decisions by adding lightweight user feedback
+                </p>
+              </div>
+
+              {/* Col 2 — doc-search */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  style={{
+                    width: 96,
+                    height: 96,
+                    marginBottom: 24,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Image
+                    src="/images/manus/next-steps/icon-doc-search.svg"
+                    alt="Document with search"
+                    width={96}
+                    height={96}
+                    style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                  />
+                </div>
+                <p
+                  style={{
+                    fontFamily: FONTS.sans,
+                    fontSize: 16,
+                    lineHeight: 1.6,
+                    color: "#1E1E1E",
+                    maxWidth: 320,
+                    margin: 0,
+                  }}
+                >
+                  Tracking time-to-first-meaningful-action for actual contribution
+                </p>
+              </div>
+
+              {/* Col 3 — laptop */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  style={{
+                    width: 96,
+                    height: 96,
+                    marginBottom: 24,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Image
+                    src="/images/manus/next-steps/icon-laptop.svg"
+                    alt="Laptop"
+                    width={96}
+                    height={96}
+                    style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                  />
+                </div>
+                <p
+                  style={{
+                    fontFamily: FONTS.sans,
+                    fontSize: 16,
+                    lineHeight: 1.6,
+                    color: "#1E1E1E",
+                    maxWidth: 320,
+                    margin: 0,
+                  }}
+                >
+                  Finish up development and launching!
+                </p>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* SECTION 16: THANKS FOR VISITING — cream card with cartoon-jaz */}
+        {/* ============================================================ */}
+        <section style={{ background: "#FFFFFF", paddingTop: 40, paddingBottom: 80, scrollMarginTop: 100 }}>
+          <div className="max-w-[1228px] mx-auto px-6">
+
+            <motion.div
+              whileHover={{ scale: 1.02, rotate: -1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              onMouseEnter={() => setThanksHovered(true)}
+              onMouseLeave={() => setThanksHovered(false)}
+              style={{
+                background: "#FFF5EF",
+                borderRadius: 16,
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
+                padding: 20,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 24,
+                maxWidth: 720,
+                cursor: "pointer",
+                transformOrigin: "center",
+                position: "relative",
+                overflow: "visible",
+              }}
+            >
+
+              {/* SPARKLES — appear on hover, drift + twinkle around card edges */}
+              <AnimatePresence>
+                {thanksHovered && (
+                  <>
+                    {[
+                      { top: "-8px",   left: "10%",    delay: 0,    size: 14, color: "#C97836", driftX: 4,  driftY: -3 },
+                      { top: "-12px",  left: "35%",    delay: 0.15, size: 10, color: "#D4A574", driftX: -3, driftY: -5 },
+                      { top: "-6px",   left: "70%",    delay: 0.3,  size: 16, color: "#C97836", driftX: 5,  driftY: -2 },
+                      { top: "30%",    right: "-10px", delay: 0.1,  size: 12, color: "#D4A574", driftX: 6,  driftY: 3 },
+                      { bottom: "10%", right: "-6px",  delay: 0.25, size: 14, color: "#C97836", driftX: 4,  driftY: 5 },
+                      { bottom: "-10px", left: "75%",  delay: 0.05, size: 10, color: "#D4A574", driftX: -3, driftY: 4 },
+                      { bottom: "-8px",  left: "45%",  delay: 0.2,  size: 14, color: "#C97836", driftX: 2,  driftY: 5 },
+                      { bottom: "-6px",  left: "15%",  delay: 0.35, size: 12, color: "#D4A574", driftX: -4, driftY: 3 },
+                      { top: "40%",    left: "-10px",  delay: 0.18, size: 14, color: "#C97836", driftX: -5, driftY: -2 },
+                    ].map((s, i) => (
+                      <motion.div
+                        key={`sparkle-${i}`}
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{
+                          opacity: [0, 1, 0.6, 1, 0.4],
+                          scale: [0, 1, 0.8, 1.1, 0.9],
+                          x: [0, s.driftX, 0, s.driftX, 0],
+                          y: [0, s.driftY, 0, s.driftY, 0],
+                        }}
+                        exit={{ opacity: 0, scale: 0, transition: { duration: 0.2 } }}
+                        transition={{
+                          duration: 1.8,
+                          delay: s.delay,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                        style={{
+                          position: "absolute",
+                          top: s.top,
+                          left: s.left,
+                          right: s.right,
+                          bottom: s.bottom,
+                          width: s.size,
+                          height: s.size,
+                          pointerEvents: "none",
+                        }}
+                      >
+                        <svg viewBox="0 0 24 24" width={s.size} height={s.size} fill={s.color}>
+                          <path d="M12 0 L13.5 10.5 L24 12 L13.5 13.5 L12 24 L10.5 13.5 L0 12 L10.5 10.5 Z" />
+                        </svg>
+                      </motion.div>
+                    ))}
+                  </>
+                )}
+              </AnimatePresence>
+
+              {/* LEFT — cartoon-jaz illustration */}
+              <div
+                style={{
+                  flexShrink: 0,
+                  width: 80,
+                  height: 80,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Image
+                  src="/images/manus/thanks/cartoon-jaz.png"
+                  alt="Cartoon illustration of Jaz"
+                  width={80}
+                  height={80}
+                  style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                />
+              </div>
+
+              {/* RIGHT — heading + body */}
+              <div style={{ flex: 1 }}>
+                <h3
+                  style={{
+                    fontFamily: FONTS.serif,
+                    fontWeight: 600,
+                    fontSize: 24,
+                    lineHeight: 1.3,
+                    color: "#1E1E1E",
+                    margin: 0,
+                  }}
+                >
+                  Thanks for visiting!
+                </h3>
+                <p
+                  style={{
+                    fontFamily: FONTS.sans,
+                    fontSize: 16,
+                    lineHeight: 1.6,
+                    color: "#1E1E1E",
+                    margin: "12px 0 0 0",
+                  }}
+                >
+                  I design better than I summarize.<br />
+                  Let&apos;s fix that over a call or interview. Reach out{" "}
+                  <a
+                    href="mailto:jazkurnz06@gmail.com"
+                    style={{ color: "#C97836", textDecoration: "underline" }}
+                  >
+                    here
+                  </a>
+                  .
+                </p>
+              </div>
+
+            </motion.div>
+          </div>
+        </section>
+
       </main>
-      <Footer />
+      <CaseStudyFooter currentSlug="manus-ai" />
+      <Footer variant="cream" />
 
       <Lightbox
         isOpen={openVideo !== null}
