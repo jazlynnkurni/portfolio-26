@@ -193,13 +193,11 @@ export default function CustomCursor() {
           alignItems: "center",
           justifyContent: "center",
           whiteSpace: "nowrap",
-          overflow: isCaption ? "visible" : "hidden",
-          // Caption mode: strip the dot/pill visuals so only the text shows.
+          overflow: "hidden",
+          // Caption mode gets its own pill padding (email/case-study pills
+          // bake their padding into the measured width via PILL_PADDING_X).
           ...(isCaption && {
-            background: "transparent",
-            borderRadius: 0,
-            boxShadow: "none",
-            padding: 0,
+            padding: "10px 22px",
           }),
         }}
       >
@@ -212,15 +210,14 @@ export default function CustomCursor() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
               style={{
-                fontFamily:
-                  "var(--font-serif), 'Source Serif Pro', serif",
-                fontStyle: "italic",
+                fontFamily: "'Helvetica Neue', Arial, sans-serif",
                 fontSize: 18,
-                fontWeight: 400,
-                color: "#1E1E1E",
-                lineHeight: 1,
-                whiteSpace: "nowrap",
+                fontWeight: 500,
+                color: "#FFFFFF",
+                lineHeight: 1.4,
+                whiteSpace: "pre-line",
                 padding: 0,
+                textAlign: "center",
               }}
             >
               {captionText}
