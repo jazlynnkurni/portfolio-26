@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local-only video backups (pre-compression)
+public/videos/conduit/_originals_DO_NOT_COMMIT/
+public/images/conduit/gaps/_originals/
+
+# Pre-crop / pre-compression backup originals (any *.original.* file)
+*.original.*

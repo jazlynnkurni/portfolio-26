@@ -8,13 +8,12 @@ const ALL_CASE_STUDIES: Record<string, WorkCardProps & { key: string }> = {
   "manus-ai": {
     key: "manus-ai",
     href: "/work/manus-ai",
-    numberLabel: "MANUS AI - NO. 01",
-    tagline: "Re-architecting community for an AI agent serving 700K+ users",
-    tags: ["Internship", "Shipped"],
+    numberLabel: "MANUS AI (ACQUIRED BY META) - NO. 01",
+    tagline: "Designing an AI community platform to drive adoption",
+    tags: ["Internship", "Approved & In Dev"],
     mediaType: "video",
-    mediaSrc: "/videos/manus/hero/laptop-mockup.mp4",
+    mediaSrc: "/videos/work-manus.mp4",
     caseStudyName: "Manus AI",
-    mediaZoom: 1.08,
   },
   "conduit-commerce": {
     key: "conduit-commerce",
