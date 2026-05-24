@@ -7,6 +7,7 @@ import HeadlineDrift, {
   type HeadlineSegment,
 } from "@/components/HeadlineDrift";
 import SnookerScene from "@/components/snooker/SnookerScene";
+import HeroPendantLamp from "@/components/HeroPendantLamp";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 12 },
@@ -31,12 +32,14 @@ export default function Home() {
     <>
       <Nav />
 
-      <main className="flex-1 px-6 md:px-16 pt-12 md:pt-20 pb-10 md:pb-16">
+      <main className="flex-1 px-6 md:px-16 pt-12 md:pt-20 pb-10 md:pb-16 relative overflow-hidden">
+        <HeroPendantLamp />
         <motion.div
           initial="hidden"
           animate="show"
           transition={{ staggerChildren: 0.08, delayChildren: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-16 items-center max-w-7xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-16 items-center max-w-7xl mx-auto relative"
+          style={{ zIndex: 10 }}
         >
           {/* LEFT COLUMN ~55% */}
           <div className="flex flex-col">
