@@ -18,7 +18,7 @@ const externalLinks: FooterLink[] = [
 
 const internalLinks: FooterLink[] = [
   { label: "HOME", href: "/" },
-  { label: "ART GALLERY", href: "/art-exhibit" },
+  { label: "ART GALLERY", href: "/art-gallery" },
   { label: "ABOUT ME", href: "/about" },
   {
     label: "RESUME",

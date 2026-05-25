@@ -89,11 +89,11 @@ export default function Home() {
                   fontSize: "14px",
                 }}
               >
-                Explore
+                <a href="/art-gallery" style={{ display: "block", width: "100%", height: "100%", color: "inherit", textDecoration: "none" }}>Explore</a>
               </button>
               <button
                 type="button"
-                className="font-sans cursor-pointer transition-colors duration-200 hover:bg-[rgba(143,75,30,0.08)]"
+                className="font-sans cursor-pointer transition-all duration-200 hover:bg-[rgba(143,75,30,0.08)] hover:shadow-[0_4px_12px_rgba(58,36,24,0.18)]"
                 style={{
                   backgroundColor: "transparent",
                   color: "#8F4B1E",
@@ -103,7 +103,7 @@ export default function Home() {
                   fontSize: "14px",
                 }}
               >
-                Skip Intro
+                <a href="/work" style={{ display: "block", width: "100%", height: "100%", color: "inherit", textDecoration: "none" }}>Skip Intro</a>
               </button>
             </motion.div>
           </div>

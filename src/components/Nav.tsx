@@ -9,7 +9,7 @@ type NavLink = { label: string; href: string; external?: boolean };
 
 const links: NavLink[] = [
   { label: "Work", href: "/work" },
-  { label: "Art Exhibit", href: "/art-exhibit" },
+  { label: "Art Gallery", href: "/art-gallery" },
   { label: "About Me", href: "/about" },
   {
     label: "Resume",
