@@ -10,7 +10,7 @@ import {
   useSpring,
 } from "framer-motion";
 
-export type CursorMode = "default" | "email" | "case-study" | "caption";
+export type CursorMode = "default" | "email" | "case-study" | "caption" | "pencil";
 
 // Dispatched by interactive elements (e.g. the headline, work cards) to morph
 // the cursor. Payload: { mode: CursorMode }.
@@ -25,7 +25,7 @@ const PILL_PADDING_X = 18;
 const PILL_WIDTH_FALLBACK_EMAIL = 200;
 const PILL_WIDTH_FALLBACK_CASE = 180;
 
-const LABEL_BY_MODE: Record<Exclude<CursorMode, "default" | "caption">, string> = {
+const LABEL_BY_MODE: Record<Exclude<CursorMode, "default" | "caption" | "pencil">, string> = {
   email: EMAIL_TEXT,
   "case-study": CASE_STUDY_TEXT,
 };
@@ -92,7 +92,8 @@ export default function CustomCursor() {
         detail?.mode !== "default" &&
         detail?.mode !== "email" &&
         detail?.mode !== "case-study" &&
-        detail?.mode !== "caption"
+        detail?.mode !== "caption" &&
+        detail?.mode !== "pencil"
       ) {
         return;
       }
@@ -123,6 +124,7 @@ export default function CustomCursor() {
     isCaseStudyRoute && mode !== "caption" ? "default" : mode;
   const isCaption = effectiveMode === "caption";
   const isPill = effectiveMode === "email" || effectiveMode === "case-study";
+  const isPencil = effectiveMode === "pencil";
   const pillWidth =
     effectiveMode === "email"
       ? emailWidth
@@ -181,6 +183,8 @@ export default function CustomCursor() {
         animate={
           isCaption
             ? { width: "auto", height: "auto" }
+            : isPencil
+            ? { width: 40, height: 40 }
             : {
                 width: isPill ? pillWidth : DOT_SIZE,
                 height: isPill ? PILL_HEIGHT : DOT_SIZE,
@@ -198,6 +202,13 @@ export default function CustomCursor() {
           // bake their padding into the measured width via PILL_PADDING_X).
           ...(isCaption && {
             padding: "10px 22px",
+          }),
+          ...(isPencil && {
+            background: "transparent",
+            borderRadius: 0,
+            overflow: "visible",
+            boxShadow: "none",
+            border: "none",
           }),
         }}
       >
@@ -222,6 +233,31 @@ export default function CustomCursor() {
             >
               {captionText}
             </motion.span>
+          ) : isPencil ? (
+            <svg
+              key="pencil"
+              width="40"
+              height="40"
+              viewBox="0 0 40 40"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              style={{
+                transform: "translate(10px, -10px)",
+                userSelect: "none",
+                pointerEvents: "none",
+                display: "block",
+              }}
+            >
+              <g transform="rotate(-45 20 20)">
+                <rect x="11" y="17" width="19" height="6" rx="1" fill="#1E1E1E" />
+                <rect x="11" y="18.5" width="19" height="0.8" fill="#FFFFFF" fillOpacity="0.22" />
+                <rect x="30" y="17" width="3" height="6" fill="#C97836" />
+                <rect x="33" y="17.5" width="4" height="5" rx="1.2" fill="#E8A4A4" />
+                <polygon points="11,17 11,23 6,20" fill="#E8C9A0" />
+                <polygon points="11,20 11,23 6,20" fill="#000000" fillOpacity="0.12" />
+                <polygon points="6,20 8.5,18.5 8.5,21.5" fill="#1E1E1E" />
+              </g>
+            </svg>
           ) : isPill && label ? (
             <motion.span
               key={mode}

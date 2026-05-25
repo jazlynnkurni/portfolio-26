@@ -46,3 +46,4 @@ public/images/conduit/gaps/_originals/
 
 # Pre-crop / pre-compression backup originals (any *.original.* file)
 *.original.*
+.env*.local
