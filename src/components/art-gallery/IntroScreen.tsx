@@ -2,6 +2,7 @@
 
 import { useRef, useState, useCallback } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { COLORS, FONTS, CARD_SWATCHES, ASSETS, type CardColor } from "./tokens";
 import DrawingCanvas, { type DrawingCanvasHandle } from "./DrawingCanvas";
 
@@ -121,12 +122,14 @@ export default function IntroScreen({ onSubmit, submitting, errorMessage }: Prop
         </button>
       </div>
 
-      <DrawingCanvas
-        ref={canvasRef}
-        backgroundColor={CARD_SWATCHES[color]}
-        watermarkSrc={ASSETS.jkWatermark}
-        onFirstStroke={() => setHasDrawn(true)}
-      />
+      <motion.div layoutId="user-card">
+        <DrawingCanvas
+          ref={canvasRef}
+          backgroundColor={CARD_SWATCHES[color]}
+          watermarkSrc={ASSETS.jkWatermark}
+          onFirstStroke={() => setHasDrawn(true)}
+        />
+      </motion.div>
 
       <div style={{ display: "flex", gap: 16, marginTop: 28 }}>
         {(Object.keys(CARD_SWATCHES) as CardColor[]).map((c) => {
