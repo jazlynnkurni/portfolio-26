@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { AnimatePresence } from "framer-motion";
 import IntroScreen from "@/components/art-gallery/IntroScreen";
+import WallScreen from "@/components/art-gallery/WallScreen";
+import ArtworksGallery from "@/components/art-gallery/ArtworksGallery";
 import MobileGate from "@/components/art-gallery/MobileGate";
 import type { CardColor } from "@/components/art-gallery/tokens";
 
@@ -10,6 +13,7 @@ const SESSION_KEY = "art-gallery:my-card";
 type Stage = "intro" | "wall";
 
 type MyCard = {
+  id: string;
   name: string;
   color: CardColor;
   drawing: string;
@@ -21,6 +25,7 @@ export default function ArtGalleryPage() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDesktop, setIsDesktop] = useState<boolean | null>(null);
+  const [myCard, setMyCard] = useState<MyCard | null>(null);
 
   useEffect(() => {
     const check = () => setIsDesktop(window.innerWidth >= 900);
@@ -45,13 +50,20 @@ export default function ArtGalleryPage() {
         }
         const data = await res.json();
         const card: MyCard = {
+          id: data.card.id,
           name: data.card.name,
           color: data.card.color,
           drawing: data.card.drawing,
           createdAt: data.card.createdAt,
         };
         sessionStorage.setItem(SESSION_KEY, JSON.stringify(card));
+        setMyCard(card);
         setStage("wall");
+        // Smooth scroll to wall after FLIP animation lands (~700ms).
+        setTimeout(() => {
+          const wall = document.getElementById("wall");
+          if (wall) wall.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 700);
       } catch (err) {
         setErrorMessage(err instanceof Error ? err.message : "Something went wrong.");
       } finally {
@@ -69,27 +81,21 @@ export default function ArtGalleryPage() {
     return <MobileGate />;
   }
 
-  if (stage === "intro") {
-    return <IntroScreen onSubmit={handleSubmit} submitting={submitting} errorMessage={errorMessage} />;
-  }
-
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#FFF5EF",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontFamily: "var(--font-serif), 'Source Serif Pro', serif",
-        fontSize: 24,
-        color: "#1E1E1E",
-      }}
-    >
-      <div style={{ textAlign: "center" }}>
-        <p>Your card is hanging on the wall ✓</p>
-        <p style={{ fontSize: 14, marginTop: 12, opacity: 0.6 }}>(Wall view coming in Phase 5b)</p>
-      </div>
-    </div>
+    <AnimatePresence mode="wait">
+      {stage === "intro" ? (
+        <IntroScreen
+          key="intro"
+          onSubmit={handleSubmit}
+          submitting={submitting}
+          errorMessage={errorMessage}
+        />
+      ) : myCard ? (
+        <div key="wall">
+          <WallScreen myCard={myCard} />
+          {/* <ArtworksGallery /> — temporarily hidden, will re-enable after wall layout is dialed in */}
+        </div>
+      ) : null}
+    </AnimatePresence>
   );
 }
