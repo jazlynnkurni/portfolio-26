@@ -129,8 +129,41 @@ export default function WallScreen({ myCard }: Props) {
           alignItems: "stretch",
         }}
       >
-        {/* Chandelier slot — temporarily empty while we dial in card grid layout */}
-        <div />
+        {/* Chandelier (left) — flush to viewport left edge, vertically centered against frame.
+            Two warm flame glows positioned over each candle, flickering out of sync via CSS. */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            height: "100%",
+            overflow: "visible",
+          }}
+        >
+          <div
+            style={{
+              position: "relative",
+              marginLeft: "-80px",
+              display: "inline-block",
+              lineHeight: 0,
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={ASSETS.chandelier}
+              alt=""
+              style={{
+                width: "auto",
+                height: 320,
+                maxWidth: "none",
+                pointerEvents: "none",
+                userSelect: "none",
+                objectFit: "contain",
+                display: "block",
+              }}
+            />
+          </div>
+        </div>
 
         {/* Framed grid: orange picture-frame border wraps the entire 4x3. */}
         <div
@@ -213,8 +246,32 @@ export default function WallScreen({ myCard }: Props) {
           </div>
         </div>
 
-        {/* Vase slot — temporarily empty while we dial in card grid layout */}
-        <div />
+        {/* Flower vase (right) — sits flush to viewport right edge, bottom aligns with frame */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "flex-end",
+            height: "100%",
+            overflow: "visible",
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={ASSETS.flowerVase}
+            alt=""
+            style={{
+              width: "auto",
+              height: 460,
+              maxWidth: "none",
+              pointerEvents: "none",
+              userSelect: "none",
+              objectFit: "contain",
+              display: "block",
+              marginRight: "-24px",
+            }}
+          />
+        </div>
       </div>
 
     </section>
