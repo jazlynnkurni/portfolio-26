@@ -248,14 +248,11 @@ export default function CustomCursor() {
                 display: "block",
               }}
             >
-              <g transform="rotate(-45 20 20)">
-                <rect x="11" y="17" width="19" height="6" rx="1" fill="#1E1E1E" />
-                <rect x="11" y="18.5" width="19" height="0.8" fill="#FFFFFF" fillOpacity="0.22" />
-                <rect x="30" y="17" width="3" height="6" fill="#C97836" />
-                <rect x="33" y="17.5" width="4" height="5" rx="1.2" fill="#E8A4A4" />
-                <polygon points="11,17 11,23 6,20" fill="#E8C9A0" />
-                <polygon points="11,20 11,23 6,20" fill="#000000" fillOpacity="0.12" />
-                <polygon points="6,20 8.5,18.5 8.5,21.5" fill="#1E1E1E" />
+              <g transform="rotate(-45 20 20)" fill="none" stroke="#FFFFFF" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round">
+                <path d="M11 17 H33 V23 H11 Z" />
+                <path d="M30 17 V23" />
+                <path d="M11 17 L6 20 L11 23" />
+                <path d="M8.2 18.6 L6 20 L8.2 21.4" />
               </g>
             </svg>
           ) : isPill && label ? (

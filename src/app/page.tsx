@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { motion, type Variants } from "framer-motion";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
@@ -28,6 +30,19 @@ const headlineSegments: HeadlineSegment[] = [
 ];
 
 export default function Home() {
+  const router = useRouter();
+  const [transitioning, setTransitioning] = useState(false);
+  const [origin, setOrigin] = useState({ x: 0, y: 0 });
+  const exploreBtnRef = useRef<HTMLButtonElement>(null);
+  const handleExplore = () => {
+    const btn = exploreBtnRef.current;
+    if (btn) {
+      const r = btn.getBoundingClientRect();
+      setOrigin({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    }
+    setTransitioning(true);
+  };
+
   return (
     <>
       <Nav />
@@ -79,7 +94,9 @@ export default function Home() {
               style={{ marginTop: "36px", gap: "25px" }}
             >
               <button
+                ref={exploreBtnRef}
                 type="button"
+                onClick={handleExplore}
                 className="font-sans cursor-pointer transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_6px_20px_rgba(143,75,30,0.35)]"
                 style={{
                   backgroundColor: "#8F4B1E",
@@ -89,7 +106,7 @@ export default function Home() {
                   fontSize: "14px",
                 }}
               >
-                <a href="/art-gallery" style={{ display: "block", width: "100%", height: "100%", color: "inherit", textDecoration: "none" }}>Explore</a>
+                Explore
               </button>
               <button
                 type="button"
@@ -116,6 +133,63 @@ export default function Home() {
       </main>
 
       <Footer />
+
+      {transitioning && (() => {
+        const vw = typeof window !== "undefined" ? window.innerWidth : 0;
+        const vh = typeof window !== "undefined" ? window.innerHeight : 0;
+        const dx = Math.max(origin.x, vw - origin.x);
+        const dy = Math.max(origin.y, vh - origin.y);
+        const size = Math.hypot(dx, dy) * 2;
+        const sparkles = [
+          { top: "20%", left: "30%", delay: 0.1, size: 16, color: "#F5D9A4" },
+          { top: "35%", left: "65%", delay: 0.25, size: 12, color: "#E8B86D" },
+          { top: "55%", left: "20%", delay: 0.18, size: 18, color: "#F5D9A4" },
+          { top: "15%", left: "75%", delay: 0.32, size: 10, color: "#E8B86D" },
+          { top: "70%", left: "50%", delay: 0.4, size: 14, color: "#F5D9A4" },
+          { top: "45%", left: "85%", delay: 0.22, size: 12, color: "#E8B86D" },
+          { top: "80%", left: "35%", delay: 0.5, size: 16, color: "#F5D9A4" },
+          { top: "60%", left: "70%", delay: 0.45, size: 10, color: "#E8B86D" },
+          { top: "28%", left: "48%", delay: 0.15, size: 14, color: "#F5D9A4" },
+          { top: "85%", left: "65%", delay: 0.55, size: 12, color: "#E8B86D" },
+          { top: "40%", left: "40%", delay: 0.35, size: 16, color: "#F5D9A4" },
+          { top: "65%", left: "15%", delay: 0.48, size: 10, color: "#E8B86D" },
+        ];
+        return (
+          <>
+            <motion.div
+              initial={{ width: 0, height: 0 }}
+              animate={{ width: size, height: size }}
+              transition={{ duration: 1.0, ease: [0.76, 0, 0.24, 1] }}
+              onAnimationComplete={() => router.push("/art-gallery")}
+              style={{
+                position: "fixed",
+                top: origin.y,
+                left: origin.x,
+                transform: "translate(-50%, -50%)",
+                borderRadius: "9999px",
+                backgroundColor: "#C97836",
+                zIndex: 9999,
+                pointerEvents: "none",
+              }}
+            />
+            <div style={{ position: "fixed", inset: 0, zIndex: 10000, pointerEvents: "none" }}>
+              {sparkles.map((s, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0] }}
+                  transition={{ duration: 0.6, delay: s.delay, ease: "easeOut" }}
+                  style={{ position: "absolute", top: s.top, left: s.left, width: s.size, height: s.size }}
+                >
+                  <svg viewBox="0 0 24 24" width={s.size} height={s.size} fill={s.color}>
+                    <path d="M12 0 L13.5 10.5 L24 12 L13.5 13.5 L12 24 L10.5 13.5 L0 12 L10.5 10.5 Z" />
+                  </svg>
+                </motion.div>
+              ))}
+            </div>
+          </>
+        );
+      })()}
     </>
   );
 }
