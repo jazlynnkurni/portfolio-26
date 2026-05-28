@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import IntroScreen from "@/components/art-gallery/IntroScreen";
 import WallScreen from "@/components/art-gallery/WallScreen";
 import ArtworksGallery from "@/components/art-gallery/ArtworksGallery";
@@ -82,20 +82,28 @@ export default function ArtGalleryPage() {
   }
 
   return (
-    <AnimatePresence mode="wait">
-      {stage === "intro" ? (
-        <IntroScreen
-          key="intro"
-          onSubmit={handleSubmit}
-          submitting={submitting}
-          errorMessage={errorMessage}
-        />
-      ) : myCard ? (
-        <div key="wall">
-          <WallScreen myCard={myCard} />
-          {/* <ArtworksGallery /> — temporarily hidden, will re-enable after wall layout is dialed in */}
-        </div>
-      ) : null}
-    </AnimatePresence>
+    <>
+      <motion.div
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        style={{ position: "fixed", inset: 0, backgroundColor: "#FFF5EF", zIndex: 9999, pointerEvents: "none" }}
+      />
+      <AnimatePresence mode="wait">
+        {stage === "intro" ? (
+          <IntroScreen
+            key="intro"
+            onSubmit={handleSubmit}
+            submitting={submitting}
+            errorMessage={errorMessage}
+          />
+        ) : myCard ? (
+          <div key="wall">
+            <WallScreen myCard={myCard} />
+            {/* <ArtworksGallery /> — temporarily hidden, will re-enable after wall layout is dialed in */}
+          </div>
+        ) : null}
+      </AnimatePresence>
+    </>
   );
 }
