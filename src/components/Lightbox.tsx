@@ -1,21 +1,34 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { useEffect } from "react";
 
 interface LightboxProps {
   isOpen: boolean;
   onClose: () => void;
-  videoSrc: string;
   layoutId: string;
+  // Existing prop — kept required-shape via optional + finalSrc fallback below
+  // so callers that pass videoSrc (Manus, Conduit) continue to work unchanged.
+  videoSrc?: string;
+  // New optional props for images.
+  src?: string | null;
+  mediaType?: "video" | "image";
+  alt?: string;
 }
 
 export default function Lightbox({
   isOpen,
   onClose,
-  videoSrc,
   layoutId,
+  videoSrc,
+  src,
+  mediaType = "video",
+  alt = "",
 }: LightboxProps) {
+  // Unified source: prefer the new generic `src`; fall back to legacy `videoSrc`.
+  const finalSrc = src ?? videoSrc ?? null;
+
   useEffect(() => {
     if (!isOpen) return;
     const handleEsc = (e: KeyboardEvent) => {
@@ -87,14 +100,26 @@ export default function Lightbox({
               boxShadow: "0 20px 60px rgba(0, 0, 0, 0.15)",
             }}
           >
-            <video
-              src={videoSrc}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="block w-auto h-auto max-w-full max-h-[85vh]"
-            />
+            {finalSrc && mediaType === "image" ? (
+              <Image
+                src={finalSrc}
+                alt={alt}
+                width={1600}
+                height={900}
+                className="block w-auto h-auto max-w-full max-h-[85vh]"
+                style={{ objectFit: "contain" }}
+                unoptimized
+              />
+            ) : finalSrc ? (
+              <video
+                src={finalSrc}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="block w-auto h-auto max-w-full max-h-[85vh]"
+              />
+            ) : null}
           </motion.div>
         </motion.div>
       )}
