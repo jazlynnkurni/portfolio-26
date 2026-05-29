@@ -14,7 +14,7 @@ const links: NavLink[] = [
   { label: "About Me", href: "/about" },
   {
     label: "Resume",
-    href: "https://drive.google.com/file/d/1n4TAlDNUFC2xF2UQngmiK4eb7gjAtFp4/view",
+    href: "https://drive.google.com/file/d/1aO4oseXHn03NRWB-e2Sj6NOyXBc6040v/view",
     external: true,
   },
 ];
