@@ -71,6 +71,7 @@ export default function WorkCard({
   const cardInner = (
     <motion.article
       className="rounded-3xl h-full"
+      data-cursor="case-study"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       onFocus={onEnter}

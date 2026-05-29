@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { COLORS, FONTS, CARD_SWATCHES, ASSETS, type CardColor } from "./tokens";
 import DrawingCanvas, { type DrawingCanvasHandle } from "./DrawingCanvas";
@@ -43,21 +42,6 @@ export default function IntroScreen({ onSubmit, submitting, errorMessage }: Prop
         color: COLORS.ink,
       }}
     >
-      <div style={{ width: "100%", maxWidth: 1228, marginBottom: 40 }}>
-        <Link
-          href="/"
-          style={{
-            fontFamily: FONTS.mono,
-            fontSize: 13,
-            color: COLORS.ink,
-            textDecoration: "none",
-            opacity: 0.7,
-          }}
-        >
-          ← BACK
-        </Link>
-      </div>
-
       <p
         style={{
           fontFamily: FONTS.mono,

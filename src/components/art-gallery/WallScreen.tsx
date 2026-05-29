@@ -61,29 +61,17 @@ export default function WallScreen({ myCard }: Props) {
         position: "relative",
       }}
     >
-      {/* Top corner links */}
+      {/* Top corner link (NEXT only — BACK removed in favor of site Nav) */}
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "flex-end",
           alignItems: "center",
           maxWidth: 1228,
           margin: "0 auto",
           marginBottom: 32,
         }}
       >
-        <Link
-          href="/"
-          style={{
-            fontFamily: FONTS.mono,
-            fontSize: 13,
-            color: COLORS.ink,
-            textDecoration: "none",
-            opacity: 0.75,
-          }}
-        >
-          ← BACK
-        </Link>
         <Link
           href="/work"
           style={{
