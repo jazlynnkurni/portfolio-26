@@ -112,11 +112,37 @@ export default function CustomCursor() {
       }
     };
     window.addEventListener(CURSOR_MODE_EVENT, onModeEvent);
+
+    // Self-healing safety net for case-study mode: on every pointermove,
+    // re-derive whether the pointer is over a [data-cursor="case-study"]
+    // element. This recovers from missed mouseleave events (e.g., when a
+    // card is clicked and the route changes before mouseleave fires).
+    // Scoped: only manages the case-study<->default transition so other
+    // modes (caption/pencil/email) keep their own dispatcher semantics.
+    const onPointerMove = (e: PointerEvent) => {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      const onCard = target.closest('[data-cursor="case-study"]');
+      setMode((current) => {
+        if (onCard) return "case-study";
+        if (current === "case-study") return "default";
+        return current;
+      });
+    };
+    document.addEventListener("pointermove", onPointerMove);
+
     return () => {
       window.removeEventListener("mousemove", move);
       window.removeEventListener(CURSOR_MODE_EVENT, onModeEvent);
+      document.removeEventListener("pointermove", onPointerMove);
     };
   }, [x, y, isCaseStudyRoute]);
+
+  // Belt-and-suspenders: reset to default on any route change so a stuck
+  // mode can't survive navigation even if the pointer doesn't move.
+  useEffect(() => {
+    setMode("default");
+  }, [pathname]);
 
   // On case-study routes, the only morph permitted is "caption" — block any
   // residual "email" / "case-study" mode that might have survived navigation.

@@ -64,7 +64,7 @@ const QAS: QA[] = [
     question: "what's your hardest project by far?",
     answer: [
       "Manus AI — you can view the case study ",
-      { text: "here", href: "/work/manus" },
+      { text: "here", href: "/work/manus-ai" },
       ".",
     ],
   },
@@ -74,9 +74,9 @@ const QAS: QA[] = [
     question: "what's the project you liked the most?",
     answer: [
       "SecondSelf and Olive — both are my hackathon wins, you can view them ",
-      { text: "here", href: "/work/second-self" },
+      { text: "here", href: "https://devpost.com/software/second-self-giwmxh" },
       " and ",
-      { text: "here", href: "/work/olive" },
+      { text: "here", href: "https://drive.google.com/file/d/15-mX_sIkPU_Ww4R1UueWG10Wv9CQbhEy/view" },
       ".",
     ],
   },
@@ -282,11 +282,14 @@ export default function InteractiveTypewriter() {
         out.push(<span key={i}>{visible}</span>);
       } else {
         const fullyTyped = limit >= end;
+        const isExternal = /^https?:\/\//.test(seg.href);
         out.push(
           fullyTyped ? (
             <a
               key={i}
               href={seg.href}
+              target={isExternal ? "_blank" : undefined}
+              rel={isExternal ? "noopener noreferrer" : undefined}
               style={{
                 color: C.burntOrange,
                 textDecoration: "underline",

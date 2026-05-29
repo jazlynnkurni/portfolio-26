@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import Nav from "@/components/Nav";
 import IntroScreen from "@/components/art-gallery/IntroScreen";
 import WallScreen from "@/components/art-gallery/WallScreen";
 import ArtworksGallery from "@/components/art-gallery/ArtworksGallery";
@@ -83,6 +84,7 @@ export default function ArtGalleryPage() {
 
   return (
     <>
+      <Nav />
       <motion.div
         initial={{ opacity: 1 }}
         animate={{ opacity: 0 }}
