@@ -39,8 +39,25 @@ function NavItem({ link, onNavigate }: { link: NavLink; onNavigate?: () => void 
   );
 }
 
-export default function Nav() {
+interface NavProps {
+  bg?: string;
+}
+
+export default function Nav({ bg }: NavProps = {}) {
   const [open, setOpen] = useState(false);
+
+  const wrapperStyle = bg === "solid"
+    ? { background: "#FFF5EF" }
+    : bg
+    ? { background: bg }
+    : {
+        background: "rgba(255, 245, 239, 0.6)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        position: "sticky" as const,
+        top: 0,
+        zIndex: 50,
+      };
 
   return (
     <motion.nav
@@ -48,11 +65,7 @@ export default function Nav() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
       className="sticky top-0 z-40 w-full flex justify-between items-center px-6 pt-5"
-      style={{
-        backgroundColor: "rgba(255, 245, 239, 0.6)",
-        backdropFilter: "blur(8px)",
-        WebkitBackdropFilter: "blur(8px)",
-      }}
+      style={wrapperStyle}
     >
       <Link
         href="/"
