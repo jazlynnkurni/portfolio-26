@@ -73,7 +73,7 @@ export default function WallScreen({ myCard }: Props) {
         }}
       >
         <Link
-          href="/work"
+          href="/#work"
           style={{
             fontFamily: FONTS.mono,
             fontSize: 13,
