@@ -282,9 +282,26 @@ export default function AboutPage() {
     <>
       <Nav />
       <main style={{ background: "#FFF5EF" }}>
-      {/* ------------------------- 1. HERO ------------------------- */}
-      <section style={{ background: "#FFF5EF" }}>
-        <div className="max-w-[1228px] mx-auto px-6 pt-20 pb-0" style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+      {/* ------------------ 1. HERO (viewport-fit) ----------------- */}
+      {/* Heading + JAZLYNN tile + photo deck centered as one group inside
+          one viewport height below the nav. Prose blocks are a separate
+          section below so they're scrolled to, not crammed in. */}
+      <section
+        style={{
+          background: "#FFF5EF",
+          minHeight: "calc(100vh - 80px)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          paddingTop: 24,
+          paddingBottom: 24,
+        }}
+      >
+        <div
+          className="max-w-[1228px] mx-auto px-6 w-full"
+          style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}
+        >
           <p
             style={{
               fontFamily: FONTS.sans,
@@ -306,16 +323,10 @@ export default function AboutPage() {
             priority
             style={{ display: "block", width: "auto", maxWidth: "100%", height: "auto" }}
           />
-        </div>
-      </section>
-
-      {/* ------------------- 2. ABOUT CONTENT --------------------- */}
-      <section style={{ background: "#FFF5EF" }}>
-        <div className="max-w-[1228px] mx-auto px-6 pt-16 pb-6">
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
+          <div style={{ marginTop: 32 }}>
             <StackedDeck
-              cardWidth={420}
-              cardHeight={420}
+              cardWidth={340}
+              cardHeight={340}
               cards={[
                 <CaptionedCard key="portrait" src="/images/about/hero/portrait.png" alt="Portrait of Jazlynn" caption="took this pic at a vintage photobooth @ amsterdam :)" />,
                 <CaptionedCard key="snow" src="/images/about/about-me-stack/snowboarding.jpg" alt="Snowboarding" caption="ripped my acl from this, but i still luv snowboarding" />,
@@ -327,15 +338,22 @@ export default function AboutPage() {
               ]}
             />
           </div>
+        </div>
+      </section>
+
+      {/* -------------------- 2. PROSE BLOCKS --------------------- */}
+      {/* Below the hero — scrolled-to. */}
+      <section style={{ background: "#FFF5EF" }}>
+        <div className="max-w-[1228px] mx-auto px-6 pt-8 pb-6">
           <div style={{ width: "100%" }}>
             <ProseBlock title="About me">
-              I&apos;m a student at Columbia University majoring in Cognitive Science with a specialization in Human-Computer Interaction. Growing up, I&apos;ve always been fascinated. Fascinated by the world, fascinated by perception, fascinated by design. This curiosity is what drives my passion. It&apos;s hard for me to not pour it into every paper and pencil I grab. What started from one medium became limitless. From product to paintings, I&apos;m forever restless, because of my curiosity.
+              I&apos;m a student at Columbia University majoring in Cognitive Science with a specialization in Human-Computer Interaction. Growing up, I&apos;ve always been fascinated by how we encounter and make sense of objects we see and hear. This curiosity is what drives my passion. It&apos;s hard for me to not pour it into every paper and pencil I grab. What started from one medium became limitless. From paintings to products, I&apos;m constantly discovering more about how observation and interaction shape meaning and form.
             </ProseBlock>
             <ProseBlock title="Experience">
-              With experience in PM, design, marketing, and (currently learning) design engineering, I&apos;m an artist without boundaries. I don&apos;t like being constrained to one medium. Taking from each of these roles with sincerity and care, I pull knowledge from every discipline and craft it into something uniquely my own. This gives me a generalist perspective that lets me understand and solve problems with a human-centered, diverse approach.
+              With experience in project management, design, marketing, and (currently learning) design engineering, I&apos;m an artist without boundaries. I don&apos;t like being constrained to one medium. Taking from each of these roles with sincerity and care, I pull knowledge across disciplines and craft it into something uniquely my own. This gives me a generalist perspective that lets me understand and solve problems with a human-centered, diverse approach.
             </ProseBlock>
             <ProseBlock title="Design Thinking">
-              I&apos;m a creator at heart. I enjoy the process more than the product. Whether I sketch, read, or create, you&apos;ll always find tiny scrappy notes beside the work (the handwriting isn&apos;t great). This habit has taught me to love iteration. Constant revision isn&apos;t a setback. It&apos;s the best part.
+              I&apos;m a creator at heart. I enjoy the process more than the product. Whether I sketch, read, or create, you&apos;ll always find tiny scrappy notes beside the work (the handwriting isn&apos;t great). This habit has taught me to love iteration. Constant revision isn&apos;t a setback, but rather the best part.
             </ProseBlock>
             <ProseBlock title="Philosophy">
               As a first-gen student, I grew up with a family that always reminded me: &ldquo;gotong royong,&rdquo; that we rise by lifting others. This saying lives in my design philosophy. I create for people, with inclusivity and accessibility at the heart of everything I make; a habit that I can never outgrow.

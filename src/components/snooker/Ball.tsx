@@ -77,7 +77,7 @@ export default function Ball({
           scale: dropping ? 0 : 1,
           opacity: dropping ? 0 : 1,
         }}
-        transition={{ duration: 0.2, ease: "easeIn" }}
+        transition={{ duration: 0.13, ease: "easeIn" }}
         style={{
           position: "relative",
           width: "100%",

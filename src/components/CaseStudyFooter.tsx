@@ -1,54 +1,35 @@
 "use client";
 
-import WorkCard, { type WorkCardProps } from "@/components/WorkCard";
+import WorkCard from "@/components/WorkCard";
+import { cards } from "@/components/WorkGrid";
 
-// Shared data — sourced from src/app/work/page.tsx (homepage Work section)
-// Keep this in sync if the homepage cards array ever changes.
-const ALL_CASE_STUDIES: Record<string, WorkCardProps & { key: string }> = {
-  "manus-ai": {
-    key: "manus-ai",
-    href: "/work/manus-ai",
-    numberLabel: "MANUS AI (ACQUIRED BY META) - NO. 01",
-    tagline: "Designing an AI community platform to drive adoption",
-    tags: ["Internship", "Approved & In Dev"],
-    mediaType: "video",
-    mediaSrc: "/videos/work-manus.mp4",
-    caseStudyName: "Manus AI",
-  },
-  "conduit-commerce": {
-    key: "conduit-commerce",
-    href: "/work/conduit-commerce",
-    numberLabel: "CONDUIT COMMERCE - NO. 02",
-    tagline: "Designing & Shipping B2B SaaS website for an AI-feature launch",
-    tags: ["Internship", "Shipped"],
-    mediaType: "video",
-    mediaSrc: "/videos/work-conduit.mp4",
-    caseStudyName: "Conduit Commerce",
-    mediaZoom: 1.08,
-  },
-  "somia-cx": {
-    key: "somia-cx",
-    href: "/work/somia-cx",
-    numberLabel: "SOMIACX (MUFG BANK) - NO. 03",
-    tagline: "Architecting a unified UVP system for 3 financial subsidiaries",
-    tags: ["Internship", "0 to 1"],
-    mediaType: "image",
-    mediaSrc: "/images/work-somiacx.png",
-    caseStudyName: "SomiaCX",
-  },
-};
-
-type Slug = keyof typeof ALL_CASE_STUDIES;
+// Source the case-study list from WorkGrid (single source of truth).
+// Filter to internal /work/ routes only — external cards (Devpost/Drive)
+// and the teaser don't belong in the "More of my Flibbertigibbeting!"
+// suggestion grid.
+const INTERNAL_CASE_STUDIES = cards.filter((card) =>
+  card.href.startsWith("/work/")
+);
 
 interface CaseStudyFooterProps {
-  currentSlug: Slug;
+  /** Route slug of the case study currently being viewed — used to exclude
+   *  it from the suggestion grid. Examples: "manus-ai", "conduit-commerce",
+   *  "somia-cx". */
+  currentSlug: string;
 }
 
+// Cap the suggestion grid at 2 cards so it fills the 2-col layout evenly.
+// On case-study pages this is a no-op (3 internal − 1 current = 2). On
+// /art-gallery (currentSlug="" → excludes nothing → 3 results), the slice
+// trims to 2 so the footer renders identically across surfaces.
+const SUGGESTION_LIMIT = 2;
+
 export default function CaseStudyFooter({ currentSlug }: CaseStudyFooterProps) {
-  // Get the other 2 case studies (excluding the current one)
-  const others = Object.values(ALL_CASE_STUDIES).filter(
-    (cs) => cs.key !== currentSlug
-  );
+  // Suggest the other internal case studies (excluding the current one),
+  // capped to SUGGESTION_LIMIT for consistent layout.
+  const others = INTERNAL_CASE_STUDIES.filter(
+    (cs) => cs.href !== `/work/${currentSlug}`
+  ).slice(0, SUGGESTION_LIMIT);
 
   return (
     <section
@@ -74,7 +55,7 @@ export default function CaseStudyFooter({ currentSlug }: CaseStudyFooterProps) {
           More of my Flibbertigibbeting!
         </h2>
 
-        {/* 2-column grid of suggested WorkCards */}
+        {/* Grid of suggested WorkCards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {others.map(({ key, ...props }) => (
             <WorkCard key={key} {...props} />

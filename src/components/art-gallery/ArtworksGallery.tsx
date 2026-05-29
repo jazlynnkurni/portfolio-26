@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { ARTWORKS, shuffleArtworks, type Artwork } from "./artworks-data";
+import { ARTWORKS, type Artwork } from "./artworks-data";
 
 // 3-column masonry. Distributes artworks across columns by tracking column heights
 // and assigning each next piece to the shortest column — produces an even visual
@@ -30,6 +30,7 @@ function ArtworkTile({ artwork }: { artwork: Artwork }) {
 
   return (
     <div
+      data-cursor="artwork"
       style={{
         position: "relative",
         width: "100%",
@@ -51,7 +52,7 @@ function ArtworkTile({ artwork }: { artwork: Artwork }) {
             inset: 0,
             width: "100%",
             height: "100%",
-            objectFit: "cover",
+            objectFit: "contain",
             display: "block",
             userSelect: "none",
           }}
@@ -80,9 +81,9 @@ function ArtworkTile({ artwork }: { artwork: Artwork }) {
 }
 
 export default function ArtworksGallery() {
-  // Shuffle once on mount, then memoize so re-renders don't reshuffle mid-view.
-  const shuffled = useMemo(() => shuffleArtworks(ARTWORKS), []);
-  const columns = useMemo(() => distributeToColumns(shuffled, 3), [shuffled]);
+  // Deterministic order — render the manifest as written. The array order in
+  // artworks-data.ts IS the display order; no shuffling so reloads are stable.
+  const columns = useMemo(() => distributeToColumns(ARTWORKS, 3), []);
 
   return (
     <section

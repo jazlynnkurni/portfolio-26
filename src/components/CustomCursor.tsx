@@ -10,7 +10,7 @@ import {
   useSpring,
 } from "framer-motion";
 
-export type CursorMode = "default" | "email" | "case-study" | "caption" | "pencil";
+export type CursorMode = "default" | "email" | "case-study" | "caption" | "pencil" | "artwork";
 
 // Dispatched by interactive elements (e.g. the headline, work cards) to morph
 // the cursor. Payload: { mode: CursorMode }.
@@ -18,16 +18,19 @@ export const CURSOR_MODE_EVENT = "cursor-mode";
 
 const EMAIL_TEXT = "jazkurnz06@gmail.com";
 const CASE_STUDY_TEXT = "view case study →";
+const ARTWORK_TEXT = "peep my art";
 const DOT_SIZE = 22;
 const PILL_HEIGHT = 36;
 const PILL_PADDING_X = 18;
 // Fallback widths if a measurement ref hasn't resolved yet (rare).
 const PILL_WIDTH_FALLBACK_EMAIL = 200;
 const PILL_WIDTH_FALLBACK_CASE = 180;
+const PILL_WIDTH_FALLBACK_ARTWORK = 140;
 
 const LABEL_BY_MODE: Record<Exclude<CursorMode, "default" | "caption" | "pencil">, string> = {
   email: EMAIL_TEXT,
   "case-study": CASE_STUDY_TEXT,
+  artwork: ARTWORK_TEXT,
 };
 
 export default function CustomCursor() {
@@ -51,8 +54,10 @@ export default function CustomCursor() {
   const [captionText, setCaptionText] = useState<string>("");
   const [emailWidth, setEmailWidth] = useState(PILL_WIDTH_FALLBACK_EMAIL);
   const [caseWidth, setCaseWidth] = useState(PILL_WIDTH_FALLBACK_CASE);
+  const [artworkWidth, setArtworkWidth] = useState(PILL_WIDTH_FALLBACK_ARTWORK);
   const measureEmailRef = useRef<HTMLSpanElement>(null);
   const measureCaseRef = useRef<HTMLSpanElement>(null);
+  const measureArtworkRef = useRef<HTMLSpanElement>(null);
 
   // Measure each pill label once (after fonts load) so morph animations have
   // two numeric width endpoints — animating from a number to "auto" doesn't
@@ -61,6 +66,7 @@ export default function CustomCursor() {
     const measure = () => {
       const e = measureEmailRef.current;
       const c = measureCaseRef.current;
+      const a = measureArtworkRef.current;
       if (e) {
         setEmailWidth(
           Math.ceil(e.getBoundingClientRect().width) + PILL_PADDING_X * 2
@@ -69,6 +75,11 @@ export default function CustomCursor() {
       if (c) {
         setCaseWidth(
           Math.ceil(c.getBoundingClientRect().width) + PILL_PADDING_X * 2
+        );
+      }
+      if (a) {
+        setArtworkWidth(
+          Math.ceil(a.getBoundingClientRect().width) + PILL_PADDING_X * 2
         );
       }
     };
@@ -93,7 +104,8 @@ export default function CustomCursor() {
         detail?.mode !== "email" &&
         detail?.mode !== "case-study" &&
         detail?.mode !== "caption" &&
-        detail?.mode !== "pencil"
+        detail?.mode !== "pencil" &&
+        detail?.mode !== "artwork"
       ) {
         return;
       }
@@ -113,19 +125,21 @@ export default function CustomCursor() {
     };
     window.addEventListener(CURSOR_MODE_EVENT, onModeEvent);
 
-    // Self-healing safety net for case-study mode: on every pointermove,
-    // re-derive whether the pointer is over a [data-cursor="case-study"]
-    // element. This recovers from missed mouseleave events (e.g., when a
-    // card is clicked and the route changes before mouseleave fires).
-    // Scoped: only manages the case-study<->default transition so other
-    // modes (caption/pencil/email) keep their own dispatcher semantics.
+    // Self-healing safety net for the data-cursor variants: on every
+    // pointermove, re-derive whether the pointer is over a tagged element.
+    // Recovers from missed mouseleave events (e.g., card clicked + route
+    // change). Scoped: only manages the case-study/artwork<->default
+    // transitions so other modes (caption/pencil/email) keep their own
+    // dispatcher semantics.
     const onPointerMove = (e: PointerEvent) => {
       const target = e.target;
       if (!(target instanceof Element)) return;
-      const onCard = target.closest('[data-cursor="case-study"]');
+      const onCaseStudy = target.closest('[data-cursor="case-study"]');
+      const onArtwork = target.closest('[data-cursor="artwork"]');
       setMode((current) => {
-        if (onCard) return "case-study";
-        if (current === "case-study") return "default";
+        if (onCaseStudy) return "case-study";
+        if (onArtwork) return "artwork";
+        if (current === "case-study" || current === "artwork") return "default";
         return current;
       });
     };
@@ -149,16 +163,23 @@ export default function CustomCursor() {
   const effectiveMode: CursorMode =
     isCaseStudyRoute && mode !== "caption" ? "default" : mode;
   const isCaption = effectiveMode === "caption";
-  const isPill = effectiveMode === "email" || effectiveMode === "case-study";
+  const isPill =
+    effectiveMode === "email" ||
+    effectiveMode === "case-study" ||
+    effectiveMode === "artwork";
   const isPencil = effectiveMode === "pencil";
   const pillWidth =
     effectiveMode === "email"
       ? emailWidth
       : effectiveMode === "case-study"
         ? caseWidth
-        : DOT_SIZE;
+        : effectiveMode === "artwork"
+          ? artworkWidth
+          : DOT_SIZE;
   const label =
-    effectiveMode === "email" || effectiveMode === "case-study"
+    effectiveMode === "email" ||
+    effectiveMode === "case-study" ||
+    effectiveMode === "artwork"
       ? LABEL_BY_MODE[effectiveMode]
       : null;
 
@@ -201,6 +222,24 @@ export default function CustomCursor() {
         }}
       >
         {CASE_STUDY_TEXT}
+      </span>
+      <span
+        ref={measureArtworkRef}
+        aria-hidden
+        style={{
+          position: "fixed",
+          top: -9999,
+          left: -9999,
+          visibility: "hidden",
+          fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+          fontSize: 14,
+          fontWeight: 500,
+          lineHeight: 1,
+          whiteSpace: "nowrap",
+          pointerEvents: "none",
+        }}
+      >
+        {ARTWORK_TEXT}
       </span>
 
       <motion.div

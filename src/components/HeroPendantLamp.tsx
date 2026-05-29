@@ -32,26 +32,18 @@ import { useEffect, useState } from "react";
 // and client first render (no localStorage gating during render).
 
 const CORD_W_DESKTOP = 24;
-const CORD_W_MOBILE = 16;
 const BODY_W_DESKTOP = 95;
-const BODY_W_MOBILE = 65;
 const CORD_BODY_OVERLAP = 12;
 
 const CORD_VISIBLE_H_DESKTOP = 80;
-const CORD_VISIBLE_H_MOBILE = 50;
 
 const BODY_H_DESKTOP = Math.round(BODY_W_DESKTOP / 0.875);
-const BODY_H_MOBILE = Math.round(BODY_W_MOBILE / 0.875);
 
 const LAMP_BODY_BOTTOM_DESKTOP =
   CORD_VISIBLE_H_DESKTOP + BODY_H_DESKTOP - CORD_BODY_OVERLAP;
-const LAMP_BODY_BOTTOM_MOBILE =
-  CORD_VISIBLE_H_MOBILE + BODY_H_MOBILE - CORD_BODY_OVERLAP;
 
 const SPILL_W_DESKTOP = 480;
 const SPILL_H_DESKTOP = 540;
-const SPILL_W_MOBILE = 320;
-const SPILL_H_MOBILE = 360;
 
 const LAMP_LEFT_ANCHOR_DESKTOP = "9vw";
 
@@ -171,7 +163,7 @@ export default function HeroPendantLamp() {
       {/* WARM GLOW — desktop. x translates with lamp swing; opacity boosts on hard swings */}
       <motion.div
         aria-hidden
-        className="hidden md:block pointer-events-none absolute"
+        className="hidden lg:block pointer-events-none absolute"
         style={{
           zIndex: 17,
           top: LAMP_BODY_BOTTOM_DESKTOP - 30,
@@ -193,37 +185,11 @@ export default function HeroPendantLamp() {
         }}
       />
 
-      {/* WARM GLOW — mobile */}
-      <motion.div
-        aria-hidden
-        className="md:hidden pointer-events-none absolute"
-        style={{
-          zIndex: 17,
-          top: LAMP_BODY_BOTTOM_MOBILE - 20,
-          left: "50%",
-          width: SPILL_W_MOBILE,
-          height: SPILL_H_MOBILE,
-          marginLeft: -(SPILL_W_MOBILE / 2),
-          mixBlendMode: "screen",
-          filter: "blur(10px)",
-          background: `radial-gradient(
-            ellipse 130px 220px at center top,
-            rgba(255, 220, 150, 0.28) 0%,
-            rgba(255, 200, 110, 0.18) 25%,
-            rgba(255, 180, 80, 0.08) 50%,
-            rgba(255, 160, 60, 0.03) 70%,
-            transparent 90%
-          )`,
-          x: lightOffsetX,
-          opacity: glowOpacity,
-        }}
-      />
-
       {/* LAMP WRAPPER — desktop. pointer-events: none on outer so cord doesn't
           block CTAs; lamp body re-enables pointer events for tap. */}
       <div
         aria-hidden
-        className="hidden md:block pointer-events-none absolute"
+        className="hidden lg:block pointer-events-none absolute"
         style={{
           zIndex: 30,
           top: 0,
@@ -268,79 +234,6 @@ export default function HeroPendantLamp() {
             style={{
               marginTop: -CORD_BODY_OVERLAP,
               width: BODY_W_DESKTOP,
-              cursor: "pointer",
-              pointerEvents: "auto",
-            }}
-            onClick={handleTap}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <Image
-              src="/images/hero/lamp/lamp-body.png"
-              alt=""
-              width={1076}
-              height={1230}
-              priority
-              draggable={false}
-              style={{
-                width: "100%",
-                height: "auto",
-                display: "block",
-                userSelect: "none",
-                WebkitUserDrag: "none",
-              } as React.CSSProperties}
-            />
-          </motion.div>
-        </motion.div>
-      </div>
-
-      {/* LAMP WRAPPER — mobile (centered) */}
-      <div
-        aria-hidden
-        className="md:hidden pointer-events-none absolute"
-        style={{
-          zIndex: 30,
-          top: 0,
-          left: "50%",
-          marginLeft: -(BODY_W_MOBILE / 2),
-          width: BODY_W_MOBILE,
-        }}
-      >
-        <motion.div
-          initial={dropInitial}
-          animate={dropAnimate}
-          transition={dropTransition}
-          style={{
-            rotate: rotation,
-            transformOrigin: "50% 0%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              width: CORD_W_MOBILE,
-              height: CORD_VISIBLE_H_MOBILE,
-              position: "relative",
-              pointerEvents: "none",
-            }}
-          >
-            <Image
-              src="/images/hero/lamp/lamp-cord.png"
-              alt=""
-              fill
-              priority
-              style={{ objectFit: "fill" }}
-              sizes="30px"
-            />
-          </div>
-
-          <motion.div
-            className={lampBodyClass}
-            style={{
-              marginTop: -CORD_BODY_OVERLAP,
-              width: BODY_W_MOBILE,
               cursor: "pointer",
               pointerEvents: "auto",
             }}

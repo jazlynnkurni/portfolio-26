@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { motion, type Variants } from "framer-motion";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
@@ -10,6 +9,7 @@ import HeadlineDrift, {
 } from "@/components/HeadlineDrift";
 import SnookerScene from "@/components/snooker/SnookerScene";
 import HeroPendantLamp from "@/components/HeroPendantLamp";
+import WorkGrid from "@/components/WorkGrid";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 12 },
@@ -30,166 +30,86 @@ const headlineSegments: HeadlineSegment[] = [
 ];
 
 export default function Home() {
-  const router = useRouter();
-  const [transitioning, setTransitioning] = useState(false);
-  const [origin, setOrigin] = useState({ x: 0, y: 0 });
-  const exploreBtnRef = useRef<HTMLButtonElement>(null);
-  const handleExplore = () => {
-    const btn = exploreBtnRef.current;
-    if (btn) {
-      const r = btn.getBoundingClientRect();
-      setOrigin({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
-    }
-    setTransitioning(true);
-  };
+  // Scroll to #work if landed via /#work or redirected from /work.
+  // Next App Router doesn't reliably auto-scroll to hash anchors on initial load.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.hash !== "#work") return;
+    const t = setTimeout(() => {
+      document.getElementById("work")?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <>
       <Nav />
 
-      <main className="flex-1 px-6 md:px-16 pt-12 md:pt-20 pb-10 md:pb-16 relative overflow-hidden">
-        <HeroPendantLamp />
-        <motion.div
-          initial="hidden"
-          animate="show"
-          transition={{ staggerChildren: 0.08, delayChildren: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-16 items-center max-w-7xl mx-auto relative"
-          style={{ zIndex: 10 }}
-        >
-          {/* LEFT COLUMN ~55% */}
-          <div className="flex flex-col">
-            <motion.div
-              variants={fadeUp}
-              className="inline-flex items-center gap-2 self-start bg-[rgba(201,120,54,0.08)] py-2 px-4 rounded-full"
-            >
-              <span className="pulse-dot" aria-hidden />
-              <span className="font-mono uppercase tracking-wide text-[13px] text-ink">
-                Open for full-time
-              </span>
-            </motion.div>
-
-            <motion.div variants={fadeUp} className="mt-8">
-              <HeadlineDrift
-                segments={headlineSegments}
-                className="font-serif font-normal text-[28px] md:text-[34px] lg:text-[40px] leading-[1.3] text-ink max-w-[752px]"
-              />
-            </motion.div>
-
-            <motion.div
-              variants={fadeUp}
-              className="mt-8 font-mono text-[14px] text-ink/70 leading-relaxed"
-            >
-              <p>
-                Ambassador @ Lovable
-                <span className="opacity-50 mx-3" aria-hidden>
-                  |
+      <main className="flex-1 relative overflow-x-hidden">
+        {/* ---------------------------- HERO ---------------------------- */}
+        <section className="relative px-6 md:px-16 pt-12 md:pt-20 pb-8 md:pb-12">
+          <HeroPendantLamp />
+          <motion.div
+            initial="hidden"
+            animate="show"
+            transition={{ staggerChildren: 0.08, delayChildren: 0.2 }}
+            className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-16 items-center max-w-7xl mx-auto relative"
+            style={{ zIndex: 10 }}
+          >
+            {/* LEFT COLUMN ~55% */}
+            <div className="flex flex-col">
+              <motion.div
+                variants={fadeUp}
+                className="inline-flex items-center gap-2 self-start bg-[rgba(201,120,54,0.08)] py-2 px-4 rounded-full"
+              >
+                <span className="pulse-dot" aria-hidden />
+                <span className="font-mono uppercase tracking-wide text-[13px] text-ink">
+                  Open for full-time
                 </span>
-                Flibbertigibbeting @ Columbia University
-              </p>
-            </motion.div>
+              </motion.div>
 
-            <motion.div
-              variants={fadeUp}
-              className="flex flex-wrap items-center"
-              style={{ marginTop: "36px", gap: "25px" }}
-            >
-              <button
-                ref={exploreBtnRef}
-                type="button"
-                onClick={handleExplore}
-                className="font-sans cursor-pointer transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_6px_20px_rgba(143,75,30,0.35)]"
-                style={{
-                  backgroundColor: "#8F4B1E",
-                  color: "#FFFFFF",
-                  padding: "10px 12px",
-                  borderRadius: "10px",
-                  fontSize: "14px",
-                }}
-              >
-                Explore
-              </button>
-              <button
-                type="button"
-                className="font-sans cursor-pointer transition-all duration-200 hover:bg-[rgba(143,75,30,0.08)] hover:shadow-[0_4px_12px_rgba(58,36,24,0.18)]"
-                style={{
-                  backgroundColor: "transparent",
-                  color: "#8F4B1E",
-                  border: "1.5px solid #8F4B1E",
-                  padding: "10px 12px",
-                  borderRadius: "15px",
-                  fontSize: "14px",
-                }}
-              >
-                <a href="/work" style={{ display: "block", width: "100%", height: "100%", color: "inherit", textDecoration: "none" }}>Skip Intro</a>
-              </button>
-            </motion.div>
-          </div>
+              <motion.div variants={fadeUp} className="mt-8">
+                <HeadlineDrift
+                  segments={headlineSegments}
+                  className="font-serif font-normal text-[28px] md:text-[34px] lg:text-[40px] leading-[1.3] text-ink max-w-[752px]"
+                />
+              </motion.div>
 
-          {/* RIGHT COLUMN — snooker scene, auto-sized to its natural width */}
-          <div>
-            <SnookerScene />
+              <motion.div
+                variants={fadeUp}
+                className="mt-8 font-mono text-[14px] text-ink/70 leading-relaxed"
+              >
+                <p>
+                  Ambassador @ Lovable
+                  <span className="opacity-50 mx-3" aria-hidden>
+                    |
+                  </span>
+                  Flibbertigibbeting @ Columbia University
+                </p>
+              </motion.div>
+            </div>
+
+            {/* RIGHT COLUMN — snooker scene, auto-sized to its natural width */}
+            <div>
+              <SnookerScene />
+            </div>
+          </motion.div>
+
+        </section>
+
+        {/* ------------------------- WORK SECTION ------------------------- */}
+        <section
+          id="work"
+          className="px-6 md:px-16 pt-12 md:pt-20 pb-24"
+          style={{ scrollMarginTop: 80 }}
+        >
+          <div className="max-w-7xl mx-auto">
+            <WorkGrid animateOnScroll />
           </div>
-        </motion.div>
+        </section>
       </main>
 
       <Footer />
-
-      {transitioning && (() => {
-        const vw = typeof window !== "undefined" ? window.innerWidth : 0;
-        const vh = typeof window !== "undefined" ? window.innerHeight : 0;
-        const dx = Math.max(origin.x, vw - origin.x);
-        const dy = Math.max(origin.y, vh - origin.y);
-        const size = Math.hypot(dx, dy) * 2;
-        const sparkles = [
-          { top: "20%", left: "30%", delay: 0.1, size: 16, color: "#F5D9A4" },
-          { top: "35%", left: "65%", delay: 0.25, size: 12, color: "#E8B86D" },
-          { top: "55%", left: "20%", delay: 0.18, size: 18, color: "#F5D9A4" },
-          { top: "15%", left: "75%", delay: 0.32, size: 10, color: "#E8B86D" },
-          { top: "70%", left: "50%", delay: 0.4, size: 14, color: "#F5D9A4" },
-          { top: "45%", left: "85%", delay: 0.22, size: 12, color: "#E8B86D" },
-          { top: "80%", left: "35%", delay: 0.5, size: 16, color: "#F5D9A4" },
-          { top: "60%", left: "70%", delay: 0.45, size: 10, color: "#E8B86D" },
-          { top: "28%", left: "48%", delay: 0.15, size: 14, color: "#F5D9A4" },
-          { top: "85%", left: "65%", delay: 0.55, size: 12, color: "#E8B86D" },
-          { top: "40%", left: "40%", delay: 0.35, size: 16, color: "#F5D9A4" },
-          { top: "65%", left: "15%", delay: 0.48, size: 10, color: "#E8B86D" },
-        ];
-        return (
-          <>
-            <motion.div
-              initial={{ width: 0, height: 0 }}
-              animate={{ width: size, height: size }}
-              transition={{ duration: 1.0, ease: [0.76, 0, 0.24, 1] }}
-              onAnimationComplete={() => router.push("/art-gallery")}
-              style={{
-                position: "fixed",
-                top: origin.y,
-                left: origin.x,
-                transform: "translate(-50%, -50%)",
-                borderRadius: "9999px",
-                backgroundColor: "#C97836",
-                zIndex: 9999,
-                pointerEvents: "none",
-              }}
-            />
-            <div style={{ position: "fixed", inset: 0, zIndex: 10000, pointerEvents: "none" }}>
-              {sparkles.map((s, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0] }}
-                  transition={{ duration: 0.6, delay: s.delay, ease: "easeOut" }}
-                  style={{ position: "absolute", top: s.top, left: s.left, width: s.size, height: s.size }}
-                >
-                  <svg viewBox="0 0 24 24" width={s.size} height={s.size} fill={s.color}>
-                    <path d="M12 0 L13.5 10.5 L24 12 L13.5 13.5 L12 24 L10.5 13.5 L0 12 L10.5 10.5 Z" />
-                  </svg>
-                </motion.div>
-              ))}
-            </div>
-          </>
-        );
-      })()}
     </>
   );
 }

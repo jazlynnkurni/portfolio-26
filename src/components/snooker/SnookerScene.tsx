@@ -65,7 +65,7 @@ const BALL_RADIUS = (6.5 / 2 / 100) * PHYS_W; // ≈ 25
 const CUSHION_INSET_X = 56;
 const CUSHION_INSET_Y = 90;
 const CUSHION_THICKNESS = 200;
-const REST_VELOCITY_THRESHOLD = 0.08;
+const REST_VELOCITY_THRESHOLD = 0.12;
 const MAX_SHOT_SPEED = 42;
 const PULLBACK_MAX = 40;
 
@@ -79,7 +79,7 @@ const POCKETS: Array<{ x: number; y: number; label: string }> = [
   { x: PHYS_W - 60, y: PHYS_H - 100, label: "pocket-br" },
 ];
 
-const DROP_ANIM_MS = 200;
+const DROP_ANIM_MS = 130;
 
 type Vec = { x: number; y: number };
 type Positions = { balls: Vec[]; cueBall: Vec };
@@ -87,11 +87,11 @@ type CueBallStatus = "active" | "dropping" | "respawning";
 type Turn = "player" | "avatar";
 
 // --- Avatar AI constants ---
-const AVATAR_THINKING_MS = 400;       // pause before the cue stick appears
-const AVATAR_FADE_IN_MS = 200;        // cue stick fades in oriented
-const AVATAR_PULLBACK_MS = 800;       // pulls back proportional to force
-const AVATAR_PAUSE_MS = 200;          // brief pause at full pullback
-const AVATAR_SNAP_MS = 150;           // forward strike
+const AVATAR_THINKING_MS = 200;       // pause before the cue stick appears
+const AVATAR_FADE_IN_MS = 120;        // cue stick fades in oriented
+const AVATAR_PULLBACK_MS = 450;       // pulls back proportional to force
+const AVATAR_PAUSE_MS = 100;          // brief pause at full pullback
+const AVATAR_SNAP_MS = 100;           // forward strike
 const POCKET_ALIGN_TOLERANCE_DEG = 15; // was 25 — borderline cuts were unmakeable
 const POCKET_SHARP_TOLERANCE_DEG = 8;  // within 8° = "sharp" alignment bonus
 const AIM_ERROR_DEG_ALIGNED = 2;       // ±2° on confident pocket-aligned shots
@@ -507,14 +507,14 @@ export default function SnookerScene() {
         lastAvatarTauntRef.current = pick;
         setTauntIndex(pick);
         setBubbleVisible(true);
-      }, 300);
+      }, 150);
       return () => clearTimeout(showTimer);
     }
     // turn === "player": fade the bubble out after a beat so the user has
     // a moment to register the turn change. SpeechBubble handles the fade.
     const hideTimer = setTimeout(() => {
       setBubbleVisible(false);
-    }, 500);
+    }, 300);
     return () => clearTimeout(hideTimer);
   }, [turn, gameOver]);
 
@@ -552,7 +552,7 @@ export default function SnookerScene() {
         {
           restitution: 0.9,
           friction: 0.001,
-          frictionAir: 0.008,
+          frictionAir: 0.012,
           density: 0.001,
           label: `ball-${b.number}`,
         }
@@ -565,7 +565,7 @@ export default function SnookerScene() {
       {
         restitution: 0.9,
         friction: 0.001,
-        frictionAir: 0.008,
+        frictionAir: 0.012,
         density: 0.001,
         label: "cue-ball",
       }
