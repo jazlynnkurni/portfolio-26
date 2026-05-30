@@ -2130,13 +2130,13 @@ export default function ManusAiPage() {
                   cardWidth={510}
                   cardHeight={480}
                   cards={[
-                    <div key="gaps-mood-1" style={{ lineHeight: 0, fontSize: 0, width: "100%", height: "100%" }}>
+                    <div key="gaps-mood-1" className="w-full h-full rounded-2xl overflow-hidden bg-white" style={{ lineHeight: 0, fontSize: 0 }}>
                       <Image src="/images/conduit/gaps/moodboard-1.png" alt="Competitor research moodboard 1" width={617} height={591} style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
                     </div>,
-                    <div key="gaps-mood-2" style={{ lineHeight: 0, fontSize: 0, width: "100%", height: "100%" }}>
+                    <div key="gaps-mood-2" className="w-full h-full rounded-2xl overflow-hidden bg-white" style={{ lineHeight: 0, fontSize: 0 }}>
                       <Image src="/images/conduit/gaps/moodboard-2.png" alt="Competitor research moodboard 2" width={671} height={495} style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
                     </div>,
-                    <div key="gaps-mood-3" style={{ lineHeight: 0, fontSize: 0, width: "100%", height: "100%" }}>
+                    <div key="gaps-mood-3" className="w-full h-full rounded-2xl overflow-hidden bg-white" style={{ lineHeight: 0, fontSize: 0 }}>
                       <Image src="/images/conduit/gaps/moodboard-3.png" alt="Competitor research moodboard 3" width={635} height={608} style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
                     </div>,
                   ]}
