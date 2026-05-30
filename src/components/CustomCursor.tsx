@@ -50,6 +50,11 @@ export default function CustomCursor() {
   // own size so the pill/dot stays centered on the pointer at any width.
   const transform = useMotionTemplate`translate3d(${springX}px, ${springY}px, 0) translate(-50%, -50%)`;
 
+  // Touch/coarse-pointer devices (phones, most tablets) get NO custom cursor.
+  // Default false on SSR + first client render so the markup is stable; the
+  // mount effect below flips it to true on touch devices, suppressing render.
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
   const [mode, setMode] = useState<CursorMode>("default");
   const [captionText, setCaptionText] = useState<string>("");
   const [emailWidth, setEmailWidth] = useState(PILL_WIDTH_FALLBACK_EMAIL);
@@ -158,6 +163,18 @@ export default function CustomCursor() {
     setMode("default");
   }, [pathname]);
 
+  // Detect touch / coarse-pointer devices (phones, most tablets). Re-checks
+  // on plug/unplug (e.g., iPad attached to a Magic Trackpad) so hybrid
+  // devices flip live. SSR-safe: matchMedia is only touched inside this effect.
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mql = window.matchMedia("(pointer: coarse)");
+    setIsTouchDevice(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsTouchDevice(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
+
   // On case-study routes, the only morph permitted is "caption" — block any
   // residual "email" / "case-study" mode that might have survived navigation.
   const effectiveMode: CursorMode =
@@ -182,6 +199,12 @@ export default function CustomCursor() {
     effectiveMode === "artwork"
       ? LABEL_BY_MODE[effectiveMode]
       : null;
+
+  // Touch / coarse-pointer devices: render nothing. All hooks above have
+  // run (rules-of-hooks safe); the early return only skips the JSX.
+  // The cursor:none CSS in globals.css is also gated to fine pointers,
+  // so the system cursor (where applicable) remains intact.
+  if (isTouchDevice) return null;
 
   return (
     <>

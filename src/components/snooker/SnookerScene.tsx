@@ -841,7 +841,7 @@ export default function SnookerScene() {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
-      className="hidden md:block pb-12"
+      className="pb-12 mx-auto"
       style={{
         maxWidth: "min(400px, calc((100vh - 220px) / 1.79))",
         width: "100%",
@@ -914,7 +914,35 @@ export default function SnookerScene() {
           />
         )}
 
-        {/* Avatar + bubble */}
+        {/* Speech bubble — positioned independently of the avatar wrapper so
+            its width can be capped by viewport rather than the narrow 25%
+            avatar column. Centered on the table (which is itself centered
+            in the viewport via mx-auto), so the bubble is always centered
+            in the viewport — neither edge can extend past it. */}
+        {bubbleVisible && (
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              bottom: "calc(92% + 64px)",
+              transform: "translateX(-50%)",
+              zIndex: 40,
+              pointerEvents: "none",
+              // Bubble sizes to content (max-content via SpeechBubble) but is
+              // hard-capped at the viewport. calc(100vw - 32px) ensures 16px
+              // of breathing room on each side on any phone width.
+              width: "max-content",
+              maxWidth: "min(260px, calc(100vw - 32px))",
+            }}
+          >
+            <SpeechBubble
+              text={TAUNTS[tauntIndex]}
+              visible={true}
+            />
+          </div>
+        )}
+
+        {/* Avatar — same positioning as before, no bubble inside */}
         <div
           style={{
             position: "absolute",
@@ -924,19 +952,10 @@ export default function SnookerScene() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: "8px",
             width: "25%",
             zIndex: 5,
           }}
         >
-          {bubbleVisible && (
-            <div style={{ zIndex: 40, position: "relative" }}>
-              <SpeechBubble
-                text={TAUNTS[tauntIndex]}
-                visible={true}
-              />
-            </div>
-          )}
           <Avatar onClick={handleTaunt} />
         </div>
 
@@ -953,6 +972,10 @@ export default function SnookerScene() {
                 : "default",
             pointerEvents:
               turn === "player" && !gameOver ? "auto" : "none",
+            // Prevents the browser from interpreting drag-to-aim as page
+            // scroll or pinch-zoom on touch devices — required for iOS,
+            // which is aggressive about hijacking vertical drags.
+            touchAction: "none",
             zIndex: 50,
           }}
           {...bind}

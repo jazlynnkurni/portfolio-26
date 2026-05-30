@@ -32,13 +32,22 @@ body {
 /* Hide the native cursor everywhere so only .custom-cursor is visible.
    The wildcard !important is necessary because Tailwind's cursor-pointer
    and inline cursor styles (snooker scene, avatar button) would otherwise
-   beat a non-!important rule on individual elements. */
-html,
-body {
-  cursor: none;
-}
-* {
-  cursor: none !important;
+   beat a non-!important rule on individual elements.
+
+   Scoped to hover-capable + fine-pointer devices ONLY (desktops, laptops,
+   iPad+Magic Trackpad). On touch / coarse-pointer devices (phones, most
+   tablets), this whole block is inert — the system handles cursor display
+   the way it normally does (i.e., no visible cursor on pure touch). The
+   custom .custom-cursor element itself is also early-returned out of the
+   CustomCursor React component on those devices. */
+@media (hover: hover) and (pointer: fine) {
+  html,
+  body {
+    cursor: none;
+  }
+  * {
+    cursor: none !important;
+  }
 }
 
 .custom-cursor {
