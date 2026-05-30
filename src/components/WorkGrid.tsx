@@ -204,7 +204,7 @@ export default function WorkGrid({ animateOnScroll = false }: WorkGridProps = {}
 
   return (
     <div
-      className="grid grid-cols-2 items-stretch"
+      className="grid grid-cols-1 md:grid-cols-2 items-stretch"
       style={{ gap: 32 }}
     >
       {cards.map(({ key, ...props }) =>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { CURSOR_MODE_EVENT, type CursorMode } from "./CustomCursor";
 
@@ -67,6 +67,36 @@ export default function WorkCard({
     const v = videoRef.current;
     if (v) v.pause();
   };
+
+  // Mobile autoplay: on coarse-pointer / narrow-viewport devices there is no
+  // hover, so play the card's video while it's at least 50% in view and
+  // pause when it scrolls away. Desktop keeps the hover-driven onEnter/onLeave
+  // handlers above and skips this observer entirely.
+  // iOS Safari requires `muted` + `playsInline` for inline autoplay — both
+  // are already set on the <video> below.
+  useEffect(() => {
+    if (mediaType !== "video") return;
+    if (typeof window === "undefined" || !("IntersectionObserver" in window)) return;
+    const v = videoRef.current;
+    if (!v) return;
+    const mql = window.matchMedia("(hover: none), (pointer: coarse)");
+    if (!mql.matches) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            v.play().catch(() => {});
+          } else {
+            v.pause();
+          }
+        }
+      },
+      { threshold: [0, 0.5, 1] }
+    );
+    observer.observe(v);
+    return () => observer.disconnect();
+  }, [mediaType]);
 
   const cardInner = (
     <motion.article
@@ -148,6 +178,7 @@ export default function WorkCard({
             src={mediaSrc}
             muted
             playsInline
+            loop
             preload="metadata"
             aria-label={`preview of ${caseStudyName}`}
             style={{

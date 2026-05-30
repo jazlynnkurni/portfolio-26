@@ -49,8 +49,15 @@ export default function SpeechBubble({ text, visible }: Props) {
       transition={{ duration: 0.22, ease: "easeOut" }}
       style={{
         position: "relative",
-        width: "max-content",
+        width: "100%",
+        // Defense-in-depth cap: the parent in SnookerScene also limits this
+        // to min(260px, calc(100vw - 32px)) so the bubble can never extend
+        // past the viewport edge. width:100% lets the bubble fill that
+        // capped parent — combined with normal word wrapping, long taunts
+        // wrap to multiple lines rather than overflowing or truncating.
         maxWidth: "100%",
+        wordWrap: "break-word",
+        overflowWrap: "break-word",
         backgroundColor: BUBBLE_BG,
         borderRadius: "18px",
         padding: "10px 14px",

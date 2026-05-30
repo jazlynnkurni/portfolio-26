@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   motion,
   useMotionValue,
@@ -8,15 +8,6 @@ import {
   useSpring,
   type MotionValue,
 } from "framer-motion";
-import { CURSOR_MODE_EVENT, type CursorMode } from "./CustomCursor";
-
-const EMAIL = "jazkurnz06@gmail.com";
-
-function setCursorMode(mode: CursorMode) {
-  window.dispatchEvent(
-    new CustomEvent(CURSOR_MODE_EVENT, { detail: { mode } })
-  );
-}
 
 const REPEL_RADIUS = 120;
 const MAX_OFFSET = 24;
@@ -146,6 +137,20 @@ export default function HeadlineDrift({ segments, className }: Props) {
   const reducedMotion = useReducedMotion();
   const handlesRef = useRef<WordHandle[]>([]);
 
+  // Disable the mouse-repel effect on narrow viewports. The 24px word offsets
+  // push tightly-wrapped mobile text into overlap. matchMedia catches both
+  // real touch devices AND Chrome DevTools mobile emulation (which still
+  // fires mousemove despite the touch-mode UI).
+  const [isNarrow, setIsNarrow] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mql = window.matchMedia("(max-width: 767px)");
+    setIsNarrow(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsNarrow(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
+
   const register = useCallback((h: WordHandle) => {
     handlesRef.current.push(h);
   }, []);
@@ -154,8 +159,8 @@ export default function HeadlineDrift({ segments, className }: Props) {
   }, []);
 
   const ctx: WordContext = useMemo(
-    () => ({ register, unregister, disabled: !!reducedMotion }),
-    [register, unregister, reducedMotion]
+    () => ({ register, unregister, disabled: !!reducedMotion || isNarrow }),
+    [register, unregister, reducedMotion, isNarrow]
   );
 
   useEffect(() => {
@@ -214,33 +219,18 @@ export default function HeadlineDrift({ segments, className }: Props) {
     };
   }, [reducedMotion, tokens]);
 
-  const openMail = useCallback(() => {
-    window.location.href = `mailto:${EMAIL}`;
+  // Tap-to-retract: spring all drifted words back to their resting positions.
+  // The spring is already active on each word's motion values, so setting the
+  // target to 0 produces the smooth animation automatically.
+  const retractWords = useCallback(() => {
+    handlesRef.current.forEach((h) => {
+      h.x.set(0);
+      h.y.set(0);
+    });
   }, []);
 
-  const onKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLHeadingElement>) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        openMail();
-      }
-    },
-    [openMail]
-  );
-
   return (
-    <h1
-      className={className}
-      role="link"
-      tabIndex={0}
-      aria-label="send email to Jazlynn"
-      onMouseEnter={() => setCursorMode("email")}
-      onMouseLeave={() => setCursorMode("default")}
-      onFocus={() => setCursorMode("email")}
-      onBlur={() => setCursorMode("default")}
-      onClick={openMail}
-      onKeyDown={onKeyDown}
-    >
+    <h1 className={className} onClick={retractWords}>
       {tokens.map((tok) => (
         <Word key={tok.key} token={tok} ctx={ctx} />
       ))}

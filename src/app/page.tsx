@@ -53,11 +53,11 @@ export default function Home() {
             initial="hidden"
             animate="show"
             transition={{ staggerChildren: 0.08, delayChildren: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-16 items-center max-w-7xl mx-auto relative"
+            className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-16 items-start md:items-center max-w-7xl mx-auto relative"
             style={{ zIndex: 10 }}
           >
-            {/* LEFT COLUMN ~55% */}
-            <div className="flex flex-col">
+            {/* LEFT COLUMN ~55% — order-2 on mobile so pool sits above text */}
+            <div className="flex flex-col order-2 md:order-none">
               <motion.div
                 variants={fadeUp}
                 className="inline-flex items-center gap-2 self-start bg-[rgba(201,120,54,0.08)] py-2 px-4 rounded-full"
@@ -71,26 +71,26 @@ export default function Home() {
               <motion.div variants={fadeUp} className="mt-8">
                 <HeadlineDrift
                   segments={headlineSegments}
-                  className="font-serif font-normal text-[28px] md:text-[34px] lg:text-[40px] leading-[1.3] text-ink max-w-[752px]"
+                  className="font-serif font-normal text-[22px] md:text-[34px] lg:text-[40px] leading-snug md:leading-[1.3] text-ink text-left max-w-[752px]"
                 />
               </motion.div>
 
               <motion.div
                 variants={fadeUp}
-                className="mt-8 font-mono text-[14px] text-ink/70 leading-relaxed"
+                className="mt-8 font-mono text-[12px] md:text-[14px] text-ink/70 leading-relaxed text-left"
               >
-                <p>
-                  Ambassador @ Lovable
-                  <span className="opacity-50 mx-3" aria-hidden>
-                    |
-                  </span>
-                  Flibbertigibbeting @ Columbia University
-                </p>
+                <p>Ambassador @ Lovable</p>
+                <p>Flibbertigibbeting @ Columbia University</p>
               </motion.div>
             </div>
 
-            {/* RIGHT COLUMN — snooker scene, auto-sized to its natural width */}
-            <div>
+            {/* RIGHT COLUMN — snooker scene, auto-sized to its natural width.
+                order-1 on mobile so the pool table renders above the text in
+                the single-column stack; order-none restores default left/right
+                placement at md+ where the 2-column grid handles position.
+                pt-12 on mobile pushes the scene (and its speech bubble) down
+                so the bubble clears the sticky nav's backdrop-blur band. */}
+            <div className="order-1 md:order-none pt-4 md:pt-0">
               <SnookerScene />
             </div>
           </motion.div>
