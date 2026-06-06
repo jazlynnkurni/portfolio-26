@@ -2736,7 +2736,7 @@ export default function ManusAiPage() {
                   <p
                     style={{
                       fontFamily: FONTS.serif,
-                      fontSize: "96px",
+                      fontSize: "clamp(48px, 12vw, 96px)",
                       fontWeight: 600,
                       lineHeight: "1",
                       color: "#D4A574",
@@ -2814,7 +2814,7 @@ export default function ManusAiPage() {
                   <p
                     style={{
                       fontFamily: FONTS.serif,
-                      fontSize: "96px",
+                      fontSize: "clamp(48px, 12vw, 96px)",
                       fontWeight: 600,
                       lineHeight: "1",
                       color: "#D4A574",
@@ -2892,7 +2892,7 @@ export default function ManusAiPage() {
                   <p
                     style={{
                       fontFamily: FONTS.serif,
-                      fontSize: "96px",
+                      fontSize: "clamp(48px, 12vw, 96px)",
                       fontWeight: 600,
                       lineHeight: "1",
                       color: "#D4A574",

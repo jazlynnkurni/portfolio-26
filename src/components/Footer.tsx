@@ -22,7 +22,7 @@ const internalLinks: FooterLink[] = [
   { label: "ABOUT ME", href: "/about" },
   {
     label: "RESUME",
-    href: "https://drive.google.com/file/d/1aO4oseXHn03NRWB-e2Sj6NOyXBc6040v/view",
+    href: "https://drive.google.com/file/d/1W2XFyFbFbd1LrVWYK8Or2wfKZBIP29sg/view",
     external: true,
   },
 ];
@@ -77,7 +77,7 @@ export default function Footer({ variant = "default" }: FooterProps) {
         >
           © made in NYC, with love from Indonesia
         </p>
-        <div className="flex flex-col md:flex-row gap-8 md:gap-20">
+        <div className="flex flex-row gap-12 md:gap-20">
           <ul className="flex flex-col gap-3">
             {externalLinks.map((link) => (
               <li key={link.label}>

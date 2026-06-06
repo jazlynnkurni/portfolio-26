@@ -74,7 +74,7 @@ export default function AsciiConstellation({
   return (
     <div
       aria-hidden
-      className="hidden md:block pointer-events-none select-none font-mono absolute inset-0"
+      className="pointer-events-none select-none font-mono absolute inset-0"
       style={{
         color: color,
         opacity: opacity,
