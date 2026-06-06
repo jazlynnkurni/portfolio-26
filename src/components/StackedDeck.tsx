@@ -16,6 +16,31 @@ export default function StackedDeck({
   cardHeight = 320,
   onTopCardChange,
 }: StackedDeckProps) {
+  // Responsive: shrink cards to fit narrow viewports while preserving aspect ratio
+  const [responsiveWidth, setResponsiveWidth] = useState(cardWidth);
+  const [responsiveHeight, setResponsiveHeight] = useState(cardHeight);
+
+  useEffect(() => {
+    const compute = () => {
+      const vw = window.innerWidth;
+      if (vw < 768) {
+        // leave room for the +60 outer stage padding and page gutters (px-6 = 24*2)
+        const maxCardWidth = vw - 48 - 60;
+        if (maxCardWidth < cardWidth) {
+          const scale = maxCardWidth / cardWidth;
+          setResponsiveWidth(Math.round(maxCardWidth));
+          setResponsiveHeight(Math.round(cardHeight * scale));
+          return;
+        }
+      }
+      setResponsiveWidth(cardWidth);
+      setResponsiveHeight(cardHeight);
+    };
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+  }, [cardWidth, cardHeight]);
+
   const [order, setOrder] = useState<number[]>(cards.map((_, i) => i));
   const [exitDirection, setExitDirection] = useState<number>(0);
 
@@ -51,11 +76,11 @@ export default function StackedDeck({
   return (
     <div
       className="relative flex flex-col items-center"
-      style={{ width: cardWidth + 60, height: cardHeight + 100 }}
+      style={{ width: responsiveWidth + 60, height: responsiveHeight + 100 }}
     >
       <div
         className="relative"
-        style={{ width: cardWidth, height: cardHeight }}
+        style={{ width: responsiveWidth, height: responsiveHeight }}
       >
         {order.map((cardIdx, stackPos) => {
           const isTop = stackPos === 0;
@@ -75,8 +100,8 @@ export default function StackedDeck({
                 isTop ? "cursor-grab active:cursor-grabbing" : ""
               }`}
               style={{
-                width: cardWidth,
-                height: cardHeight,
+                width: responsiveWidth,
+                height: responsiveHeight,
                 zIndex,
               }}
               initial={{
