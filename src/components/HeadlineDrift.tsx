@@ -8,6 +8,15 @@ import {
   useSpring,
   type MotionValue,
 } from "framer-motion";
+import { CURSOR_MODE_EVENT, type CursorMode } from "./CustomCursor";
+
+const EMAIL = "jazkurnz06@gmail.com";
+
+function setCursorMode(mode: CursorMode) {
+  window.dispatchEvent(
+    new CustomEvent(CURSOR_MODE_EVENT, { detail: { mode } })
+  );
+}
 
 const REPEL_RADIUS = 120;
 const MAX_OFFSET = 24;
@@ -229,8 +238,33 @@ export default function HeadlineDrift({ segments, className }: Props) {
     });
   }, []);
 
+  const openMail = useCallback(() => {
+    window.location.href = `mailto:${EMAIL}`;
+  }, []);
+
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLHeadingElement>) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openMail();
+      }
+    },
+    [openMail]
+  );
+
   return (
-    <h1 className={className} onClick={retractWords}>
+    <h1
+      className={className}
+      onClick={isNarrow ? retractWords : openMail}
+      role={isNarrow ? undefined : "link"}
+      tabIndex={isNarrow ? undefined : 0}
+      aria-label={isNarrow ? undefined : "send email to Jazlynn"}
+      onMouseEnter={isNarrow ? undefined : () => setCursorMode("email")}
+      onMouseLeave={isNarrow ? undefined : () => setCursorMode("default")}
+      onFocus={isNarrow ? undefined : () => setCursorMode("email")}
+      onBlur={isNarrow ? undefined : () => setCursorMode("default")}
+      onKeyDown={isNarrow ? undefined : onKeyDown}
+    >
       {tokens.map((tok) => (
         <Word key={tok.key} token={tok} ctx={ctx} />
       ))}
