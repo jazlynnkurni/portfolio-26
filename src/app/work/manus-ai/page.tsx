@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Footer from "@/components/Footer";
+import MahjongFooter from "@/components/MahjongFooter";
 import CaseStudyFooter from "@/components/CaseStudyFooter";
 import Lightbox from "@/components/Lightbox";
 import StackedDeck from "@/components/StackedDeck";
@@ -3610,8 +3610,8 @@ export default function ManusAiPage() {
         </section>
 
       </main>
-      <CaseStudyFooter currentSlug="manus-ai" />
-      <Footer variant="cream" />
+      <CaseStudyFooter currentSlug="manus-ai" variant="beige" />
+      <MahjongFooter />
 
       <Lightbox
         isOpen={openVideo !== null}
