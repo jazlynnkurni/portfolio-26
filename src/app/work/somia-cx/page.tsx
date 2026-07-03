@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Footer from "@/components/Footer";
+import MahjongFooter from "@/components/MahjongFooter";
 import CaseStudyFooter from "@/components/CaseStudyFooter";
 import StackedDeck from "@/components/StackedDeck";
 
@@ -1798,8 +1798,8 @@ export default function SomiaCXCaseStudy() {
         </section>
 
       </main>
-      <CaseStudyFooter currentSlug="somia-cx" />
-      <Footer variant="cream" />
+      <CaseStudyFooter currentSlug="somia-cx" variant="beige" />
+      <MahjongFooter />
 
     </>
   );

@@ -53,13 +53,14 @@ const TIP_SPIN = 0.05; // gentle rotational nudge per tile (tips, never launches
 const DOMINO_STEP_MS = 240; // delay between each tile tipping (left → right)
 const RESTITUTION = 0.22; // impact bounce (coefficient of restitution) — subtle recoil
 
-// --- Auto stand-up on scroll-up ---------------------------------------------
-// After a run, when the visitor scrolls UP the tiles rewind upright as a timed
-// reverse domino — right → left, edge-first (the last tile that fell rises
-// first).
+// --- Auto stand-up ----------------------------------------------------------
+// After a run falls and settles, the tiles wait, then rewind upright on their
+// own as a timed reverse domino — right → left, edge-first (the last tile that
+// fell rises first). No scrolling needed.
 const STANDUP_TILE_MS = 480; // time for a single tile to rise
 const STANDUP_STAGGER_MS = 95; // delay between consecutive tiles (right → left)
-const STANDUP_SCROLL_UP_PX = 6; // upward scroll (px) that triggers the stand-up
+const FALL_SETTLE_MS = 1300; // ~time for the last tile to finish falling
+const AUTO_RESET_HOLD_MS = 500; // how long the fallen tiles rest before rising
 
 // --- Dithered floor shadow (WebGL2 shader) ---------------------------------
 // Each tile casts a shadow whose footprint is its horizontal projection —
@@ -269,6 +270,7 @@ export default function MahjongTiles({
   const hoverAmtRef = useRef<number[]>([]); // eased 0..1 hover weight per tile
   const homeRef = useRef<{ x: number; y: number }[]>([]); // upright rest poses
   const playedRef = useRef(false); // a run has toppled → needs standing back up
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const standupRef = useRef<{
     start: number;
     poses: { x: number; y: number; angle: number }[];
@@ -435,6 +437,7 @@ export default function MahjongTiles({
       const su = standupRef.current;
       if (su) {
         // --- Timed reverse-domino stand-up (right → left, physics paused) ---
+        if (su.start === 0) su.start = now; // stamp start on the first frame
         const elapsed = now - su.start;
         let allDone = true;
         for (let i = 0; i < bodies.length; i++) {
@@ -502,6 +505,8 @@ export default function MahjongTiles({
       cancelAnimationFrame(raf);
       timersRef.current.forEach(clearTimeout);
       timersRef.current = [];
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+      resetTimerRef.current = null;
       kickedRef.current = [];
       standupRef.current = null;
       shadow?.dispose();
@@ -525,35 +530,28 @@ export default function MahjongTiles({
     return () => io.disconnect();
   }, []);
 
-  // Auto stand-up: when the visitor scrolls UP after a run, rewind the tiles
-  // upright (right → left).
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    let lastY = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      const scrolledUp = lastY - y > STANDUP_SCROLL_UP_PX;
-      lastY = y;
-      if (!scrolledUp || !playedRef.current || standupRef.current) return;
-      const bodies = bodiesRef.current;
-      if (!bodies.length) return;
-      const poses = bodies.map((b) => ({
-        x: b.position.x,
-        y: b.position.y,
-        angle: b.angle,
-      }));
-      bodies.forEach((b) => Matter.Body.setStatic(b, true));
-      standupRef.current = { start: performance.now(), poses };
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  // Begin the reverse-domino stand-up (right → left). The frame loop animates
+  // it out from the tiles' fallen poses.
+  const triggerStandUp = () => {
+    if (standupRef.current || !playedRef.current) return;
+    const bodies = bodiesRef.current;
+    if (!bodies.length) return;
+    const poses = bodies.map((b) => ({
+      x: b.position.x,
+      y: b.position.y,
+      angle: b.angle,
+    }));
+    bodies.forEach((b) => Matter.Body.setStatic(b, true));
+    // start stamped from the rAF clock on the first frame (see frame loop).
+    standupRef.current = { start: 0, poses };
+  };
 
   // Start the domino run at the clicked tile: gently tip it, then each tile to
   // its right in turn (staggered by DOMINO_STEP_MS), so the line collapses one
   // tile at a time from the click rightward. Tiles to the left stay standing.
   // Per-tile tracking means a later click on an earlier tile topples the
-  // still-standing ones without re-nudging those already down.
+  // still-standing ones without re-nudging those already down. Once the run
+  // has fallen + rested, it stands itself back up automatically.
   const cascade = (start: number) => {
     // Ignore clicks while the tiles are standing back up.
     if (standupRef.current) return;
@@ -564,7 +562,7 @@ export default function MahjongTiles({
     for (let j = start; j < bodies.length; j++) {
       if (kicked[j]) continue;
       kicked[j] = true;
-      playedRef.current = true; // a run is underway → arm the scroll-in reset
+      playedRef.current = true;
       const body = bodies[j];
       timersRef.current.push(
         setTimeout(
@@ -573,6 +571,16 @@ export default function MahjongTiles({
         )
       );
       seq++;
+    }
+    if (seq > 0) {
+      // (Re)schedule the auto stand-up: last tile finishes falling, rests a
+      // beat, then rewinds. Rescheduled from now so extra clicks extend the wait.
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+      const lastKickDelay = (seq - 1) * DOMINO_STEP_MS;
+      resetTimerRef.current = setTimeout(() => {
+        resetTimerRef.current = null;
+        triggerStandUp();
+      }, lastKickDelay + FALL_SETTLE_MS + AUTO_RESET_HOLD_MS);
     }
   };
 

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Nav from "@/components/Nav";
-import Footer from "@/components/Footer";
+import MahjongFooter from "@/components/MahjongFooter";
 import CaseStudyFooter from "@/components/CaseStudyFooter";
 import IntroScreen from "@/components/art-gallery/IntroScreen";
 import WallScreen from "@/components/art-gallery/WallScreen";
@@ -132,10 +132,10 @@ export default function ArtGalleryPage() {
           <div key="wall">
             <WallScreen myCard={myCard} />
             <ArtworksGallery />
-            {/* Mirror the case-study page bottom: cards block + site footer.
+            {/* Cards block (beige, to sit under the mahjong footer) + footer.
                 Empty currentSlug → no exclusion; CaseStudyFooter caps at 2. */}
-            <CaseStudyFooter currentSlug="" />
-            <Footer variant="cream" />
+            <CaseStudyFooter currentSlug="" variant="beige" />
+            <MahjongFooter />
           </div>
         ) : null}
       </AnimatePresence>

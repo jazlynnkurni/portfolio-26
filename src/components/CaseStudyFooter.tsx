@@ -16,6 +16,10 @@ interface CaseStudyFooterProps {
    *  it from the suggestion grid. Examples: "manus-ai", "conduit-commerce",
    *  "somia-cx". */
   currentSlug: string;
+  /** Colour scheme. "clay" (default) = tan bg + white heading, used on the
+   *  case-study pages. "beige" = site cream bg + ink heading, used on the art
+   *  gallery so it sits seamlessly above the mahjong footer. */
+  variant?: "clay" | "beige";
 }
 
 // Cap the suggestion grid at 2 cards so it fills the 2-col layout evenly.
@@ -24,17 +28,22 @@ interface CaseStudyFooterProps {
 // trims to 2 so the footer renders identically across surfaces.
 const SUGGESTION_LIMIT = 2;
 
-export default function CaseStudyFooter({ currentSlug }: CaseStudyFooterProps) {
+export default function CaseStudyFooter({
+  currentSlug,
+  variant = "clay",
+}: CaseStudyFooterProps) {
   // Suggest the other internal case studies (excluding the current one),
   // capped to SUGGESTION_LIMIT for consistent layout.
   const others = INTERNAL_CASE_STUDIES.filter(
     (cs) => cs.href !== `/work/${currentSlug}`
   ).slice(0, SUGGESTION_LIMIT);
 
+  const beige = variant === "beige";
+
   return (
     <section
       style={{
-        backgroundColor: "#D4A574",
+        backgroundColor: beige ? "#FFF5EF" : "#D4A574",
         paddingTop: 64,
         paddingBottom: 64,
         position: "relative",
@@ -48,7 +57,7 @@ export default function CaseStudyFooter({ currentSlug }: CaseStudyFooterProps) {
             fontFamily: "var(--font-serif), 'Source Serif Pro', serif",
             fontWeight: 600,
             fontSize: 24,
-            color: "#FFFFFF",
+            color: beige ? "#0D0D0D" : "#FFFFFF",
             marginBottom: 32,
           }}
         >
