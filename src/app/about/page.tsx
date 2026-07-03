@@ -23,7 +23,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import Nav from "@/components/Nav";
-import Footer from "@/components/Footer";
+import MahjongFooter from "@/components/MahjongFooter";
 import InteractiveTypewriter from "@/components/InteractiveTypewriter";
 import StackedDeck from "@/components/StackedDeck";
 
@@ -376,7 +376,7 @@ export default function AboutPage() {
         </div>
       </section>
       </main>
-      <Footer />
+      <MahjongFooter />
     </>
   );
 }

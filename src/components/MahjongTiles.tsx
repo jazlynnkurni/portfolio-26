@@ -43,8 +43,8 @@ const DEFAULT_TILES = [
 const TILE_ASPECT = 402 / 469;
 
 // --- Tunable feel -----------------------------------------------------------
-const TILE_H = 240; // upright tile height in px (before responsive scaling)
-const GAP = 12; // px gap between standing tiles (close, so tiles catch & lean)
+const TILE_H = 165; // upright tile height in px (before responsive scaling)
+const GAP = 18; // px gap between standing tiles (close enough to catch & lean)
 const SIDE_PAD = 40; // px padding on the left before the first tile
 const GROUND_INSET = 48; // px of floor below the tiles (room for the shadow)
 const GRAVITY = 0.85; // world gravity — lower = slower, more satisfying fall
@@ -68,7 +68,7 @@ const STANDUP_SCROLL_UP_PX = 6; // upward scroll (px) that triggers the stand-up
 // a soft blur, to match the tiles' own dithered pixel art.
 const SHADOW_MAX_DARK = 0.85; // peak shadow density (0..1) before dithering
 const SHADOW_DITHER_PX = 2; // Bayer dither cell size in CSS px
-const SHADOW_COLOR: [number, number, number] = [0.13, 0.13, 0.11]; // dark ink
+const SHADOW_COLOR: [number, number, number] = [0.17, 0.14, 0.1]; // warm dark (in-palette)
 // ---------------------------------------------------------------------------
 
 // --- Hover breathing --------------------------------------------------------
@@ -273,6 +273,7 @@ export default function MahjongTiles({
     start: number;
     poses: { x: number; y: number; angle: number }[];
   } | null>(null); // active stand-up animation
+  const visibleRef = useRef(true); // footer intersects the viewport
   const [width, setWidth] = useState(0);
 
   // Measure container width (responsive rebuild).
@@ -291,6 +292,10 @@ export default function MahjongTiles({
   useEffect(() => {
     if (!width) return;
 
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     const n = tiles.length;
 
     // Responsive scale so all tiles fit the measured width.
@@ -303,6 +308,11 @@ export default function MahjongTiles({
     const gap = GAP * scale;
     const pad = SIDE_PAD * scale;
     const step = tileW + gap;
+
+    // Centre the row so it stays balanced (full-bleed rug, not left-anchored).
+    // When the row fills the width (scale < 1) this collapses back to `pad`.
+    const rowW = n * tileW + (n - 1) * gap;
+    const originX = Math.max(pad, (width - rowW) / 2);
 
     const groundY = height - GROUND_INSET;
     const centerY = groundY - tileH / 2;
@@ -345,7 +355,7 @@ export default function MahjongTiles({
     const bodies: Matter.Body[] = [];
     const home: { x: number; y: number }[] = [];
     for (let i = 0; i < n; i++) {
-      const cx = pad + tileW / 2 + i * step;
+      const cx = originX + tileW / 2 + i * step;
       home.push({ x: cx, y: centerY });
       const body = Matter.Bodies.rectangle(cx, centerY, bodyW, tileH, {
         friction: 0.55, // grip the floor so tiles topple instead of sliding
@@ -368,13 +378,21 @@ export default function MahjongTiles({
     standupRef.current = null;
     Matter.World.add(world, bodies);
 
-    // Size the DOM tiles to match their bodies.
-    tileElsRef.current.forEach((el) => {
-      if (el) {
-        el.style.width = `${tileW}px`;
-        el.style.height = `${tileH}px`;
+    // Size AND position the DOM tiles up front so they never flash at the
+    // image's intrinsic (huge) size or stacked at 0,0 before the first frame.
+    tileElsRef.current.forEach((el, i) => {
+      if (!el) return;
+      el.style.width = `${tileW}px`;
+      el.style.height = `${tileH}px`;
+      const b = bodies[i];
+      if (b) {
+        el.style.transform = `translate(${b.position.x - tileW / 2}px, ${
+          b.position.y - tileH / 2
+        }px) rotate(0rad)`;
       }
     });
+    // Now that tiles are correctly sized + placed, reveal (fade in).
+    containerRef.current?.classList.add("is-ready");
 
     // Dithered floor-shadow renderer (WebGL2). Degrades gracefully to no
     // shadow if WebGL2 is unavailable.
@@ -395,6 +413,13 @@ export default function MahjongTiles({
     let raf = 0;
     let last = performance.now();
     const tick = (now: number) => {
+      // Skip all physics/DOM/WebGL work while the footer is offscreen — no
+      // point stepping the sim or redrawing shadows the user can't see.
+      if (!visibleRef.current) {
+        last = now;
+        raf = requestAnimationFrame(tick);
+        return;
+      }
       try {
         frame(now);
       } catch {
@@ -446,8 +471,12 @@ export default function MahjongTiles({
         Matter.Engine.update(engine, dt);
       }
 
-      // Breathing bob (shared phase → cohesive across tiles).
-      const bob = 0.5 + 0.5 * Math.sin((now * 2 * Math.PI) / HOVER_PERIOD_MS);
+      // Breathing bob (shared phase → cohesive across tiles). Held flat for
+      // visitors who prefer reduced motion — hovered tiles still lift, just
+      // without the perpetual up/down breathing.
+      const bob = reduceMotion
+        ? 0
+        : 0.5 + 0.5 * Math.sin((now * 2 * Math.PI) / HOVER_PERIOD_MS);
       const hoverAmt = hoverAmtRef.current;
 
       for (let i = 0; i < bodies.length; i++) {
@@ -481,6 +510,20 @@ export default function MahjongTiles({
       bodiesRef.current = [];
     };
   }, [width, height, tiles]);
+
+  // Pause the render loop while the footer is offscreen (battery/CPU/GPU).
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        visibleRef.current = entries[0]?.isIntersecting ?? true;
+      },
+      { threshold: 0 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   // Auto stand-up: when the visitor scrolls UP after a run, rewind the tiles
   // upright (right → left).
@@ -535,10 +578,16 @@ export default function MahjongTiles({
 
   return (
     <div className={`relative w-full ${className}`} style={{ height }}>
-      <div ref={containerRef} className="absolute inset-0">
+      {/* Decorative interactive flourish — hidden from the a11y tree. */}
+      <div
+        ref={containerRef}
+        aria-hidden="true"
+        className="mahjong-layer absolute inset-0"
+      >
         {/* Dithered floor shadows render here, beneath the tiles. */}
         <canvas
           ref={canvasRef}
+          aria-hidden="true"
           className="pointer-events-none absolute inset-0 h-full w-full"
         />
         {tiles.map((src, i) => (
@@ -560,8 +609,10 @@ export default function MahjongTiles({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={src}
-              alt={`Mahjong tile ${i + 1}`}
+              alt=""
               draggable={false}
+              loading="lazy"
+              decoding="async"
               className="pointer-events-none h-full w-full"
             />
           </div>

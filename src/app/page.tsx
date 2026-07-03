@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { motion, type Variants } from "framer-motion";
 import Nav from "@/components/Nav";
-import Footer from "@/components/Footer";
+import MahjongFooter from "@/components/MahjongFooter";
 import HeadlineDrift, {
   type HeadlineSegment,
 } from "@/components/HeadlineDrift";
@@ -109,7 +109,7 @@ export default function Home() {
         </section>
       </main>
 
-      <Footer />
+      <MahjongFooter />
     </>
   );
 }
