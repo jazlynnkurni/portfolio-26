@@ -11,6 +11,7 @@ type NavLink = { label: string; href: string; external?: boolean };
 const links: NavLink[] = [
   { label: "Work", href: "/#work" },
   { label: "Art Gallery", href: "/art-gallery" },
+  { label: "Sandbox", href: "/sandbox" },
   { label: "About Me", href: "/about" },
   {
     label: "Resume",

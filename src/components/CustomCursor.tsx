@@ -10,7 +10,7 @@ import {
   useSpring,
 } from "framer-motion";
 
-export type CursorMode = "default" | "email" | "case-study" | "caption" | "pencil" | "artwork";
+export type CursorMode = "default" | "email" | "case-study" | "caption" | "pencil" | "artwork" | "sandbox";
 
 // Dispatched by interactive elements (e.g. the headline, work cards) to morph
 // the cursor. Payload: { mode: CursorMode }.
@@ -19,6 +19,7 @@ export const CURSOR_MODE_EVENT = "cursor-mode";
 const EMAIL_TEXT = "jazkurnz06@gmail.com";
 const CASE_STUDY_TEXT = "view case study →";
 const ARTWORK_TEXT = "peep my art";
+const SANDBOX_TEXT = "view sandbox →";
 const DOT_SIZE = 22;
 const PILL_HEIGHT = 36;
 const PILL_PADDING_X = 18;
@@ -26,11 +27,13 @@ const PILL_PADDING_X = 18;
 const PILL_WIDTH_FALLBACK_EMAIL = 200;
 const PILL_WIDTH_FALLBACK_CASE = 180;
 const PILL_WIDTH_FALLBACK_ARTWORK = 140;
+const PILL_WIDTH_FALLBACK_SANDBOX = 170;
 
 const LABEL_BY_MODE: Record<Exclude<CursorMode, "default" | "caption" | "pencil">, string> = {
   email: EMAIL_TEXT,
   "case-study": CASE_STUDY_TEXT,
   artwork: ARTWORK_TEXT,
+  sandbox: SANDBOX_TEXT,
 };
 
 export default function CustomCursor() {
@@ -60,9 +63,11 @@ export default function CustomCursor() {
   const [emailWidth, setEmailWidth] = useState(PILL_WIDTH_FALLBACK_EMAIL);
   const [caseWidth, setCaseWidth] = useState(PILL_WIDTH_FALLBACK_CASE);
   const [artworkWidth, setArtworkWidth] = useState(PILL_WIDTH_FALLBACK_ARTWORK);
+  const [sandboxWidth, setSandboxWidth] = useState(PILL_WIDTH_FALLBACK_SANDBOX);
   const measureEmailRef = useRef<HTMLSpanElement>(null);
   const measureCaseRef = useRef<HTMLSpanElement>(null);
   const measureArtworkRef = useRef<HTMLSpanElement>(null);
+  const measureSandboxRef = useRef<HTMLSpanElement>(null);
 
   // Measure each pill label once (after fonts load) so morph animations have
   // two numeric width endpoints — animating from a number to "auto" doesn't
@@ -85,6 +90,12 @@ export default function CustomCursor() {
       if (a) {
         setArtworkWidth(
           Math.ceil(a.getBoundingClientRect().width) + PILL_PADDING_X * 2
+        );
+      }
+      const s = measureSandboxRef.current;
+      if (s) {
+        setSandboxWidth(
+          Math.ceil(s.getBoundingClientRect().width) + PILL_PADDING_X * 2
         );
       }
     };
@@ -110,7 +121,8 @@ export default function CustomCursor() {
         detail?.mode !== "case-study" &&
         detail?.mode !== "caption" &&
         detail?.mode !== "pencil" &&
-        detail?.mode !== "artwork"
+        detail?.mode !== "artwork" &&
+        detail?.mode !== "sandbox"
       ) {
         return;
       }
@@ -141,10 +153,12 @@ export default function CustomCursor() {
       if (!(target instanceof Element)) return;
       const onCaseStudy = target.closest('[data-cursor="case-study"]');
       const onArtwork = target.closest('[data-cursor="artwork"]');
+      const onSandbox = target.closest('[data-cursor="sandbox"]');
       setMode((current) => {
         if (onCaseStudy) return "case-study";
+        if (onSandbox) return "sandbox";
         if (onArtwork) return "artwork";
-        if (current === "case-study" || current === "artwork") return "default";
+        if (current === "case-study" || current === "artwork" || current === "sandbox") return "default";
         return current;
       });
     };
@@ -183,7 +197,8 @@ export default function CustomCursor() {
   const isPill =
     effectiveMode === "email" ||
     effectiveMode === "case-study" ||
-    effectiveMode === "artwork";
+    effectiveMode === "artwork" ||
+    effectiveMode === "sandbox";
   const isPencil = effectiveMode === "pencil";
   const pillWidth =
     effectiveMode === "email"
@@ -192,11 +207,14 @@ export default function CustomCursor() {
         ? caseWidth
         : effectiveMode === "artwork"
           ? artworkWidth
-          : DOT_SIZE;
+          : effectiveMode === "sandbox"
+            ? sandboxWidth
+            : DOT_SIZE;
   const label =
     effectiveMode === "email" ||
     effectiveMode === "case-study" ||
-    effectiveMode === "artwork"
+    effectiveMode === "artwork" ||
+    effectiveMode === "sandbox"
       ? LABEL_BY_MODE[effectiveMode]
       : null;
 
@@ -263,6 +281,24 @@ export default function CustomCursor() {
         }}
       >
         {ARTWORK_TEXT}
+      </span>
+      <span
+        ref={measureSandboxRef}
+        aria-hidden
+        style={{
+          position: "fixed",
+          top: -9999,
+          left: -9999,
+          visibility: "hidden",
+          fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+          fontSize: 14,
+          fontWeight: 500,
+          lineHeight: 1,
+          whiteSpace: "nowrap",
+          pointerEvents: "none",
+        }}
+      >
+        {SANDBOX_TEXT}
       </span>
 
       <motion.div
