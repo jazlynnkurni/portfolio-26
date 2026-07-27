@@ -24,6 +24,8 @@ type Props = {
   visible?: boolean;
   /** Visual tone: player = warm clay, avatar = darker walnut. */
   variant?: Variant;
+  /** Optional design override — a custom shaft gradient + width (%). */
+  design?: { background?: string; width?: string };
 };
 
 const FADE_MASK =
@@ -54,6 +56,7 @@ export default function CueStick({
   y = 72,
   visible = true,
   variant = "player",
+  design,
 }: Props) {
   const fallbackAngle = useMotionValue(0);
   const fallbackPullback = useMotionValue(0);
@@ -71,11 +74,11 @@ export default function CueStick({
         position: "absolute",
         left: `${x}%`,
         top: `${y}%`,
-        width: "3%",
+        width: design?.width ?? "3%",
         height: `${length}%`,
         transform,
         transformOrigin: "50% 0%",
-        background: VARIANT_BG[variant],
+        background: design?.background ?? VARIANT_BG[variant],
         borderRadius: "0 0 9999px 9999px",
         filter:
           "drop-shadow(2px 4px 6px rgba(50, 30, 20, 0.3)) blur(0.4px)",
