@@ -81,22 +81,6 @@ export default function SandboxPage() {
       <Nav />
       <main className="flex-1 px-6 md:px-16 pt-28 md:pt-32 pb-24">
         <div className="max-w-7xl mx-auto">
-          <header className="mb-12 md:mb-16">
-            <div className="inline-flex items-center gap-2 bg-[rgba(201,120,54,0.08)] py-2 px-4 rounded-full mb-6">
-              <span className="pulse-dot" aria-hidden />
-              <span className="font-mono uppercase tracking-wide text-[13px] text-ink">
-                Sandbox
-              </span>
-            </div>
-            <h1 className="font-serif text-[32px] md:text-[48px] leading-tight text-ink max-w-3xl">
-              Motion &amp; experiments
-            </h1>
-            <p className="mt-4 font-mono text-[13px] text-ink/60">
-              {items.length} clips — design plays, loops, and things in motion.
-              Click any to play.
-            </p>
-          </header>
-
           <SandboxGallery items={items} />
         </div>
       </main>
