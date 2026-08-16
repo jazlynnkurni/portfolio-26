@@ -47,3 +47,19 @@ public/images/conduit/gaps/_originals/
 # Pre-crop / pre-compression backup originals (any *.original.* file)
 *.original.*
 .env*.local
+node_modules/
+.next/
+.DS_Store
+
+# Raw editing sources (Premiere assets, screen recordings, scans).
+# Multi-GB and referenced by nothing in src/ — they live on disk, not in git.
+/Manus AI Case Study/
+/PD/
+/demo/
+/ConduitCommerce/
+/art/
+
+# Pre-compression originals of the work-card clips. The shipped versions are
+# public/videos/work-fostr.mp4 and public/videos/work-clover.mp4.
+public/videos/Fostr/
+public/videos/Eden/

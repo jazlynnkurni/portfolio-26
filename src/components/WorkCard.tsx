@@ -29,16 +29,12 @@ function setCursorMode(mode: CursorMode) {
 }
 
 // Warm clay-toned shadows — not pure black, so the card lifts off the cream
-// background without bruising it. Hover state amps the blur + offset so the
-// card feels like it's pulling further off the page. Both shadow strings
-// share an identical layer structure (2 outer + 2 inset) so framer-motion
-// can interpolate between them smoothly. The inset layers stay constant
-// across states — they paint the glass-style top highlight and bottom
-// shading that gives the card its depth.
-const INSET_LAYERS =
-  "inset 0 1px 2px rgba(255, 255, 255, 0.15), inset 0 -2px 4px rgba(0, 0, 0, 0.08)";
-const SHADOW_DEFAULT = `0 12px 32px -8px rgba(176, 137, 104, 0.25), 0 4px 12px -2px rgba(176, 137, 104, 0.15), ${INSET_LAYERS}`;
-const SHADOW_HOVER = `0 20px 48px -8px rgba(176, 137, 104, 0.35), 0 8px 20px -2px rgba(176, 137, 104, 0.20), ${INSET_LAYERS}`;
+// background without bruising it. Kept light: the card is now the same beige
+// as the page, so a heavy shadow would read as a smudge under it rather than
+// as depth. Both strings share a layer structure so framer-motion can
+// interpolate between them smoothly.
+const SHADOW_DEFAULT = `0 10px 26px -14px rgba(176, 137, 104, 0.20), 0 2px 8px -4px rgba(176, 137, 104, 0.12)`;
+const SHADOW_HOVER = `0 18px 40px -14px rgba(176, 137, 104, 0.28), 0 6px 16px -4px rgba(176, 137, 104, 0.16)`;
 
 export default function WorkCard({
   href,
@@ -100,7 +96,7 @@ export default function WorkCard({
 
   const cardInner = (
     <motion.article
-      className="rounded-3xl h-full"
+      className="relative rounded-3xl h-full"
       data-cursor="case-study"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
@@ -118,9 +114,14 @@ export default function WorkCard({
       }}
       transition={{ duration: 0.35, ease: "easeOut" }}
       style={{
-        background:
-          "linear-gradient(180deg, #D08440 0%, #C97836 60%, #BC6E2E 100%)",
-        padding: 24,
+        // Beige rather than an orange fill: the card sits ON the page tone, so
+        // only the burnt-orange outline separates it — seamless instead of a
+        // block of colour.
+        background: "#FFF5EF",
+        border: "1.5px solid #C97836",
+        // Extra headroom: the label sits ON the top border, so the first
+        // child needs to start below where it straddles.
+        padding: "30px 24px 24px",
         display: "flex",
         flexDirection: "column",
         gap: 20,
@@ -128,23 +129,30 @@ export default function WorkCard({
         width: "100%",
       }}
     >
-      {/* Top row: dot + number label */}
+      {/* Top row: dot + number label. Positioned ON the top border and given
+          the page background, so the rule visibly breaks around it — the
+          "notched" treatment, same idea as a fieldset legend. */}
       <div
         style={{
+          position: "absolute",
+          top: -9,
+          left: 20,
           display: "flex",
           alignItems: "center",
-          gap: 12,
+          gap: 10,
+          background: "#FFF5EF",
+          padding: "0 10px",
+          maxWidth: "calc(100% - 40px)",
         }}
       >
         <span
           aria-hidden
-          className="shadow-[inset_0_2px_3px_rgba(0,0,0,0.35)]"
           style={{
             display: "inline-block",
-            width: 12,
-            height: 12,
+            width: 8,
+            height: 8,
             borderRadius: "50%",
-            backgroundColor: "#FFF5EF",
+            backgroundColor: "#C97836",
             flexShrink: 0,
           }}
         />
@@ -154,7 +162,7 @@ export default function WorkCard({
             fontSize: 12,
             fontWeight: 400,
             letterSpacing: "0.08em",
-            color: "#FFF5EF",
+            color: "#C97836",
             textTransform: "uppercase",
             margin: 0,
             lineHeight: 1,
@@ -169,7 +177,7 @@ export default function WorkCard({
           burnt orange (matches card bg, reads as intentional). */}
       <div
         className="relative isolate aspect-video rounded-xl overflow-hidden w-full"
-        style={{ backgroundColor: "#C97836" }}
+        style={{ backgroundColor: "#FFF5EF" }}
       >
         {mediaType === "video" ? (
           <video
@@ -205,7 +213,7 @@ export default function WorkCard({
         style={{
           fontFamily: "var(--font-sans), sans-serif",
           lineHeight: 1.3,
-          color: "#FFF5EF",
+          color: "#16100C",
           margin: 0,
           flexGrow: 1,
         }}
@@ -218,11 +226,12 @@ export default function WorkCard({
         {tags.map((tag) => (
           <span
             key={tag}
-            className="font-medium text-[14px] rounded-full bg-[#9A4C19]"
+            className="font-medium text-[14px] rounded-full"
             style={{
               fontFamily: "var(--font-sans), sans-serif",
-              color: "#FFF5EF",
-              padding: "5px 12px",
+              color: "#C97836",
+              border: "1px solid rgba(201, 120, 54, 0.45)",
+              padding: "4px 11px",
               lineHeight: 1.2,
             }}
           >

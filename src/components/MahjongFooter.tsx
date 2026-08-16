@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import MahjongTiles from "@/components/MahjongTiles";
+import ExternalArrow from "@/components/ExternalArrow";
 
 // Smooth underline that grows left → right on hover (mirrors the site's
 // .footer-link animation, in the footer's own text colour). Instant for
@@ -67,7 +68,7 @@ export default function MahjongFooter() {
   return (
     <footer
       ref={rootRef}
-      className={`footer-reveal ${inView ? "is-in" : ""} flex flex-col overflow-x-hidden pb-14`}
+      className={`footer-reveal ${inView ? "is-in" : ""} flex flex-col overflow-x-hidden pt-20 pb-14 md:pt-32`}
       style={{ backgroundColor: "var(--color-bg)" }}
     >
       {/* Divider + links share the work section's exact grid (px on the outer
@@ -81,16 +82,16 @@ export default function MahjongFooter() {
             style={rise(0)}
           />
 
-          <div className="flex flex-col gap-8 pt-12 md:flex-row md:justify-between md:pt-14">
+          <div className="flex flex-col gap-6 pt-9 md:flex-row md:justify-between md:pt-10">
             <p
-              className="rise group cursor-default font-serif text-lg font-semibold text-ink"
+              className="rise group cursor-default font-serif text-[15px] font-semibold text-ink"
               style={rise(1)}
             >
               © made in NYC<Peek>🗽</Peek>, with love from Indonesia
               <Peek>🇮🇩</Peek>
             </p>
-            <div className="flex gap-16 font-mono text-sm uppercase tracking-wide text-ink">
-              <ul className="flex flex-col gap-5">
+            <div className="flex gap-12 font-mono text-[11px] uppercase tracking-wide text-ink">
+              <ul className="flex flex-col gap-4">
                 <li className="rise" style={rise(2)}>
                   <a href="mailto:jazkurnz06@gmail.com" className={linkClass}>
                     EMAIL
@@ -117,7 +118,7 @@ export default function MahjongFooter() {
                   </a>
                 </li>
               </ul>
-              <ul className="flex flex-col gap-5">
+              <ul className="flex flex-col gap-4">
                 <li className="rise" style={rise(2)}>
                   <Link href="/" className={linkClass}>
                     HOME
@@ -135,12 +136,13 @@ export default function MahjongFooter() {
                 </li>
                 <li className="rise" style={rise(5)}>
                   <a
-                    href="https://drive.google.com/file/d/1W2XFyFbFbd1LrVWYK8Or2wfKZBIP29sg/view"
+                    href="https://drive.google.com/file/d/16SwZiGvIjfRE5J2eGrCoXIXYLl7Vnx2E/view?usp=sharing"
                     target="_blank"
                     rel="noreferrer"
-                    className={linkClass}
+                    className={`${linkClass} inline-flex items-center`}
                   >
                     RESUME
+                    <ExternalArrow />
                   </a>
                 </li>
               </ul>
@@ -151,7 +153,7 @@ export default function MahjongFooter() {
 
       {/* Interactive physics tile band — contained to the same grid as the rule
           so the row fits within the orange line. Rises in last. */}
-      <div className="mt-16 px-6 md:px-16">
+      <div className="mt-12 px-6 md:px-16">
         <div className="rise mx-auto max-w-7xl" style={rise(7)}>
           <MahjongTiles height={230} />
         </div>

@@ -183,3 +183,206 @@ body {
     animation: none;
   }
 }
+
+/* ---------------- Riso typewriter (/about) ---------------- */
+.tw-rig {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+  align-items: center;
+  gap: 48px;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  .tw-rig { grid-template-columns: 1fr; gap: 32px; }
+}
+.tw-machine { position: relative; z-index: 0; width: 100%; }
+.tw-machine canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.62 / 1;
+  filter: drop-shadow(0 26px 34px rgba(22, 16, 12, 0.18));
+}
+/* Real white paper, behind the canvas so the roller and bail overlap it.
+   z-index:-1 needs .tw-machine to be its own stacking context (z-index:0
+   above) or the page background paints straight over it. */
+.tw-sheet {
+  position: absolute;
+  z-index: -1;
+  min-height: 280px;
+  padding: 26px 30px 104px;
+  /* The rule sits at 20px, not at the 26px band edge: with 12.5px type on a
+     26px line the baseline lands ~20px down, so ruling at the boundary left
+     the text floating above the line. Now it sits ON it. */
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 20px, rgba(22,16,12,0.055) 20px 21px, transparent 21px 26px),
+    linear-gradient(to bottom, #ffffff 0%, #fdfcfa 78%, #f6f1ea 100%);
+  border-radius: 2px 2px 0 0;
+  box-shadow: 0 -1px 0 rgba(0,0,0,0.06), 0 14px 30px rgba(58,42,32,0.16),
+              inset 0 0 0 1px rgba(58,42,32,0.06);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 26px;
+  color: #16100c;
+}
+/* The question is the prompt, the answer is the content: colour separates
+   them so the sheet reads as a transcript. */
+.tw-sheet .tw-q { margin: 0; color: #c97836; font-weight: 500; }
+.tw-sheet .tw-a { margin: 0; }
+.tw-sheet .tw-idle { margin: 0; font-style: italic; color: rgba(22,16,12,0.32); }
+/* "here" in an answer is a real link to the case study. */
+.tw-sheet .tw-link {
+  color: #c97836;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(201, 120, 54, 0.45);
+}
+.tw-sheet .tw-link:hover { border-bottom-color: #c97836; }
+.tw-caret { display: none; }
+.tw-caret.on { display: inline-block; animation: tw-blink 1s steps(2) infinite; }
+@keyframes tw-blink { 0%, 50% { opacity: 1 } 50.01%, 100% { opacity: 0 } }
+
+.tw-asks { display: flex; flex-direction: column; gap: 4px; }
+/* Lead-in above the questions. Site serif, sentence case — it reads as a line
+   of the page's own voice rather than a UI label. */
+.tw-asks h3 {
+  margin: 0 0 18px;
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: #16100c;
+}
+.tw-asks .chip {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 11px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #16100c;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms cubic-bezier(0.22,1,0.36,1);
+}
+.tw-asks .chip:hover { background: rgba(201,120,54,0.08); transform: translateX(3px); }
+.tw-asks .chip .arrow { color: #c97836; transition: transform 200ms cubic-bezier(0.22,1,0.36,1); }
+.tw-asks .chip:hover .arrow { transform: translateX(4px); }
+.tw-asks .chip.on { background: rgba(201,120,54,0.13); }
+.tw-asks .chip.on .arrow { transform: translateX(4px); }
+
+/* ---------------- Tear-away (/work/in-progress) ---------------- */
+.tear-host {
+  position: relative;
+  width: 100%;
+  height: calc(100dvh - 0px);
+  min-height: 620px;
+  overflow: hidden;
+  touch-action: none;
+  cursor: none;
+  background: #FFF5EF;
+}
+.tear-host canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.tear-copy {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  padding: 18vh 24px 0;
+  text-align: center;
+  pointer-events: none;
+}
+.tear-copy h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(38px, 6.4vw, 92px);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  color: #16100c;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+}
+.tear-copy p {
+  margin: 0;
+  max-width: 44ch;
+  font-family: var(--font-serif);
+  font-size: clamp(15px, 1.35vw, 19px);
+  line-height: 1.5;
+  color: rgba(22,16,12,0.62);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+}
+.tear-cta {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 6px;
+  padding: 13px 22px;
+  border-radius: 999px;
+  background: #c97836;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 0 6px 18px -10px rgba(201,120,54,0.9);
+  transition: transform 180ms cubic-bezier(0.22,1,0.36,1);
+}
+.tear-cta:hover { transform: translateY(-2px); }
+.tear-nail {
+  position: absolute; top: 0; left: 0; z-index: 30;
+  width: 34px; height: 34px; margin: -17px 0 0 -17px;
+  pointer-events: none; will-change: transform;
+}
+.tear-nail::before {
+  content: ""; position: absolute; inset: 0;
+  border-radius: 50% 50% 50% 6px;
+  border: 1.5px solid #c97836;
+  transform: rotate(-45deg);
+}
+.tear-readout {
+  position: absolute; right: 26px; top: 92px; z-index: 40;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(22,16,12,0.6);
+}
+.tear-readout b { color: #c97836; font-weight: 500; }
+@media (prefers-reduced-motion: reduce) { .tear-cta { transition: none; } }
+
+/* ---------------- Text selection ---------------- */
+/* Signature orange ground with pastel-yellow text. Set on both ::selection
+   and ::-moz-selection because the two cannot be combined in one rule — an
+   unrecognised selector invalidates the whole list. */
+::selection {
+  background: #c97836;
+  color: #fbeec2;
+}
+::-moz-selection {
+  background: #c97836;
+  color: #fbeec2;
+}
+
+/* ---------------- External-link arrow ---------------- */
+/* Travels along its own diagonal on hover — up and to the right, the same
+   direction it points. Transform-only so it stays on the compositor. */
+.ext-arrow {
+  display: inline-block;
+  vertical-align: baseline;
+  margin-left: 0.34em;
+  flex: 0 0 auto;
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+a:hover > .ext-arrow,
+a:focus-visible > .ext-arrow,
+a:hover .ext-arrow,
+a:focus-visible .ext-arrow {
+  transform: translate(0.16em, -0.16em);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ext-arrow { transition: none; }
+}
