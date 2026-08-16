@@ -1,0 +1,85 @@
+/* Scoped module rather than globals.css: appended global rules were silently
+   not applying here, which is what left the heading visible and the field
+   spanning the full page width. A module is guaranteed to reach the element.
+
+   Fonts come from the site tokens only — var(--font-serif) / --font-mono.
+   No new faces. */
+
+.wrap {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;      /* a real 404: dead centre of the viewport */
+  padding: 96px 24px;
+  text-align: center;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.plot {
+  width: min(560px, 84vw);
+  cursor: pointer;
+  line-height: 0;
+}
+.plot canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.copy {
+  font-family: var(--font-serif);
+  font-size: clamp(16px, 1.5vw, 20px);
+  line-height: 1.6;
+  color: #16100c;            /* black, per the site ink token */
+  margin: 0;
+}
+.copy p { margin: 0; }
+.copy p + p { margin-top: 16px; }
+
+/* The address is styled as the site's orange cursor pill, so the emphasis
+   matches an affordance visitors have already seen elsewhere on the site. */
+.reach {
+  text-decoration: none;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+/* Clipping slot. It is deliberately TALLER than the pill: when the two match
+   exactly, sub-pixel rounding shaves the pill's rounded top and bottom edges
+   and it reads as cut off. The 6px of clearance means the whole pill lands
+   inside the clip. Fixed height so nothing reflows when it arrives. */
+.slot {
+  display: inline-block;
+  overflow: hidden;
+  height: 44px;
+  vertical-align: middle;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  margin: 6px 0;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #c97836;
+  color: #fff5ef;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transform: translateY(-165%);
+  transition: transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reach:hover .pill,
+.reach:focus-visible .pill { transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pill { transition: none; }
+}

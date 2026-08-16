@@ -16,6 +16,7 @@ const ibmPlexMono = IBM_Plex_Mono({
   weight: "400",
 });
 
+
 export const metadata: Metadata = {
   title: "Jazlynn Kurniandra",
   description: "Portfolio of Jazlynn Kurniandra",

@@ -4,7 +4,7 @@
  * About Me — src/app/about/page.tsx  (v2)
  * ---------------------------------------
  * Layout:
- *  1. Hero band       - cream, "Halo, I'm ____" + tile-jazlynn.png
+ *  1. Hero band       - cream, holographic licence card (/jaz.svg) in a TiltCard
  *  2. About content   - white, 2-col: prose left, portrait right
  *  3. CULTURE CAROUSEL - white, one cycling carousel:
  *       slide 1: My Toolkit                     -> toolkit.png
@@ -22,10 +22,11 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Nav from "@/components/Nav";
 import MahjongFooter from "@/components/MahjongFooter";
-import InteractiveTypewriter from "@/components/InteractiveTypewriter";
-import StackedDeck from "@/components/StackedDeck";
+import RisoTypewriter from "@/components/typewriter/RisoTypewriter";
+import { TiltCard } from "@/components/TiltCard";
 
 const FONTS = {
   serif: '"Source Serif Pro", "Source Serif 4", Georgia, serif',
@@ -111,16 +112,27 @@ const SLIDES: Slide[] = [
   { id: "books",   header: "My Best Reads",                             src: "/images/about/books/books.png",    alt: "Best reads" },
 ];
 
-function CultureCarousel() {
-  const [idx, setIdx] = useState(0);
-  const [dir, setDir] = useState<1 | -1>(1); // 1 = next (slide-in-from-right), -1 = prev
-  const [animKey, setAnimKey] = useState(0); // forces re-mount so CSS animation replays
+/* A springy carousel: the outgoing slide is popped out of flow rather than
+   unmounted, so the incoming one takes its place on the SAME frame — that gap
+   is what read as a blank pause before. The frame itself animates its own
+   height on a spring, so when a slide is a different shape the box stretches
+   into it rather than snapping. */
+// damping ratio = damping / (2*sqrt(stiffness*mass)). At 24 this sat at 0.86 —
+// under 1, so it overshot and wobbled back. 30 puts it just past 1: still a
+// spring's ease-out, but it settles without the bounce.
+const SPRING = { type: "spring" as const, stiffness: 230, damping: 30, mass: 0.85 };
 
-  const goto = (next: number, direction: 1 | -1) => {
-    setDir(direction);
-    setIdx(((next % SLIDES.length) + SLIDES.length) % SLIDES.length);
-    setAnimKey((k) => k + 1);
-  };
+const slideVariants = {
+  enter: (d: 1 | -1) => ({ x: `${d * 46}%`, opacity: 0, scale: 0.97 }),
+  center: { x: "0%", opacity: 1, scale: 1 },
+  exit: (d: 1 | -1) => ({ x: `${d * -46}%`, opacity: 0, scale: 0.97 }),
+};
+
+function CultureCarousel() {
+  const [[idx, dir], setState] = useState<[number, 1 | -1]>([0, 1]);
+
+  const goto = (next: number, direction: 1 | -1) =>
+    setState([((next % SLIDES.length) + SLIDES.length) % SLIDES.length, direction]);
   const next = () => goto(idx + 1, 1);
   const prev = () => goto(idx - 1, -1);
 
@@ -128,10 +140,23 @@ function CultureCarousel() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "100%" }}>
-      {/* header swaps with the slide */}
-      <SectionHeader>{slide.header}</SectionHeader>
+      {/* Header swaps with the slide, on the same spring so the two read as
+          one movement rather than two separate changes. */}
+      <div style={{ position: "relative", minHeight: 52, width: "100%" }}>
+        <AnimatePresence initial={false} mode="popLayout" custom={dir}>
+          <motion.div
+            key={slide.id}
+            custom={dir}
+            initial={{ opacity: 0, y: dir * 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: dir * -10 }}
+            transition={{ ...SPRING, stiffness: 300, damping: 34 }}
+          >
+            <SectionHeader>{slide.header}</SectionHeader>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
-      {/* carousel row: < arrow | image frame | > arrow */}
       <div
         style={{
           display: "flex",
@@ -143,8 +168,12 @@ function CultureCarousel() {
       >
         <ArrowButton dir="left" onClick={prev} ariaLabel="Previous slide" />
 
-        {/* the image frame — fixed max width, overflow clipped for the slide animation */}
-        <div
+        {/* `layout` on the frame is what gives the size change its rubber:
+            when the next slide is a different aspect, the box springs to the
+            new height instead of jumping. */}
+        <motion.div
+          layout
+          transition={SPRING}
           style={{
             position: "relative",
             flex: "0 1 800px",
@@ -154,41 +183,40 @@ function CultureCarousel() {
             borderRadius: 8,
           }}
         >
-          <div
-            key={animKey}
-            style={{
-              animation: `tw-slide-${dir === 1 ? "right" : "left"} 380ms ease-out`,
-            }}
-          >
-            <Image
-              src={slide.src}
-              alt={slide.alt}
-              width={1600}
-              height={600}
-              priority={idx === 0}
-              style={{ display: "block", width: "100%", height: "auto" }}
-            />
-          </div>
-        </div>
+          <AnimatePresence initial={false} mode="popLayout" custom={dir}>
+            <motion.div
+              key={slide.id}
+              custom={dir}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={SPRING}
+              style={{ width: "100%" }}
+            >
+              <Image
+                src={slide.src}
+                alt={slide.alt}
+                width={1600}
+                height={600}
+                priority={idx === 0}
+                style={{ display: "block", width: "100%", height: "auto" }}
+              />
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
 
         <ArrowButton dir="right" onClick={next} ariaLabel="Next slide" />
       </div>
 
-      {/* small dot indicators — full-width centered (matches centered image row above) */}
-      <div
-        style={{
-          display: "flex",
-          gap: 8,
-          justifyContent: "center",
-          marginTop: 18,
-          width: "100%",
-        }}
-      >
-        {SLIDES.map((s, i) => (
+      {/* dots */}
+      <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 18, width: "100%" }}>
+        {SLIDES.map((sl, i) => (
           <button
-            key={s.id}
+            key={sl.id}
             type="button"
-            aria-label={`Go to ${s.header}`}
+            aria-label={`Go to ${sl.header}`}
+            aria-current={i === idx}
             onClick={() => goto(i, i > idx ? 1 : -1)}
             style={{
               width: 7,
@@ -203,12 +231,6 @@ function CultureCarousel() {
           />
         ))}
       </div>
-
-      {/* slide keyframes */}
-      <style>{`
-        @keyframes tw-slide-right { from { transform: translateX(40px); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
-        @keyframes tw-slide-left  { from { transform: translateX(-40px); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
-      `}</style>
     </div>
   );
 }
@@ -257,25 +279,6 @@ function ArrowButton({
   );
 }
 
-/* --------------- Captioned card for about-me StackedDeck --------------- */
-function CaptionedCard({ src, alt, caption }: { src: string; alt: string; caption: string }) {
-  const handleEnter = () => {
-    window.dispatchEvent(new CustomEvent("cursor-mode", { detail: { mode: "caption", text: caption } }));
-  };
-  const handleLeave = () => {
-    window.dispatchEvent(new CustomEvent("cursor-mode", { detail: { mode: "default" } }));
-  };
-  return (
-    <div
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
-      className="w-full h-full rounded-2xl overflow-hidden bg-white"
-    >
-      <Image src={src} alt={alt} width={1200} height={1200} className="w-full h-full object-cover block" />
-    </div>
-  );
-}
-
 /* =========================== PAGE =========================== */
 export default function AboutPage() {
   return (
@@ -286,57 +289,55 @@ export default function AboutPage() {
       {/* Heading + JAZLYNN tile + photo deck centered as one group inside
           one viewport height below the nav. Prose blocks are a separate
           section below so they're scrolled to, not crammed in. */}
+      {/* Deliberately NOT viewport-height: the card is sized so the "About me"
+          heading and the first lines of prose clear the fold, which is what
+          tells a visitor there's more below. A full-bleed 100vh hero read as
+          the whole page. */}
       <section
         style={{
           background: "#FFF5EF",
-          minHeight: "calc(100vh - 80px)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          paddingTop: 24,
-          paddingBottom: 24,
+          paddingTop: 112,
+          paddingBottom: 40,
         }}
       >
         <div
           className="max-w-[1228px] mx-auto px-6 w-full"
           style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}
         >
-          <p
-            style={{
-              fontFamily: FONTS.sans,
-              fontSize: 48,
-              fontWeight: 500,
-              lineHeight: 1.1,
-              color: C.ink,
-              margin: 0,
-              marginBottom: 16,
-            }}
-          >
-            Halo, I&apos;m ________
-          </p>
-          <Image
-            src="/images/about/hero/tile-jazlynn.png"
-            alt="JAZLYNN"
-            width={520}
-            height={140}
-            priority
-            style={{ display: "block", width: "auto", maxWidth: "100%", height: "auto" }}
-          />
-          <div style={{ marginTop: 32 }}>
-            <StackedDeck
-              cardWidth={340}
-              cardHeight={340}
-              cards={[
-                <CaptionedCard key="portrait" src="/images/about/hero/portrait.png" alt="Portrait of Jazlynn" caption="took this pic at a vintage photobooth @ amsterdam :)" />,
-                <CaptionedCard key="snow" src="/images/about/about-me-stack/snowboarding.jpg" alt="Snowboarding" caption="ripped my acl from this, but i still luv snowboarding" />,
-                <CaptionedCard key="bagel" src="/images/about/about-me-stack/bagels.jpg" alt="Bagels" caption="apollo bagels ftw" />,
-                <CaptionedCard key="camera" src="/images/about/about-me-stack/camera.jpg" alt="Speakeasy" caption="love me a nice speak-easy bar" />,
-                <CaptionedCard key="dog" src="/images/about/about-me-stack/dog-beach.jpg" alt="Beach dog" caption="im a huge dog person <3" />,
-                <CaptionedCard key="mun" src="/images/about/about-me-stack/mun.jpg" alt="MUN" caption="fun fact: i was an mun gurlie" />,
-                <CaptionedCard key="teach" src="/images/about/about-me-stack/teaching.jpg" alt="Teaching" caption="i teach kids ui/ux on the side — love my students" />,
-              ]}
-            />
+          {/* Holographic "about me" card — tilts, gleams, and shows an
+              iridescent holo sweep under the pointer. The face is the
+              "Permanent License of Travel" art (/jaz.svg, 2325x1471), laid in
+              full-bleed: its baked-in paper edge already carries the rounding
+              TiltCard clips to (8.17% / 12.91% == rx 190 on that viewBox), so
+              no inner padding — any inset would show cream through the corners
+              and double the border. Held to 600px so the "About me" prose below
+              clears the fold; unoptimized because the SVG carries its own
+              embedded rasters and the image optimizer only adds a hop. */}
+          {/* w-full (not a vw cap) so the card stays inside the section's px-6
+              gutter on phones — 92vw overflowed it and pushed the document
+              wider than the viewport. */}
+          <div className="w-full max-w-[600px]">
+            <TiltCard maxTilt={14} glare={0.45} holo aspect="2325 / 1471" className="bg-[#FFF5EF]">
+              <Image
+                src="/jaz.svg"
+                alt="Jazlynn Kurniandra — permanent license of travel"
+                width={2325}
+                height={1471}
+                priority
+                unoptimized
+                /* The artwork doesn't fill its own viewBox: measured against a
+                   magenta ground it leaves ~1.3% transparent at the BOTTOM and
+                   0.2% on each side, which let the card's beige show through as
+                   a pale band under the gold star border. Scaling ~1.5% from the
+                   top edge pushes that gap past the card's clip; the top is
+                   flush already so it stays put. */
+                className="h-full w-full origin-top scale-[1.015] object-cover"
+              />
+            </TiltCard>
           </div>
         </div>
       </section>
@@ -370,9 +371,13 @@ export default function AboutPage() {
       </section>
 
       {/* ------------------ 4. TYPEWRITER ------------------------ */}
+      {/* The sheet is absolutely positioned and grows UPWARD out of the machine,
+          overhanging the rig by ~150px. At paddingTop 64 the paper collided with
+          the carousel above. 190 clears the overhang AND leaves a real section
+          break, so the two stop reading as one compacted block. */}
       <section style={{ background: "#FFF5EF" }}>
-        <div className="max-w-[1228px] mx-auto px-6" style={{ paddingTop: 64, paddingBottom: 96 }}>
-          <InteractiveTypewriter />
+        <div className="max-w-[1228px] mx-auto px-6" style={{ paddingTop: 320, paddingBottom: 130 }}>
+          <RisoTypewriter />
         </div>
       </section>
       </main>

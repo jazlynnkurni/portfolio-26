@@ -15,10 +15,12 @@ const links: NavLink[] = [
   { label: "About Me", href: "/about" },
   {
     label: "Resume",
-    href: "https://drive.google.com/file/d/1W2XFyFbFbd1LrVWYK8Or2wfKZBIP29sg/view",
+    href: "https://drive.google.com/file/d/16SwZiGvIjfRE5J2eGrCoXIXYLl7Vnx2E/view?usp=sharing",
     external: true,
   },
 ];
+
+import ExternalArrow from "@/components/ExternalArrow";
 
 const ACTIVE_COLOR = "#C97836";
 
@@ -41,11 +43,12 @@ function NavItem({
         href={link.href}
         target="_blank"
         rel="noreferrer"
-        className="nav-link"
+        className="nav-link inline-flex items-center"
         onClick={onNavigate}
         style={style}
       >
         {link.label}
+        <ExternalArrow />
       </a>
     );
   }
