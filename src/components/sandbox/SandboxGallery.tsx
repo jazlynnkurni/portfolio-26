@@ -9,7 +9,7 @@
  * when scrolled away. Clicking a tile opens its linked X post in a new tab.
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
 export type SandboxItem = {
@@ -50,16 +50,42 @@ function TileInner({
   item: SandboxItem;
   videoRef: React.RefObject<HTMLVideoElement | null>;
 }) {
+  const [frameReady, setFrameReady] = useState(false);
   return (
     <>
+      {/* The still is the element that defines the tile's box. Tiles are
+          `h-auto` with no fixed aspect, so before this the tile had zero
+          height until video metadata landed and the whole masonry reflowed
+          under the reader. The image's intrinsic size settles it immediately. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        aria-hidden
+        alt=""
+        src={item.src.replace(/\.[^.]+$/, ".jpg")}
+        className="w-full h-auto block transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+      />
       <video
         ref={videoRef}
         src={item.src}
         muted
         loop
         playsInline
-        preload="metadata"
-        className="w-full h-auto block transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+        // `none`, not `metadata`: the still above carries the visual, and the
+        // observer calls play() when the tile comes into view, which starts
+        // the fetch then. Otherwise all 13 clips hit the network on load just
+        // to read their headers.
+        preload="none"
+        // Held invisible until a frame has actually decoded — otherwise the
+        // decoder's empty surface shows through as a green flash.
+        onLoadedData={() => setFrameReady(true)}
+        className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.04]"
+        style={{
+          opacity: frameReady ? 1 : 0,
+          // Both transitions declared here: an inline `transition` would
+          // otherwise clobber the class-based transform easing.
+          transition:
+            "opacity 320ms ease, transform 500ms cubic-bezier(0.22,1,0.36,1)",
+        }}
       />
 
       {/* Soft frosted-glass corner arrow (recent.design style). Decorative —

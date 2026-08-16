@@ -81,7 +81,7 @@ export const cards: WorkGridCard[] = [
     href: "/work/in-progress?p=Halodoc",
     numberLabel: "HALODOC - NO. 06",
     tagline: "Designing onboarding journey for AI Prescription on Mobile",
-    tags: ["Internship", "Shipped", "Cut CS tickets 18%"],
+    tags: ["Internship", "Shipped", "Cut CS tickets 13%"],
     mediaType: "video",
     // Portrait onboarding recording centred on the page beige, matching how
     // the Olive clip is composed (phone at ~25% of frame width).

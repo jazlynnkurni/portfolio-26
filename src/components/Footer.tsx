@@ -22,7 +22,7 @@ const internalLinks: FooterLink[] = [
   { label: "ABOUT ME", href: "/about" },
   {
     label: "RESUME",
-    href: "https://drive.google.com/file/d/16SwZiGvIjfRE5J2eGrCoXIXYLl7Vnx2E/view?usp=sharing",
+    href: "https://drive.google.com/file/d/1wam6sYI--pjJ74f0_qIMModLEalWe-sR/view?usp=sharing",
     external: true,
   },
 ];

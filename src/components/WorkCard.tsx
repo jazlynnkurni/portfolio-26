@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { CURSOR_MODE_EVENT, type CursorMode } from "./CustomCursor";
 
@@ -48,6 +48,9 @@ export default function WorkCard({
   mediaZoom,
 }: WorkCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  // False until the clip has a decoded frame. Gates the fade from poster to
+  // video so the empty decode surface is never on screen.
+  const [frameReady, setFrameReady] = useState(false);
 
   const onEnter = () => {
     setCursorMode("case-study");
@@ -180,21 +183,45 @@ export default function WorkCard({
         style={{ backgroundColor: "#FFF5EF" }}
       >
         {mediaType === "video" ? (
-          <video
-            ref={videoRef}
-            className="w-full h-full object-cover"
-            src={mediaSrc}
-            muted
-            playsInline
-            loop
-            preload="metadata"
-            aria-label={`preview of ${caseStudyName}`}
-            style={{
-              display: "block",
-              backgroundColor: "transparent",
-              transform: `scale(${mediaZoom ?? 1})`,
-            }}
-          />
+          <>
+            {/* Still first frame (~20KB), generated alongside each clip and
+                named to match. It sits UNDER the video as its own element
+                rather than relying on the `poster` attribute, because the
+                browser drops the poster the instant play() is called — which
+                is what exposes the decoder's empty surface (the green flash)
+                while the clip is still buffering. As a separate layer it stays
+                put until there's a real frame to show. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              aria-hidden
+              className="absolute inset-0 w-full h-full object-cover"
+              src={mediaSrc.replace(/\.[^.]+$/, ".jpg")}
+              alt=""
+              style={{ transform: `scale(${mediaZoom ?? 1})` }}
+            />
+            <video
+              ref={videoRef}
+              className="relative w-full h-full object-cover"
+              src={mediaSrc}
+              poster={mediaSrc.replace(/\.[^.]+$/, ".jpg")}
+              muted
+              playsInline
+              loop
+              preload="metadata"
+              // Revealed only once a frame has actually decoded.
+              onLoadedData={() => setFrameReady(true)}
+              aria-label={`preview of ${caseStudyName}`}
+              style={{
+                display: "block",
+                // Beige, not transparent: if anything ever does show through
+                // before the fade completes, it matches the card.
+                backgroundColor: "#FFF5EF",
+                transform: `scale(${mediaZoom ?? 1})`,
+                opacity: frameReady ? 1 : 0,
+                transition: "opacity 320ms ease",
+              }}
+            />
+          </>
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
           <img
