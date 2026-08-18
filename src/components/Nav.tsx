@@ -97,12 +97,22 @@ export default function Nav({ bg }: NavProps = {}) {
     return () => observer.disconnect();
   }, [pathname]);
 
+  /* Which link reads as "you are here". Derived from the link list rather than
+     matched href by href — the old version named /art-gallery and /about
+     explicitly and simply had no case for Sandbox, so that one could never
+     light up. Anything added to `links` is now covered by default. */
   const isActive = (link: NavLink): boolean => {
+    // Resume opens in a new tab. It's never the page you're on.
     if (link.external) return false;
-    if (link.href === "/#work") return pathname === "/" && workInView;
-    if (link.href === "/art-gallery") return pathname === "/art-gallery";
-    if (link.href === "/about") return pathname === "/about";
-    return false;
+
+    // Work is both a section of the homepage and the /work/* case studies.
+    if (link.href === "/#work") {
+      return pathname.startsWith("/work") || (pathname === "/" && workInView);
+    }
+
+    // Exact page, or a route nested under it. The trailing slash matters:
+    // a bare startsWith would light "Sandbox" up on /sandbox-lab too.
+    return pathname === link.href || pathname.startsWith(`${link.href}/`);
   };
 
   // If already on /, intercept the click on Work and smooth-scroll to #work
