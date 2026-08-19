@@ -11,6 +11,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import Nav from "@/components/Nav";
 import MahjongFooter from "@/components/MahjongFooter";
 import WorkGrid from "@/components/WorkGrid";
 import SandboxGallery, { type SandboxItem } from "@/components/sandbox/SandboxGallery";
@@ -67,6 +68,7 @@ export default function ScrollLab() {
 
   return (
     <>
+      <Nav />
 
       {/* HERO */}
       <section className="min-h-screen flex items-center px-6 md:px-16" style={{ background: "#FFF5EF" }}>

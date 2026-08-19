@@ -7,12 +7,14 @@
  * (EditableFourOhFour, TearAway and CodeTrail all remain in the repo, unused.)
  */
 
+import Nav from "@/components/Nav";
 import MahjongFooter from "@/components/MahjongFooter";
 import CloverDither from "@/components/clover404/CloverDither";
 
 export default function InProgressPage() {
   return (
     <>
+      <Nav />
       <main className="relative z-10 flex-1">
         <CloverDither />
       </main>

@@ -9,6 +9,7 @@
  */
 
 import { useState } from "react";
+import Nav from "@/components/Nav";
 import ShaderPendantLamp from "@/components/ShaderPendantLamp";
 
 export default function LampPositionLab() {
@@ -21,6 +22,7 @@ export default function LampPositionLab() {
 
   return (
     <>
+      <Nav />
       {/* mock hero — relative so the lamp's vw-based left matches the homepage */}
       <main className="relative min-h-screen" style={{ background: "#FFF5EF" }}>
         <ShaderPendantLamp width={width} height={height} left={left} top={topOffset} />
