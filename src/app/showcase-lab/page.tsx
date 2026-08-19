@@ -10,7 +10,6 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import Nav from "@/components/Nav";
 import WorkCard from "@/components/WorkCard";
 import { cards } from "@/components/WorkGrid";
 
@@ -64,7 +63,6 @@ export default function ShowcaseLab() {
 
   return (
     <>
-      <Nav />
       <main className="px-6 md:px-16 pt-32 pb-28 min-h-screen" style={{ background: "#FFF5EF" }}>
         <div className="max-w-6xl mx-auto">
 

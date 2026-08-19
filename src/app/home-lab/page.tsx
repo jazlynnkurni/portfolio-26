@@ -15,7 +15,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
-import Nav from "@/components/Nav";
 import MahjongFooter from "@/components/MahjongFooter";
 import SnookerScene from "@/components/snooker/ChromeSnookerScene";
 import HeroPendantLamp from "@/components/HeroPendantLamp";
@@ -434,7 +433,6 @@ export default function HomeLab() {
 
   return (
     <>
-      <Nav />
 
       {/* ------------------------- HERO (top) ------------------------- */}
       <section ref={heroRef} className="relative h-screen overflow-hidden">
