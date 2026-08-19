@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Source_Serif_4, IBM_Plex_Mono } from "next/font/google";
 import CustomCursor from "@/components/CustomCursor";
+import SiteNav from "@/components/SiteNav";
 import "./globals.css";
 
 const sourceSerif = Source_Serif_4({
@@ -33,6 +34,9 @@ export default function RootLayout({
       className={`${sourceSerif.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        {/* Outside {children} on purpose — this is what keeps it mounted across
+            navigation, so the active bar has somewhere to slide from. */}
+        <SiteNav />
         {children}
         <CustomCursor />
       </body>

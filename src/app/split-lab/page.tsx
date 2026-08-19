@@ -12,7 +12,6 @@
 
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import Nav from "@/components/Nav";
 import MahjongFooter from "@/components/MahjongFooter";
 import WorkCard from "@/components/WorkCard";
 import { cards } from "@/components/WorkGrid";
@@ -50,7 +49,6 @@ function Clip({ src, href }: { src: string; href: string }) {
 export default function SplitLab() {
   return (
     <>
-      <Nav />
 
       {/* hero landing — fills the viewport so a refresh lands here, and the
           split feed only appears on the first scroll down. */}

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
-import Nav from "@/components/Nav";
 import MahjongFooter from "@/components/MahjongFooter";
 import HeadlineDrift, {
   type HeadlineSegment,
@@ -99,7 +98,6 @@ export default function Home() {
         style={{ position: "fixed", inset: 0, zIndex: -1, pointerEvents: "none", background: "#FFF5EF" }}
       />
 
-      <Nav />
 
       <main className="flex-1 relative overflow-x-clip">
         {/* ---------------------------- HERO ---------------------------- */}
