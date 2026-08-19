@@ -8,6 +8,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import Nav from "@/components/Nav";
 import MahjongFooter from "@/components/MahjongFooter";
 import SandboxGallery, {
   type SandboxItem,
@@ -77,6 +78,7 @@ export default function SandboxPage() {
 
   return (
     <>
+      <Nav />
       <main className="flex-1 px-6 md:px-16 pt-28 md:pt-32 pb-24">
         <div className="max-w-7xl mx-auto">
           <SandboxGallery items={items} />

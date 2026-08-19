@@ -24,40 +24,14 @@ import ExternalArrow from "@/components/ExternalArrow";
 
 const ACTIVE_COLOR = "#C97836";
 
-/* Underdamped on purpose. damping / (2·√(stiffness·mass)) = 26 / (2·√(430·0.9))
-   ≈ 0.66, so the bar overshoots its target slightly and settles back — the recoil.
-   Critically damped (ratio 1) arrives dead and reads mechanical. */
-const SLIDE_SPRING = { type: "spring" as const, stiffness: 430, damping: 26, mass: 0.9 };
-
-/** The orange itself, travelling. One bar per nav group, moved between items by
- *  framer-motion's shared-layout — which is why the whole nav has to survive the
- *  route change (see SiteNav). If it remounted, the bar would simply appear
- *  already-arrived under the new word and there'd be nothing to watch. */
-function ActiveBar({ groupId }: { groupId: string }) {
-  return (
-    <motion.span
-      layoutId={`nav-active-${groupId}`}
-      aria-hidden
-      className="absolute left-0 right-0 -bottom-1 h-[2px] rounded-full"
-      style={{ background: ACTIVE_COLOR }}
-      transition={SLIDE_SPRING}
-    />
-  );
-}
-
 function NavItem({
   link,
   active,
-  groupId,
   onNavigate,
   onWorkClick,
 }: {
   link: NavLink;
   active: boolean;
-  /* Desktop and mobile menus are both in the DOM at once (one is just
-     display:none), so they need separate layoutIds — sharing one would have the
-     bar trying to be in two places and snapping between them. */
-  groupId: string;
   onNavigate?: () => void;
   onWorkClick?: (e: React.MouseEvent) => void;
 }) {
@@ -69,13 +43,12 @@ function NavItem({
         href={link.href}
         target="_blank"
         rel="noreferrer"
-        className="nav-link relative inline-flex items-center"
+        className="nav-link inline-flex items-center"
         onClick={onNavigate}
         style={style}
       >
         {link.label}
         <ExternalArrow />
-        {active && <ActiveBar groupId={groupId} />}
       </a>
     );
   }
@@ -88,12 +61,11 @@ function NavItem({
   return (
     <Link
       href={link.href}
-      className="nav-link relative inline-block"
+      className="nav-link"
       onClick={handleClick}
       style={style}
     >
       {link.label}
-      {active && <ActiveBar groupId={groupId} />}
     </Link>
   );
 }
@@ -202,7 +174,6 @@ export default function Nav({ bg }: NavProps = {}) {
               key={link.label}
               link={link}
               active={isActive(link)}
-              groupId="desktop"
               onWorkClick={link.href === "/#work" ? handleWorkClick : undefined}
             />
           ))}
@@ -226,7 +197,6 @@ export default function Nav({ bg }: NavProps = {}) {
                   key={link.label}
                   link={link}
                   active={isActive(link)}
-                  groupId="mobile"
                   onNavigate={() => setOpen(false)}
                   onWorkClick={link.href === "/#work" ? handleWorkClick : undefined}
                 />

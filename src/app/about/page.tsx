@@ -23,6 +23,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import Nav from "@/components/Nav";
 import MahjongFooter from "@/components/MahjongFooter";
 import RisoTypewriter from "@/components/typewriter/RisoTypewriter";
 import { TiltCard } from "@/components/TiltCard";
@@ -282,6 +283,7 @@ function ArrowButton({
 export default function AboutPage() {
   return (
     <>
+      <Nav />
       <main style={{ background: "#FFF5EF" }}>
       {/* ------------------ 1. HERO (viewport-fit) ----------------- */}
       {/* Heading + JAZLYNN tile + photo deck centered as one group inside
