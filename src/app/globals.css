@@ -28,6 +28,40 @@ body {
   font-family: var(--font-sans);
 }
 
+/* --- Line wrapping ---------------------------------------------------------
+   Titles get `balance`: the browser evens out the lines so a heading never
+   breaks 6-words-then-1. It only applies up to a handful of lines, which is
+   fine — headings are short, and that cap is exactly why it isn't set on body
+   copy.
+
+   Descriptions get `pretty`, which is the cheaper cousin: it doesn't even the
+   lines out, it only refuses to leave a single word stranded on the last one.
+
+   Both are progressive enhancement — a browser without support just wraps the
+   way it always did. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* The typewriter is the exception. Its answers are appended one character at a
+   time into these paragraphs (typewriter/engine.ts), so re-wrapping on every
+   keystroke would make the last line twitch as it types — and the sheet's whole
+   point is that text lands on the ruled lines. Let it wrap plainly. */
+.tw-sheet p,
+.tw-sheet .tw-q,
+.tw-sheet .tw-a {
+  text-wrap: wrap;
+}
+
 /* --- Custom cursor --- */
 /* Hide the native cursor everywhere so only .custom-cursor is visible.
    The wildcard !important is necessary because Tailwind's cursor-pointer
@@ -268,6 +302,10 @@ body {
   transition: background 160ms ease, transform 160ms cubic-bezier(0.22,1,0.36,1);
 }
 .tw-asks .chip:hover { background: rgba(201,120,54,0.08); transform: translateX(3px); }
+/* Press feedback. Composed with the hover nudge rather than replacing it, or the
+   chip would jump back to x=0 the moment you pressed it. 0.96 exactly — below
+   0.95 reads as a flinch. */
+.tw-asks .chip:active { transform: translateX(3px) scale(0.96); }
 .tw-asks .chip .arrow { color: #c97836; transition: transform 200ms cubic-bezier(0.22,1,0.36,1); }
 .tw-asks .chip:hover .arrow { transform: translateX(4px); }
 .tw-asks .chip.on { background: rgba(201,120,54,0.13); }

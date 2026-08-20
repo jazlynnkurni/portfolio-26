@@ -99,7 +99,12 @@ export default function WorkCard({
 
   const cardInner = (
     <motion.article
-      className="relative rounded-3xl h-full"
+      /* Concentric with the media box inside it: outer radius = inner radius +
+         padding, so 12 + 24 = 36. At the old rounded-3xl (24px) the card's
+         curve was tighter than the curve 24px inside it, and the two corners
+         visibly fought. The media box can't be the one to move — the clips
+         carry their own rounded corners. */
+      className="relative rounded-[36px] h-full"
       data-cursor="case-study"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
@@ -180,7 +185,15 @@ export default function WorkCard({
           burnt orange (matches card bg, reads as intentional). */}
       <div
         className="relative isolate aspect-video rounded-xl overflow-hidden w-full"
-        style={{ backgroundColor: "#FFF5EF" }}
+        style={{
+          backgroundColor: "#FFF5EF",
+          // Hairline containment for the media. Pure black at 10%, never a
+          // tinted neutral — a tinted line picks up the beige underneath and
+          // reads as grime along the edge. Negative offset draws it inside, so
+          // it follows the corner radius instead of boxing it.
+          outline: "1px solid oklch(0 0 0 / 0.1)",
+          outlineOffset: "-1px",
+        }}
       >
         {mediaType === "video" ? (
           <>
