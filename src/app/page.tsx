@@ -135,7 +135,6 @@ export default function Home() {
                 variants={fadeUp}
                 className="mt-8 font-mono text-[12px] md:text-[14px] text-ink/70 leading-relaxed text-left"
               >
-                <p>Ambassador @ Lovable</p>
                 <p>Flibbertigibbeting @ Columbia University</p>
               </motion.div>
             </div>
