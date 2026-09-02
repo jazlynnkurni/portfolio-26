@@ -91,7 +91,7 @@ export default function ArtLab() {
 
       {/* 2 — EDITORIAL ZINE */}
       {mode === 1 && (
-        <main className="pt-32 pb-40" style={{ background: "#FFF5EF" }}>
+        <main className="pt-32 pb-40" style={{ background: "#FFFFFF" }}>
           <div className="max-w-4xl mx-auto px-6 flex flex-col gap-36">
             {ARTWORKS.map((a, i) => (
               <motion.figure key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -141,7 +141,7 @@ export default function ArtLab() {
 
       {/* 5 — LIVING MASONRY */}
       {mode === 4 && (
-        <main className="pt-32 pb-32 px-6 md:px-12" style={{ background: "#FFF5EF" }}>
+        <main className="pt-32 pb-32 px-6 md:px-12" style={{ background: "#FFFFFF" }}>
           <div className="max-w-7xl mx-auto columns-2 md:columns-3 lg:columns-4 gap-4">
             {ARTWORKS.map((a, i) => (
               <div key={i} className="mb-4 overflow-hidden rounded-lg group" style={{ boxShadow: "0 10px 26px -14px rgba(0,0,0,0.25)" }}>

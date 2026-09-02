@@ -60,7 +60,7 @@ export default function Lightbox({
           onClick={onClose}
           className="fixed inset-0 z-[100] flex items-center justify-center cursor-zoom-out"
           style={{
-            backgroundColor: "rgba(255, 245, 239, 0.7)",
+            backgroundColor: "rgba(255, 255, 255, 0.7)",
             backdropFilter: "blur(20px)",
             WebkitBackdropFilter: "blur(20px)",
           }}

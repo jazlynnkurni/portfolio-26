@@ -387,7 +387,7 @@ export default function CustomCursor() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15, delay: 0.1 }}
               style={{
-                color: "#FFF5EF",
+                color: "#FFFFFF",
                 fontFamily:
                   '"Helvetica Neue", Helvetica, Arial, sans-serif',
                 fontSize: 14,

@@ -54,7 +54,7 @@ export default function SplitLab() {
 
       {/* hero landing — fills the viewport so a refresh lands here, and the
           split feed only appears on the first scroll down. */}
-      <section className="min-h-screen flex items-center px-6 md:px-16" style={{ background: "#FFF5EF" }}>
+      <section className="min-h-screen flex items-center px-6 md:px-16" style={{ background: "#FFFFFF" }}>
         <div className="max-w-7xl mx-auto w-full">
           <div className="inline-flex items-center gap-2 bg-[rgba(201,120,54,0.08)] py-2 px-4 rounded-full mb-8">
             <span className="pulse-dot" aria-hidden />

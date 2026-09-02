@@ -29,14 +29,14 @@ const STICKS: { name: string; design: { background: string; width: string } }[] 
   },
   {
     name: "Two-tone Sport",
-    design: { background: "linear-gradient(to bottom, #FFF5EF 0%, #FFF5EF 8%, #C97836 12%, #C97836 20%, #9A4C19 20%, #9A4C19 24%, #C97836 26%, #B0642B 100%)", width: "3%" },
+    design: { background: "linear-gradient(to bottom, #FFFFFF 0%, #FFFFFF 8%, #C97836 12%, #C97836 20%, #9A4C19 20%, #9A4C19 24%, #C97836 26%, #B0642B 100%)", width: "3%" },
   },
 ];
 
 export default function StickLab() {
   const [i, setI] = useState(0);
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center py-10" style={{ background: "#FFF5EF" }}>
+    <main className="min-h-screen flex flex-col items-center justify-center py-10" style={{ background: "#FFFFFF" }}>
       <div style={{ width: "min(400px, calc((100vh - 200px) / 1.79))" }}>
         <ChromeSnookerScene cueDesign={STICKS[i].design} />
       </div>

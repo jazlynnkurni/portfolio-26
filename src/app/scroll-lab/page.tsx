@@ -71,7 +71,7 @@ export default function ScrollLab() {
       <Nav />
 
       {/* HERO */}
-      <section className="min-h-screen flex items-center px-6 md:px-16" style={{ background: "#FFF5EF" }}>
+      <section className="min-h-screen flex items-center px-6 md:px-16" style={{ background: "#FFFFFF" }}>
         <div className="max-w-7xl mx-auto w-full">
           <div className="inline-flex items-center gap-2 bg-[rgba(201,120,54,0.08)] py-2 px-4 rounded-full mb-8">
             <span className="pulse-dot" aria-hidden />
@@ -88,8 +88,8 @@ export default function ScrollLab() {
 
       {/* SANDBOX SCROLL-BOX (sticky; you scroll through it in place). Same
           max-w-7xl + px as the case studies / hero so the margins line up. */}
-      <div ref={wrapRef} style={{ height: `calc(100vh + ${travel}px)`, background: "#FFF5EF" }}>
-        <div className="sticky top-0 h-screen flex items-center justify-center px-6 md:px-16" style={{ background: "#FFF5EF" }}>
+      <div ref={wrapRef} style={{ height: `calc(100vh + ${travel}px)`, background: "#FFFFFF" }}>
+        <div className="sticky top-0 h-screen flex items-center justify-center px-6 md:px-16" style={{ background: "#FFFFFF" }}>
           {/* the box — fixed height, edge-faded, content translates inside it */}
           <div
             className="w-full max-w-7xl mx-auto overflow-hidden"
@@ -107,7 +107,7 @@ export default function ScrollLab() {
       </div>
 
       {/* CASE STUDIES */}
-      <section className="px-6 md:px-16 pt-16 pb-24" style={{ background: "#FFF5EF" }}>
+      <section className="px-6 md:px-16 pt-16 pb-24" style={{ background: "#FFFFFF" }}>
         <div className="max-w-7xl mx-auto">
           <WorkGrid animateOnScroll />
         </div>

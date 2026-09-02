@@ -92,7 +92,7 @@ export default function SoundLab() {
   const onHit = useCallback((impact: number) => { play(soundRef.current, impact, volRef.current); }, [play]);
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center py-10" style={{ background: "#FFF5EF" }}>
+    <main className="min-h-screen flex flex-col items-center justify-center py-10" style={{ background: "#FFFFFF" }}>
       <div style={{ width: "min(400px, calc((100vh - 210px) / 1.79))" }}>
         <ChromeSnookerScene onBallHit={onHit} />
       </div>

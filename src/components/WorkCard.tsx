@@ -125,7 +125,7 @@ export default function WorkCard({
         // Beige rather than an orange fill: the card sits ON the page tone, so
         // only the burnt-orange outline separates it — seamless instead of a
         // block of colour.
-        background: "#FFF5EF",
+        background: "#FFFFFF",
         border: "1.5px solid #C97836",
         // Extra headroom: the label sits ON the top border, so the first
         // child needs to start below where it straddles.
@@ -148,7 +148,7 @@ export default function WorkCard({
           display: "flex",
           alignItems: "center",
           gap: 10,
-          background: "#FFF5EF",
+          background: "#FFFFFF",
           padding: "0 10px",
           maxWidth: "calc(100% - 40px)",
         }}
@@ -186,7 +186,7 @@ export default function WorkCard({
       <div
         className="relative isolate aspect-video rounded-xl overflow-hidden w-full"
         style={{
-          backgroundColor: "#FFF5EF",
+          backgroundColor: "#FFFFFF",
           // Hairline containment for the media. Pure black at 10%, never a
           // tinted neutral — a tinted line picks up the beige underneath and
           // reads as grime along the edge. Negative offset draws it inside, so
@@ -228,7 +228,7 @@ export default function WorkCard({
                 display: "block",
                 // Beige, not transparent: if anything ever does show through
                 // before the fade completes, it matches the card.
-                backgroundColor: "#FFF5EF",
+                backgroundColor: "#FFFFFF",
                 transform: `scale(${mediaZoom ?? 1})`,
                 opacity: frameReady ? 1 : 0,
                 transition: "opacity 320ms ease",

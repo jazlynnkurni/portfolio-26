@@ -129,11 +129,11 @@ export default function Nav({ bg }: NavProps = {}) {
 
   const wrapperStyle =
     bg === "solid"
-      ? { background: "#FFF5EF" }
+      ? { background: "#FFFFFF" }
       : bg
       ? { background: bg }
       : {
-          background: "rgba(255, 245, 239, 0.6)",
+          background: "rgba(255, 255, 255, 0.6)",
           backdropFilter: "blur(8px)",
           WebkitBackdropFilter: "blur(8px)",
           position: "sticky" as const,
