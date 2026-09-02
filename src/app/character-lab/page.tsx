@@ -18,7 +18,7 @@ export default function CharacterLab() {
   const [x, setX] = useState(50); // horizontal %
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center py-10" style={{ background: "#FFF5EF" }}>
+    <main className="min-h-screen flex flex-col items-center justify-center py-10" style={{ background: "#FFFFFF" }}>
       <div style={{ width: "min(400px, calc((100vh - 220px) / 1.79))" }}>
         {/* key forces a fresh mount only if you want to re-rack; here we keep it
             mounted so the physics keeps running while you tune the avatar. */}

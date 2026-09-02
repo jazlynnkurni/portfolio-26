@@ -43,7 +43,7 @@ export default function Ball({
   isCueBall,
   dropping = false,
 }: BallProps) {
-  const base = isCueBall ? "#FFF5EF" : color;
+  const base = isCueBall ? "#FFFFFF" : color;
   const highlight = isCueBall ? "#FFFEFB" : lighten(base);
   const shadow = isCueBall ? "#E8DDD0" : darken(base);
 
@@ -51,7 +51,7 @@ export default function Ball({
   const numberColor = isStriped
     ? "rgba(30, 30, 30, 0.65)"
     : isInkBall
-      ? "rgba(255, 245, 239, 0.85)"
+      ? "rgba(255, 255, 255, 0.85)"
       : "rgba(30, 30, 30, 0.55)";
 
   const ballShadow = isCueBall
@@ -98,7 +98,7 @@ export default function Ball({
               width: "100%",
               height: "30%",
               background:
-                "linear-gradient(to bottom, #FFFAF4 0%, #FFF5EF 50%, #F2E6D7 100%)",
+                "linear-gradient(to bottom, #FFFAF4 0%, #FFFFFF 50%, #F2E6D7 100%)",
               opacity: 0.95,
             }}
           />

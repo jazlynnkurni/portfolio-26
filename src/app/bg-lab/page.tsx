@@ -8,13 +8,13 @@
  * full-viewport layer behind sample hero content so you can judge how it reads
  * with real text on top. Pick a direction; not wired into the real site.
  *
- * Palette: cream #FFF5EF · ink #3A2A20 · clover green #717C4D · burnt #C97836
+ * Palette: cream #FFFFFF · ink #3A2A20 · clover green #717C4D · burnt #C97836
  */
 
 import { useEffect, useRef, useState } from "react";
 import Matter from "matter-js";
 
-const CREAM = "#FFF5EF";
+const CREAM = "#FFFFFF";
 const GREEN = "113,124,77"; // #717C4D
 const BURNT = "201,120,54"; // #C97836
 

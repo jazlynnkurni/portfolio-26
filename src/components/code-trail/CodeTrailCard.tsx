@@ -20,7 +20,7 @@ const MIN_TRAVEL_RATIO = 0.055;
 
 export function CodeTrailCard({
   className,
-  background = "#FFF5EF",
+  background = "#FFFFFF",
 }: { className?: string; background?: string } = {}) {
   const hostRef = useRef<HTMLDivElement>(null);
   const rowRefs = useRef<Map<number, HTMLDivElement>>(new Map());

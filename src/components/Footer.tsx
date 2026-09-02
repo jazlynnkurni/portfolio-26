@@ -69,7 +69,7 @@ export default function Footer({ variant = "default" }: FooterProps) {
           .footer-cream .footer-link::after { background: #FFFFFF; }
         `}</style>
       )}
-      <AsciiConstellation color={isCream ? "#FFFFFF" : "#FFF5EF"} opacity={isCream ? 1 : 0.7} />
+      <AsciiConstellation color={isCream ? "#FFFFFF" : "#FFFFFF"} opacity={isCream ? 1 : 0.7} />
       <div className="relative z-10 flex flex-col md:flex-row md:justify-between gap-8 md:gap-0 max-w-7xl mx-auto">
         <p
           className="font-serif font-semibold text-[16px] not-italic leading-normal"

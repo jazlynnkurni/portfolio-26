@@ -66,3 +66,6 @@ public/videos/Eden/
 
 # Pre-optimisation media originals (local only)
 .media-originals/
+
+# Visual references — local scratch, never deployed
+refs/

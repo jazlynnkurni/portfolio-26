@@ -59,7 +59,7 @@ export default function SandboxLab() {
   return (
     <>
       <Nav />
-      <main className="min-h-screen pt-32 pb-32" style={{ background: "#FFF5EF" }}>
+      <main className="min-h-screen pt-32 pb-32" style={{ background: "#FFFFFF" }}>
         <div className="px-6 md:px-16 mb-10">
           <div className="max-w-7xl mx-auto flex items-baseline justify-between">
             <h1 className="font-serif text-[28px] text-ink">Sandbox</h1>

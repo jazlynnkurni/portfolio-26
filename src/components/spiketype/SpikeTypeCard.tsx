@@ -8,7 +8,7 @@ import { onTransitionChange } from "../../lib/view-transition";
 const PALETTE = {
   // Page beige, so this reads as a page title sitting on the page rather than
   // a grey plate dropped onto it.
-  ground: "#FFF5EF",
+  ground: "#FFFFFF",
   // White knockout, per jaz. Against the beige this is a soft ~1.06:1 shape,
   // so the yellow spikes do the reading and the word sits underneath them as a
   // ghost. Deliberate — swap to ink if the words need to carry on their own.

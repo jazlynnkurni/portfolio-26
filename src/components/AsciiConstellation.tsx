@@ -66,7 +66,7 @@ interface AsciiConstellationProps {
 }
 
 export default function AsciiConstellation({
-  color = "#FFF5EF",
+  color = "#FFFFFF",
   opacity = BASELINE_OPACITY,
 }: AsciiConstellationProps = {}) {
   const reducedMotion = useReducedMotion();

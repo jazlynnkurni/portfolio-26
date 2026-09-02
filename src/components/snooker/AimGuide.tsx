@@ -33,7 +33,7 @@ export default function AimGuide({
         transformOrigin: "0% 50%",
         rotate: aimAngle,
         backgroundImage:
-          "repeating-linear-gradient(to right, rgba(255, 245, 239, 0.55) 0 4px, transparent 4px 9px)",
+          "repeating-linear-gradient(to right, rgba(255, 255, 255, 0.55) 0 4px, transparent 4px 9px)",
         pointerEvents: "none",
         zIndex: 25,
       }}

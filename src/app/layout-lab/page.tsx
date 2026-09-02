@@ -67,7 +67,7 @@ export default function LayoutLab() {
   return (
     <>
       <Nav />
-      <main className="min-h-screen pt-32" style={{ background: "#FFF5EF", paddingBottom: mode === 2 ? 200 : 120 }}>
+      <main className="min-h-screen pt-32" style={{ background: "#FFFFFF", paddingBottom: mode === 2 ? 200 : 120 }}>
         <div className="max-w-7xl mx-auto px-6 md:px-16">
 
           {/* 1 — TWO-TIER REEL */}
@@ -119,7 +119,7 @@ export default function LayoutLab() {
 
       {/* docked reel band (mode 3) */}
       {mode === 2 && (
-        <div className="fixed bottom-0 left-0 right-0 z-[70] px-6 py-4" style={{ background: "rgba(255,245,239,0.82)", backdropFilter: "blur(10px)", borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+        <div className="fixed bottom-0 left-0 right-0 z-[70] px-6 py-4" style={{ background: "rgba(255, 255, 255,0.82)", backdropFilter: "blur(10px)", borderTop: "1px solid rgba(0,0,0,0.06)" }}>
           <div className="max-w-7xl mx-auto flex items-center gap-4">
             <span className="font-mono text-[10px] uppercase tracking-wide text-ink/40 shrink-0">Sandbox ↗</span>
             <div className="flex-1"><Filmstrip h={92} dur={30} /></div>
@@ -133,7 +133,7 @@ export default function LayoutLab() {
           <button onClick={() => setDrawer((v) => !v)} className="fixed right-0 top-1/2 -translate-y-1/2 z-[71] px-3 py-4 font-mono text-[12px] rounded-l-xl" style={{ background: "#C97836", color: "#fff", writingMode: "vertical-rl" }}>
             {drawer ? "close ✕" : "Sandbox ▸"}
           </button>
-          <motion.aside initial={false} animate={{ x: drawer ? 0 : "100%" }} transition={{ type: "spring", stiffness: 260, damping: 30 }} className="fixed right-0 top-0 bottom-0 z-[70] w-[360px] max-w-[86vw] overflow-y-auto p-5" style={{ background: "#FFF5EF", boxShadow: "-20px 0 50px -20px rgba(0,0,0,0.25)" }}>
+          <motion.aside initial={false} animate={{ x: drawer ? 0 : "100%" }} transition={{ type: "spring", stiffness: 260, damping: 30 }} className="fixed right-0 top-0 bottom-0 z-[70] w-[360px] max-w-[86vw] overflow-y-auto p-5" style={{ background: "#FFFFFF", boxShadow: "-20px 0 50px -20px rgba(0,0,0,0.25)" }}>
             <h3 className="font-serif text-[20px] text-ink mb-4">Sandbox</h3>
             <div className="flex flex-col gap-4">{CLIPS.map((c, i) => <a key={i} href={c.href} target="_blank" rel="noopener noreferrer" className="group relative block overflow-hidden rounded-[14px]"><video src={c.src} autoPlay muted loop playsInline className="w-full h-auto block" /></a>)}</div>
           </motion.aside>
