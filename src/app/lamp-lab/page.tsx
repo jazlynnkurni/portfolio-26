@@ -27,7 +27,7 @@ export default function LampLab() {
   const lit = on ? (hoverBright ? 1 : 0.8) : 0;
 
   return (
-    <main className="relative min-h-screen overflow-hidden" style={{ background: on ? "#FFFFFF" : "#171310", transition: "background 500ms ease" }}>
+    <main className="relative min-h-screen overflow-hidden" style={{ background: on ? "#FFF5EF" : "#171310", transition: "background 500ms ease" }}>
       {/* pool of light under the lamp */}
       <div aria-hidden style={{
         position: "absolute", top: 120, left: "50%", transform: "translateX(-50%)",

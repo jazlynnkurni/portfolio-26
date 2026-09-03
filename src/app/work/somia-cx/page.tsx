@@ -9,7 +9,7 @@ import CaseStudyFooter from "@/components/CaseStudyFooter";
 import StackedDeck from "@/components/StackedDeck";
 
 const COLORS = {
-  cream: "#FFFFFF",
+  cream: "#FFF5EF",
   burntOrange: "#C97836",
   inkSoft: "#3A3A3A",
 };
@@ -436,7 +436,7 @@ export default function SomiaCXCaseStudy() {
             className="w-full"
             style={{
               background:
-                "linear-gradient(to bottom, #FFFFFF 0%, #FFFFFF 50%, #FFFFFF 50%, #FFFFFF 100%)",
+                "linear-gradient(to bottom, #FFF5EF 0%, #FFF5EF 50%, #FFFFFF 50%, #FFFFFF 100%)",
             }}
           >
             <div className="mx-auto max-w-[1228px] px-6 py-6">
@@ -588,7 +588,7 @@ export default function SomiaCXCaseStudy() {
             <div
               className="rounded-3xl"
               style={{
-                backgroundColor: "#FFFFFF",
+                backgroundColor: "#FFF5EF",
                 padding: "60px 40px",
               }}
             >
@@ -805,7 +805,7 @@ export default function SomiaCXCaseStudy() {
                 <div
                   className="rounded-2xl"
                   style={{
-                    backgroundColor: "#FFFFFF",
+                    backgroundColor: "#FFF5EF",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
                     padding: "24px 28px",
                   }}
@@ -846,7 +846,7 @@ export default function SomiaCXCaseStudy() {
                 <div
                   className="rounded-2xl"
                   style={{
-                    backgroundColor: "#FFFFFF",
+                    backgroundColor: "#FFF5EF",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
                     padding: "24px 28px",
                   }}
@@ -887,7 +887,7 @@ export default function SomiaCXCaseStudy() {
                 <div
                   className="rounded-2xl"
                   style={{
-                    backgroundColor: "#FFFFFF",
+                    backgroundColor: "#FFF5EF",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
                     padding: "24px 28px",
                   }}
@@ -928,7 +928,7 @@ export default function SomiaCXCaseStudy() {
                 <div
                   className="rounded-2xl"
                   style={{
-                    backgroundColor: "#FFFFFF",
+                    backgroundColor: "#FFF5EF",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
                     padding: "24px 28px",
                   }}
@@ -1121,7 +1121,7 @@ export default function SomiaCXCaseStudy() {
                 </div>
 
                 {/* persona card */}
-                <div className="rounded-2xl flex items-center gap-4" style={{ backgroundColor: "#FFFFFF", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "20px" }}>
+                <div className="rounded-2xl flex items-center gap-4" style={{ backgroundColor: "#FFF5EF", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "20px" }}>
                   <div style={{ flexShrink: 0, width: 72, height: 72, borderRadius: 12, overflow: "hidden" }}>
                     <Image src="/images/manus/research/persona-power-user.png" alt="Motorcycle owners persona avatar" width={72} height={72} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                   </div>
@@ -1170,7 +1170,7 @@ export default function SomiaCXCaseStudy() {
                   ))}
                 </div>
 
-                <div className="rounded-2xl flex items-center gap-4" style={{ backgroundColor: "#FFFFFF", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "20px" }}>
+                <div className="rounded-2xl flex items-center gap-4" style={{ backgroundColor: "#FFF5EF", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "20px" }}>
                   <div style={{ flexShrink: 0, width: 72, height: 72, borderRadius: 12, overflow: "hidden" }}>
                     <Image src="/images/manus/research/persona-newcomer.png" alt="Car owners persona avatar" width={72} height={72} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                   </div>
@@ -1218,7 +1218,7 @@ export default function SomiaCXCaseStudy() {
                   ))}
                 </div>
 
-                <div className="rounded-2xl flex items-center gap-4" style={{ backgroundColor: "#FFFFFF", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "20px" }}>
+                <div className="rounded-2xl flex items-center gap-4" style={{ backgroundColor: "#FFF5EF", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "20px" }}>
                   <div style={{ flexShrink: 0, width: 72, height: 72, borderRadius: 12, overflow: "hidden" }}>
                     <Image src="/images/conduit/users/core-user-avatar.png" alt="Internal subsidiary team persona avatar" width={72} height={72} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                   </div>
@@ -1482,7 +1482,7 @@ export default function SomiaCXCaseStudy() {
               {/* CARD 1 — chart */}
               <div
                 className="rounded-2xl"
-                style={{ backgroundColor: "#FFFFFF", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "32px", transform: "rotate(-1.5deg)" }}
+                style={{ backgroundColor: "#FFF5EF", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "32px", transform: "rotate(-1.5deg)" }}
               >
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C97836" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "24px" }}>
                   <path d="M3 3v18h18" />
@@ -1496,7 +1496,7 @@ export default function SomiaCXCaseStudy() {
               {/* CARD 2 — clock */}
               <div
                 className="rounded-2xl"
-                style={{ backgroundColor: "#FFFFFF", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "32px", transform: "rotate(1deg)" }}
+                style={{ backgroundColor: "#FFF5EF", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "32px", transform: "rotate(1deg)" }}
               >
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C97836" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "24px" }}>
                   <circle cx="12" cy="12" r="9" />
@@ -1510,7 +1510,7 @@ export default function SomiaCXCaseStudy() {
               {/* CARD 3 — thumbs up */}
               <div
                 className="rounded-2xl"
-                style={{ backgroundColor: "#FFFFFF", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "32px", transform: "rotate(-1deg)" }}
+                style={{ backgroundColor: "#FFF5EF", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "32px", transform: "rotate(-1deg)" }}
               >
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C97836" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "24px" }}>
                   <path d="M7 10v11" />
@@ -1671,7 +1671,7 @@ export default function SomiaCXCaseStudy() {
               onMouseEnter={() => setThanksHovered(true)}
               onMouseLeave={() => setThanksHovered(false)}
               style={{
-                background: "#FFFFFF",
+                background: "#FFF5EF",
                 borderRadius: 16,
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                 padding: 20,

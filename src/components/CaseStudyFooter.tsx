@@ -43,7 +43,7 @@ export default function CaseStudyFooter({
   return (
     <section
       style={{
-        backgroundColor: beige ? "#FFFFFF" : "#D4A574",
+        backgroundColor: beige ? "#FFF5EF" : "#D4A574",
         paddingTop: 64,
         paddingBottom: 64,
         position: "relative",

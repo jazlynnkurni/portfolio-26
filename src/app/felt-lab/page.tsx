@@ -205,7 +205,7 @@ export default function FeltLab() {
   const PRESETS = ["#63978A", "#2E6E5E", "#3A7CA5", "#7A9471", "#B0656A", "#6B5FA8", "#1E1E1E"];
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center py-10" style={{ background: "#FFFFFF" }}>
+    <main className="min-h-screen flex flex-col items-center justify-center py-10" style={{ background: "#FFF5EF" }}>
       {/* lamp — self-positioned top-left, colour driven by the picker */}
       <ShaderPendantLamp color={lamp} />
       <div ref={tableRef} className="relative" style={{ width: "min(390px, calc((100vh - 210px) / 1.79))", aspectRatio: "768 / 1376" }}

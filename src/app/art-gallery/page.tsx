@@ -104,7 +104,7 @@ export default function ArtGalleryPage() {
   );
 
   if (isDesktop === null) {
-    return <div style={{ minHeight: "100vh", background: "#FFFFFF" }} />;
+    return <div style={{ minHeight: "100vh", background: "#FFF5EF" }} />;
   }
 
   if (!isDesktop) {
@@ -118,7 +118,7 @@ export default function ArtGalleryPage() {
         initial={{ opacity: 1 }}
         animate={{ opacity: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        style={{ position: "fixed", inset: 0, backgroundColor: "#FFFFFF", zIndex: 9999, pointerEvents: "none" }}
+        style={{ position: "fixed", inset: 0, backgroundColor: "#FFF5EF", zIndex: 9999, pointerEvents: "none" }}
       />
       <AnimatePresence mode="wait">
         {stage === "intro" ? (

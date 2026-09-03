@@ -96,7 +96,7 @@ export default function Home() {
       {/* Flat beige ground (site --color-bg), fixed behind all content. */}
       <div
         aria-hidden
-        style={{ position: "fixed", inset: 0, zIndex: -1, pointerEvents: "none", background: "#FFFFFF" }}
+        style={{ position: "fixed", inset: 0, zIndex: -1, pointerEvents: "none", background: "#FFF5EF" }}
       />
 
       <Nav />

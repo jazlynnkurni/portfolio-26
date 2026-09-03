@@ -222,14 +222,14 @@ function ProtoCard({
         <span
           aria-hidden
           className="shadow-[inset_0_2px_3px_rgba(0,0,0,0.35)]"
-          style={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: "#FFFFFF", flexShrink: 0 }}
+          style={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: "#FFF5EF", flexShrink: 0 }}
         />
         <h2
           style={{
             fontFamily: "var(--font-mono), monospace",
             fontSize: 12,
             letterSpacing: "0.08em",
-            color: "#FFFFFF",
+            color: "#FFF5EF",
             textTransform: "uppercase",
             margin: 0,
             lineHeight: 1,
@@ -284,7 +284,7 @@ function ProtoCard({
             fontSize: 16,
             fontWeight: 500,
             lineHeight: 1.3,
-            color: "#FFFFFF",
+            color: "#FFF5EF",
             margin: 0,
           }}
         >
@@ -300,7 +300,7 @@ function ProtoCard({
                 fontFamily: "var(--font-sans), sans-serif",
                 fontSize: 13,
                 fontWeight: 500,
-                color: "#FFFFFF",
+                color: "#FFF5EF",
                 padding: "4px 11px",
                 lineHeight: 1.2,
               }}

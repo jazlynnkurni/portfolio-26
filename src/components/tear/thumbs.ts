@@ -3,7 +3,7 @@
    one project rather than ten stock images. Shared by the prototypes that
    need "real work" to show. */
 
-const CREAM = "#FFFFFF";
+const CREAM = "#FFF5EF";
 const PAPER = "#FBF7F2";
 const INK = "#16100C";
 const BURNT = "#C97836";
@@ -51,7 +51,7 @@ export function thumbPainter(canvas: HTMLCanvasElement, seed: number) {
     for (const [x, y, c] of blobs) {
       const rad = g.createRadialGradient(x, y, 0, x, y, w * 0.55);
       rad.addColorStop(0, c);
-      rad.addColorStop(1, "rgba(255, 255, 255,0)");
+      rad.addColorStop(1, "rgba(255,245,239,0)");
       g.fillStyle = rad;
       g.fillRect(0, 0, w, h);
     }

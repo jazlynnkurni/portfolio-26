@@ -13,7 +13,7 @@ import Constellation, {
   type ConstellationConfig,
 } from "@/components/Constellation";
 
-const CREAM = "#FFFFFF";
+const CREAM = "#FFF5EF";
 
 type NumKey =
   | "density"

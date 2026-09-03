@@ -4,7 +4,7 @@
 
 import { thumbPainter } from "./thumbs";
 
-const CREAM = "#FFFFFF";
+const CREAM = "#FFF5EF";
 const INK = "#16100C";
 const BURNT = "#C97836";
 

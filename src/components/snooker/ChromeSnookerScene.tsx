@@ -480,11 +480,11 @@ export default function ChromeSnookerScene({
           {gameOver && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2, ease: "easeOut" }}
               style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px", padding: "24px", zIndex: 60, pointerEvents: "none" }}>
-              <h2 style={{ fontFamily: "var(--font-serif), serif", fontSize: "32px", color: "#FFFFFF", fontWeight: 400, letterSpacing: "0.02em", margin: 0, textAlign: "center", textShadow: "0 2px 12px rgba(30,30,30,0.4)" }}>GAME OVER</h2>
-              <p style={{ fontFamily: "var(--font-sans), sans-serif", fontSize: "13px", color: "#FFFFFF", opacity: 0.85, margin: 0, textAlign: "center", textShadow: "0 2px 12px rgba(30,30,30,0.4)" }}>
+              <h2 style={{ fontFamily: "var(--font-serif), serif", fontSize: "32px", color: "#FFF5EF", fontWeight: 400, letterSpacing: "0.02em", margin: 0, textAlign: "center", textShadow: "0 2px 12px rgba(30,30,30,0.4)" }}>GAME OVER</h2>
+              <p style={{ fontFamily: "var(--font-sans), sans-serif", fontSize: "13px", color: "#FFF5EF", opacity: 0.85, margin: 0, textAlign: "center", textShadow: "0 2px 12px rgba(30,30,30,0.4)" }}>
                 {gameOverShooter === "avatar" ? "the avatar potted the 8 ball" : "you potted the 8 ball"}
               </p>
-              <button type="button" onClick={handleReset} style={{ marginTop: "8px", fontFamily: "var(--font-sans), sans-serif", backgroundColor: "#C97836", color: "#FFFFFF", padding: "10px 16px", borderRadius: "10px", fontSize: "14px", border: "none", cursor: "pointer", pointerEvents: "auto" }}>
+              <button type="button" onClick={handleReset} style={{ marginTop: "8px", fontFamily: "var(--font-sans), sans-serif", backgroundColor: "#C97836", color: "#FFF5EF", padding: "10px 16px", borderRadius: "10px", fontSize: "14px", border: "none", cursor: "pointer", pointerEvents: "auto" }}>
                 rack &apos;em up again
               </button>
             </motion.div>

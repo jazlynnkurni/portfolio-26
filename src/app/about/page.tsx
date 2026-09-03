@@ -34,7 +34,7 @@ const FONTS = {
 };
 
 const C = {
-  cream: "#FFFFFF",
+  cream: "#FFF5EF",
   burntOrange: "#C97836",
   ink: "#000000",
 };
@@ -284,7 +284,7 @@ export default function AboutPage() {
   return (
     <>
       <Nav />
-      <main style={{ background: "#FFFFFF" }}>
+      <main style={{ background: "#FFF5EF" }}>
       {/* ------------------ 1. HERO (viewport-fit) ----------------- */}
       {/* Heading + JAZLYNN tile + photo deck centered as one group inside
           one viewport height below the nav. Prose blocks are a separate
@@ -295,7 +295,7 @@ export default function AboutPage() {
           the whole page. */}
       <section
         style={{
-          background: "#FFFFFF",
+          background: "#FFF5EF",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -321,7 +321,7 @@ export default function AboutPage() {
               gutter on phones — 92vw overflowed it and pushed the document
               wider than the viewport. */}
           <div className="w-full max-w-[600px]">
-            <TiltCard maxTilt={14} glare={0.45} holo aspect="2325 / 1471" className="bg-[#FFFFFF]">
+            <TiltCard maxTilt={14} glare={0.45} holo aspect="2325 / 1471" className="bg-[#FFF5EF]">
               <Image
                 src="/jaz.svg"
                 alt="Jazlynn Kurniandra — permanent license of travel"
@@ -344,7 +344,7 @@ export default function AboutPage() {
 
       {/* -------------------- 2. PROSE BLOCKS --------------------- */}
       {/* Below the hero — scrolled-to. */}
-      <section style={{ background: "#FFFFFF" }}>
+      <section style={{ background: "#FFF5EF" }}>
         <div className="max-w-[1228px] mx-auto px-6 pt-8 pb-6">
           <div style={{ width: "100%" }}>
             <ProseBlock title="About me">
@@ -364,7 +364,7 @@ export default function AboutPage() {
       </section>
 
       {/* ------------------ 3. CULTURE CAROUSEL ------------------- */}
-      <section style={{ background: "#FFFFFF" }}>
+      <section style={{ background: "#FFF5EF" }}>
         <div className="max-w-[1228px] mx-auto px-6 pt-4 pb-20">
           <CultureCarousel />
         </div>
@@ -375,7 +375,7 @@ export default function AboutPage() {
           overhanging the rig by ~150px. At paddingTop 64 the paper collided with
           the carousel above. 190 clears the overhang AND leaves a real section
           break, so the two stop reading as one compacted block. */}
-      <section style={{ background: "#FFFFFF" }}>
+      <section style={{ background: "#FFF5EF" }}>
         <div className="max-w-[1228px] mx-auto px-6" style={{ paddingTop: 320, paddingBottom: 130 }}>
           <RisoTypewriter />
         </div>
