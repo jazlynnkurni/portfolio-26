@@ -88,10 +88,10 @@ export const PALETTES: Palette[] = [
   },
 ];
 
-// Seamless on the site cream (#FFFFFF = --color-bg): force every palette's
+// Seamless on the site cream (#FFF5EF = --color-bg): force every palette's
 // paper (canvas background + gradient light-end) to the page bg so the glow
 // dissolves into the page with no card edge or white plate behind the word.
-const SITE_PAPER = rgb("#FFFFFF");
+const SITE_PAPER = rgb("#FFF5EF");
 for (const p of PALETTES) {
   p.paper = SITE_PAPER;
   p.stops[p.stops.length - 1] = { pos: 1.0, color: SITE_PAPER };

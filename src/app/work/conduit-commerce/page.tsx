@@ -10,7 +10,7 @@ import Lightbox from "@/components/Lightbox";
 import StackedDeck from "@/components/StackedDeck";
 
 const COLORS = {
-  cream: "#FFFFFF",
+  cream: "#FFF5EF",
   burntOrange: "#C97836",
   inkSoft: "#3A3A3A",
 };
@@ -429,7 +429,7 @@ export default function ManusAiPage() {
             className="w-full"
             style={{
               background:
-                "linear-gradient(to bottom, #FFFFFF 0%, #FFFFFF 50%, #FFFFFF 50%, #FFFFFF 100%)",
+                "linear-gradient(to bottom, #FFF5EF 0%, #FFF5EF 50%, #FFFFFF 50%, #FFFFFF 100%)",
             }}
           >
             <div className="mx-auto max-w-[1228px] px-6 py-6">
@@ -578,7 +578,7 @@ export default function ManusAiPage() {
             <div
               className="rounded-3xl"
               style={{
-                backgroundColor: "#FFFFFF",
+                backgroundColor: "#FFF5EF",
                 padding: "60px 40px",
               }}
             >
@@ -980,7 +980,7 @@ export default function ManusAiPage() {
                       key="quote-1"
                       className="w-full h-full rounded-2xl flex flex-col justify-between"
                       style={{
-                        backgroundColor: "#FFFFFF",
+                        backgroundColor: "#FFF5EF",
                         padding: "32px 28px",
                         boxShadow: "0 4px 20px rgba(0, 0, 0, 0.06)",
                         border: "1px solid rgba(201, 120, 54, 0.15)",
@@ -1027,7 +1027,7 @@ export default function ManusAiPage() {
                       key="quote-2"
                       className="w-full h-full rounded-2xl flex flex-col justify-between"
                       style={{
-                        backgroundColor: "#FFFFFF",
+                        backgroundColor: "#FFF5EF",
                         padding: "32px 28px",
                         boxShadow: "0 4px 20px rgba(0, 0, 0, 0.06)",
                         border: "1px solid rgba(201, 120, 54, 0.15)",
@@ -1074,7 +1074,7 @@ export default function ManusAiPage() {
                       key="quote-3"
                       className="w-full h-full rounded-2xl flex flex-col justify-between"
                       style={{
-                        backgroundColor: "#FFFFFF",
+                        backgroundColor: "#FFF5EF",
                         padding: "32px 28px",
                         boxShadow: "0 4px 20px rgba(0, 0, 0, 0.06)",
                         border: "1px solid rgba(201, 120, 54, 0.15)",
@@ -1294,7 +1294,7 @@ export default function ManusAiPage() {
                         key={`coreuser-${num}`}
                         className="flex flex-col items-center justify-center gap-1 rounded-2xl"
                         style={{
-                          backgroundColor: "#FFFFFF",
+                          backgroundColor: "#FFF5EF",
                           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                           width: "60px",
                           height: "60px",
@@ -1352,7 +1352,7 @@ export default function ManusAiPage() {
                         key={`potentialuser-${num}`}
                         className="flex flex-col items-center justify-center gap-1 rounded-2xl"
                         style={{
-                          backgroundColor: "#FFFFFF",
+                          backgroundColor: "#FFF5EF",
                           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                           width: "60px",
                           height: "60px",
@@ -1401,7 +1401,7 @@ export default function ManusAiPage() {
                     <div
                       className="shrink-0 rounded-2xl overflow-hidden flex items-center justify-center"
                       style={{
-                        backgroundColor: "#FFFFFF",
+                        backgroundColor: "#FFF5EF",
                         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                         width: "120px",
                         height: "120px",
@@ -1420,7 +1420,7 @@ export default function ManusAiPage() {
                     <div
                       className="flex-1 rounded-2xl flex flex-col justify-center"
                       style={{
-                        backgroundColor: "#FFFFFF",
+                        backgroundColor: "#FFF5EF",
                         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                         padding: "20px 24px",
                       }}
@@ -1456,7 +1456,7 @@ export default function ManusAiPage() {
                   <div
                     className="rounded-2xl"
                     style={{
-                      backgroundColor: "#FFFFFF",
+                      backgroundColor: "#FFF5EF",
                       boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                       padding: "20px 24px",
                     }}
@@ -1528,7 +1528,7 @@ export default function ManusAiPage() {
                     <div
                       className="shrink-0 rounded-2xl overflow-hidden flex items-center justify-center"
                       style={{
-                        backgroundColor: "#FFFFFF",
+                        backgroundColor: "#FFF5EF",
                         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                         width: "120px",
                         height: "120px",
@@ -1547,7 +1547,7 @@ export default function ManusAiPage() {
                     <div
                       className="flex-1 rounded-2xl flex flex-col justify-center"
                       style={{
-                        backgroundColor: "#FFFFFF",
+                        backgroundColor: "#FFF5EF",
                         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                         padding: "20px 24px",
                       }}
@@ -1583,7 +1583,7 @@ export default function ManusAiPage() {
                   <div
                     className="rounded-2xl"
                     style={{
-                      backgroundColor: "#FFFFFF",
+                      backgroundColor: "#FFF5EF",
                       boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                       padding: "20px 24px",
                     }}
@@ -1686,7 +1686,7 @@ export default function ManusAiPage() {
               <div
                 className="rounded-2xl flex flex-col"
                 style={{
-                  backgroundColor: "#FFFFFF",
+                  backgroundColor: "#FFF5EF",
                   boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                   padding: "40px 32px",
                 }}
@@ -1832,7 +1832,7 @@ export default function ManusAiPage() {
               <div
                 className="rounded-2xl flex flex-col"
                 style={{
-                  backgroundColor: "#FFFFFF",
+                  backgroundColor: "#FFF5EF",
                   boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                   padding: "40px 32px",
                 }}
@@ -1978,7 +1978,7 @@ export default function ManusAiPage() {
               <div
                 className="rounded-2xl flex flex-col"
                 style={{
-                  backgroundColor: "#FFFFFF",
+                  backgroundColor: "#FFF5EF",
                   boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                   padding: "40px 32px",
                 }}
@@ -2981,7 +2981,7 @@ export default function ManusAiPage() {
                 {/* CARD 1 — Line chart */}
                 <div
                   style={{
-                    backgroundColor: "#FFFFFF",
+                    backgroundColor: "#FFF5EF",
                     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                     borderRadius: "16px",
                     padding: "32px",
@@ -3020,7 +3020,7 @@ export default function ManusAiPage() {
                 {/* CARD 2 — Clock */}
                 <div
                   style={{
-                    backgroundColor: "#FFFFFF",
+                    backgroundColor: "#FFF5EF",
                     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                     borderRadius: "16px",
                     padding: "32px",
@@ -3059,7 +3059,7 @@ export default function ManusAiPage() {
                 {/* CARD 3 — Thumbs up */}
                 <div
                   style={{
-                    backgroundColor: "#FFFFFF",
+                    backgroundColor: "#FFF5EF",
                     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                     borderRadius: "16px",
                     padding: "32px",
@@ -3426,7 +3426,7 @@ export default function ManusAiPage() {
               onMouseEnter={() => setThanksHovered(true)}
               onMouseLeave={() => setThanksHovered(false)}
               style={{
-                background: "#FFFFFF",
+                background: "#FFF5EF",
                 borderRadius: 16,
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
                 padding: 20,

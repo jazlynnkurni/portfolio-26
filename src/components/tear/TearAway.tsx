@@ -48,7 +48,7 @@ export default function TearAway({ project }: { project?: string }) {
       pctx.setTransform(1, 0, 0, 1, 0, 0);
       pctx.globalCompositeOperation = "source-over";
       pctx.clearRect(0, 0, paper.width, paper.height);
-      pctx.fillStyle = "#FFFFFF";
+      pctx.fillStyle = "#FFF5EF";
       pctx.fillRect(0, 0, paper.width, paper.height);
       pctx.globalAlpha = 0.05;
       for (let i = 0; i < (paper.width * paper.height) / 260; i++) {
@@ -151,7 +151,7 @@ export default function TearAway({ project }: { project?: string }) {
         g!.translate(f.x, f.y);
         g!.rotate(f.rot);
         g!.globalAlpha = Math.max(0, f.life) * 0.9;
-        g!.fillStyle = "#FFFFFF";
+        g!.fillStyle = "#FFF5EF";
         g!.fillRect(-f.s / 2, -f.s / 2, f.s, f.s * 0.72);
         g!.strokeStyle = "rgba(22,16,12,0.18)";
         g!.lineWidth = 0.6;

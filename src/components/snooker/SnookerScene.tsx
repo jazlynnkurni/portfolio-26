@@ -908,7 +908,7 @@ export default function SnookerScene() {
           <Ball
             x={positions.cueBall.x}
             y={positions.cueBall.y}
-            color="#FFFFFF"
+            color="#FFF5EF"
             isCueBall
             dropping={cueBallStatus === "dropping"}
           />
@@ -1006,7 +1006,7 @@ export default function SnookerScene() {
                 style={{
                   fontFamily: "var(--font-serif), serif",
                   fontSize: "32px",
-                  color: "#FFFFFF",
+                  color: "#FFF5EF",
                   fontWeight: 400,
                   letterSpacing: "0.02em",
                   margin: 0,
@@ -1020,7 +1020,7 @@ export default function SnookerScene() {
                 style={{
                   fontFamily: "var(--font-sans), sans-serif",
                   fontSize: "13px",
-                  color: "#FFFFFF",
+                  color: "#FFF5EF",
                   opacity: 0.85,
                   margin: 0,
                   textAlign: "center",
@@ -1038,7 +1038,7 @@ export default function SnookerScene() {
                   marginTop: "8px",
                   fontFamily: "var(--font-sans), sans-serif",
                   backgroundColor: "#C97836",
-                  color: "#FFFFFF",
+                  color: "#FFF5EF",
                   padding: "10px 16px",
                   borderRadius: "10px",
                   fontSize: "14px",

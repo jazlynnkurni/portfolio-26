@@ -1,7 +1,7 @@
 // Shared design tokens for the art gallery feature.
 
 export const COLORS = {
-  cream: "#FFFFFF",
+  cream: "#FFF5EF",
   burntOrange: "#C97836",
   darkerOrange: "#9A4C19",
   highlightedOrange: "#8F4B1E",

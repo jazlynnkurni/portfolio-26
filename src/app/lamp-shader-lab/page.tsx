@@ -125,7 +125,7 @@ export default function LampShaderLab() {
   );
 
   return (
-    <main className="min-h-screen flex items-start justify-center gap-8 py-6 px-6" style={{ background: "#FFFFFF" }}>
+    <main className="min-h-screen flex items-start justify-center gap-8 py-6 px-6" style={{ background: "#FFF5EF" }}>
       <canvas ref={canvasRef} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{ width: "min(420px, 60vh)", height: "min(760px, 96vh)", display: "block", cursor: "pointer" }} />
       <aside className="w-[270px] shrink-0 rounded-2xl p-5 text-[13px] sticky top-6" style={{ background: "rgba(30,24,18,0.92)", border: "1px solid rgba(255,255,255,0.1)", color: "#EDE6DE" }}>
         <div className="flex items-center justify-between mb-4">
