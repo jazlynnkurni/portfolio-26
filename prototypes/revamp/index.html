@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-cache">
+<title>Jazlynn Kurniandra — revamp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --jak:"Plus Jakarta Sans",sans-serif; --hel:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  /* the three, fixed in both modes */
+  --gold:#A99939; --oxblood:#340414; --charcoal:#1C1A17;
+}
+/* ============ TWO MODES, ONE PALETTE ==============================================
+ * No colour is introduced for dark mode. The ground and the ink swap places -- paper
+ * becomes the ink, charcoal becomes the ground -- and everything else is a tint of
+ * whichever is the ink. The one thing that cannot simply swap is the INTERACTION
+ * colour: oxblood is 12.1:1 on paper and 1.0:1 on charcoal, literally invisible, while
+ * gold is 1.6:1 on paper and 6.0:1 on charcoal. So each mode uses the one of the two
+ * that can be read on its ground. That is the whole dark-mode design, and it is why
+ * the lock ("the background is always paper") can survive this as a rule about the
+ * DEFAULT rather than about every state. */
+:root, [data-theme="light"]{
+  --paper:#FAF9F7; --ink:#14171B;
+  --ink2:rgba(20,23,27,.66); --ink3:rgba(20,23,27,.42); --hair:rgba(20,23,27,.16);
+  --touch:#340414;
+  --flick-a:#A99939; --flick-b:#340414;
+  /* the surface media sits on. On paper it IS the paper; the outline is what draws
+     the box. */
+  --plate:#FAF9F7; --outline:oklch(0 0 0 / 0.1);
+  /* the nav pill: paper lifted toward white, no new hue */
+  --pill:#fff; --pill-shadow:0 1px 2px rgba(20,23,27,.04),0 6px 20px rgba(20,23,27,.07);
+  color-scheme:light;
+}
+[data-theme="dark"]{
+  --paper:#1C1A17; --ink:#FAF9F7;
+  --ink2:rgba(250,249,247,.66); --ink3:rgba(250,249,247,.42); --hair:rgba(250,249,247,.16);
+  --touch:#A99939;
+  /* oxblood is invisible here, so the second tile colour is the ink itself: a paper
+     tile with a charcoal letter, which is the same "knocked out" logic inverted */
+  --flick-a:#A99939; --flick-b:#FAF9F7;
+  /* lifted four points off the ground so a plate reads as a plate. Without this the
+     media boxes and the Track Record panel were charcoal on charcoal: present in
+     the DOM, invisible on the screen. */
+  --plate:#262320; --outline:oklch(1 0 0 / 0.1);
+  --pill:#262320; --pill-shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+html{background:var(--paper)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--hel);font-weight:300;
+     -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+h1,h2,h3,.jak{font-family:var(--jak);font-weight:500;letter-spacing:-.012em;text-wrap:balance}
+p{text-wrap:pretty}
+.wrap{max-width:1180px;margin:0 auto;padding:0 30px}
+.label{font-family:var(--jak);font-weight:600;font-size:10.5px;letter-spacing:.15em;
+       text-transform:uppercase;color:var(--ink3)}
+.grain{position:absolute;inset:0;pointer-events:none;background-image:var(--noise);
+       background-size:170px 170px;mix-blend-mode:overlay;opacity:.55}
+
+/* ---------------- nav ---------------- */
+/* ============ THE LOADING BLOB ===================================================
+ * NO EXACT VALUES. The outline is a ring of control points whose radius is the sum of
+ * several sines at unrelated frequencies, all drifting at different rates, so the
+ * shape never repeats and never settles into a circle. A single sine would breathe;
+ * three incommensurable ones wander.
+ * The points are joined with Catmull-Rom converted to cubic beziers rather than
+ * straight lines, so the edge is continuously curved -- a polygon with enough points
+ * still reads as faceted at the silhouette, which is exactly where the eye looks. */
+#load{position:fixed;inset:0;z-index:200;background:var(--paper);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+  transition:opacity 520ms ease}
+#load.gone{opacity:0;pointer-events:none}
+/* ============ THE LOADER IS THE GRID =============================================
+ * Same object as the hero: cells with a head rule, a foot rule and a stem at each start.
+ * Order of events, because a loader that all happens at once is not a loader:
+ *   0ms    the head rule draws left to right, the foot rule 120ms behind it
+ *   380ms  stems drop in from the head, one every 70ms, cutting the line into cells
+ *   0ms    widths breathe on the hero's sine, so the rules stretch while they draw
+ *   1000ms the cells ink one after another and STAY, left to right -- a progress bar
+ *          that is also the masthead arriving. Straight lines, rectangles, one sweep.
+ * The bar finishes about 1.8s in; the page leaves at 2s or when load is done, whichever
+ * is later, so the sweep is never cut off half-inked. */
+#load .ld{position:relative;display:flex;height:40px;width:min(300px,70vw)}
+#load .ld i{position:absolute;left:0;right:0;height:1px;background:var(--hair);transform:scaleX(0);
+  transform-origin:left center;animation:ld-rule 560ms cubic-bezier(.22,1,.36,1) forwards}
+#load .ld i.head{top:0}
+#load .ld i.foot{bottom:0;animation-delay:120ms}
+#load .lc{flex:0 0 auto;height:40px;position:relative;transition:background 160ms ease;will-change:width}
+#load .lc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--hair);
+  transform:scaleY(0);transform-origin:top center;animation:ld-stem 420ms cubic-bezier(.22,1,.36,1) forwards;
+  animation-delay:var(--d)}
+#load .lc:last-child::after{content:"";position:absolute;right:0;top:0;bottom:0;width:1px;background:var(--hair);
+  transform:scaleY(0);transform-origin:top center;animation:ld-stem 420ms cubic-bezier(.22,1,.36,1) forwards;
+  animation-delay:calc(var(--d) + 70ms)}
+/* the fills are the two: oxblood and gold, same tokens as the hero's tiles, so in dark
+   mode the oxblood (invisible on charcoal) swaps to paper exactly as it does there */
+#load .lc.on{background:var(--flick-b)}
+#load .lc.on.g{background:var(--flick-a)}
+@keyframes ld-rule{to{transform:scaleX(1)}}
+@keyframes ld-stem{to{transform:scaleY(1)}}
+@media(prefers-reduced-motion:reduce){#load .ld i,#load .lc::before,#load .lc:last-child::after{animation:none;transform:none}}
+#load span{font:300 12.5px var(--hel);letter-spacing:.08em;color:var(--ink3)}
+/* his nav, read off the screenshot: nothing spans the page. The name sits alone top-left
+   and the links float top-right in a lifted pill with the mode icon at its head. The
+   pill is a shadow, not a border: the outline is the 10% image rule, not a frame. */
+nav{position:fixed;top:0;left:0;right:0;z-index:60;pointer-events:none}
+nav .in{display:flex;justify-content:space-between;align-items:center;padding-top:24px}
+nav .mark{pointer-events:auto;font-family:var(--jak);font-weight:600;font-size:13px;letter-spacing:-.01em;padding:10px 0}
+/* measured off his pill: 46px tall, the icon 24px in from the left edge, ~44px between
+   words, the last word 28px from the right edge. Pure white on the paper, no outline. */
+nav .links{pointer-events:auto;display:flex;align-items:center;gap:8px;background:var(--pill);border-radius:999px;
+  padding:4px 12px 4px 8px;box-shadow:var(--pill-shadow)}
+[data-theme="dark"] nav .links{outline:1px solid var(--outline);outline-offset:-1px}
+/* nav words are body copy, not headings: Helvetica Neue like everything that is read,
+   at Regular rather than Light so 14px holds up on the white pill */
+nav a{font-family:var(--hel);font-weight:400;font-size:14.5px;letter-spacing:0;color:var(--ink);text-decoration:none;
+      padding:10px 16px;border-radius:999px;transition:color .18s ease,background .18s ease}
+nav a:hover{color:var(--touch);background:color-mix(in srgb,var(--ink) 6%,transparent)}
+nav a:active{transform:scale(.96)}
+/* the mode icon: a sun in light, a moon in dark, 36px so it clears the hit-area floor */
+#theme{width:38px;height:38px;border-radius:50%;border:0;background:transparent;color:var(--ink2);
+  cursor:pointer;padding:0;display:grid;place-items:center;transition:background .18s ease,color .18s ease}
+#theme:hover{background:color-mix(in srgb,var(--ink) 6%,transparent);color:var(--ink)}
+#theme:active{transform:scale(.96)}
+#theme svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+[data-theme="dark"] #theme .sun{display:none}
+:root:not([data-theme="dark"]) #theme .moon{display:none}
+@media(max-width:640px){nav .in{padding-top:16px} nav a{padding:9px 10px;font-size:12.5px}}
+
+/* ---------------- hero: the locked letter grid ---------------- */
+.hero{padding:0 0 72px}
+.hero-grid{display:grid;grid-template-columns:1fr;grid-template-rows:1.618fr auto 1fr;min-height:calc(100vh - 72px);position:relative;padding-top:96px;padding-bottom:120px}
+/* ============ THE SHEETS =========================================================
+ * Her vellum piece, off its black plate and laid across the page.
+ *
+ * Taking the box away changes the arithmetic, and the palette lock already said it would:
+ * the sheets are translucent, and translucent only reads against a ground. On the paper
+ * they are PIGMENT and multiply, so two crossing sheets go deeper. On the charcoal they
+ * are LIGHT and add, which is what they do in the lab. Same discs, opposite sign, and it
+ * is the only way they can sit under the type on both grounds.
+ *
+ * They sit UNDER the wall on purpose: the name has to stay readable, so the sheets never
+ * cover a letter, they tint the paper the letter is printed on. */
+.hero{position:relative;overflow:hidden}
+#sheets{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;
+  mix-blend-mode:multiply;touch-action:none}
+[data-theme="dark"] #sheets{mix-blend-mode:screen}
+.hero-grid{z-index:1}
+/* the type is a window onto the sheets, not a lid. The GRID has to be transparent too,
+   not just its children -- it is a full-bleed box sitting over the canvas, and it was
+   swallowing every drag. Only the things you can actually click take events back. */
+.hero-grid,.hero .stack,.hero-foot{pointer-events:none}
+.hero-foot a,.hint{pointer-events:auto}
+/* THE GOLDEN SECTION, weighted to the foot. The free space is split 1.618 : 1, air above to
+   air below: the larger share clears the fixed pill, and the block settles low in the hero
+   the way his masthead does, with the hint just beneath it. */
+.hero-grid .stack{grid-row:2;grid-column:1}
+/* top/bottom only: the shorthand was wiping .wrap's 30px gutter, which put the grid 30px left of the name */
+/* ONE composition on every screen: the row scales with the viewport so the ten rows take
+   about two thirds of the hero, the rest split at the golden section. A fixed 40px row left
+   whatever was left over above the block, and leftover space reads as empty. */
+:root{--row:clamp(34px,5.4vh,56px)}
+section[id]{scroll-margin-top:24px}
+/* his composition, read off the page: the toy owns the upper-left, the masthead sits
+   LOWER-RIGHT, and a "view project" hint sits at the foot. The facts align to the
+   bottom of the grid rather than the top, which is what puts them there. */
+.facts .who{font-family:var(--jak);font-weight:600;font-size:15px;color:var(--ink);letter-spacing:-.01em}
+.facts b{font-weight:400;color:var(--ink)}
+.hint{font:400 14.5px var(--hel);color:var(--ink);text-decoration:none;
+  display:inline-flex;align-items:center;gap:10px;padding:4px 8px;transition:color .18s ease}
+.hint svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+/* three columns, not space-between: the outer two are equal so the middle item sits on the
+   page's centre line rather than halfway between two labels of different lengths */
+.hero-foot{position:absolute;left:30px;right:30px;bottom:22px;display:grid;
+  grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;
+  font:300 13px var(--hel);color:var(--ink3);white-space:nowrap}
+.hero-foot .cr{text-align:right}
+.hero-foot b{font-weight:400;color:var(--ink2);font-variant-numeric:tabular-nums}
+@media(max-width:640px){.hero-foot{font-size:12px}}
+.hint:hover{color:var(--touch)}
+/* the negative space only exists on a wide screen. Below this the grid fills the width
+   and the facts reflow underneath, left-aligned, as a second beat rather than a column. */
+@media(max-width:900px){
+  .hero-grid{grid-template-columns:1fr;row-gap:36px}
+}
+.stack{display:flex;flex-direction:column;gap:calc(var(--row) * .2)}
+.line{display:flex;align-items:stretch}
+/* head + foot rules live on the CELL, so touching cells give one unbroken rule
+   across the row. That continuity is what holds a word together while the
+   spacing moves. Left border only: a right border doubles every seam. */
+.cell{flex:0 0 auto;height:var(--row);transition:background 140ms ease;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
+      border-left:1px solid var(--hair);display:flex;align-items:center;overflow:hidden;will-change:width}
+.cell:last-child{border-right:1px solid var(--hair)}
+.ch{font-family:var(--hel);font-weight:400;font-size:calc(var(--row) * .9);line-height:1;color:var(--ink);position:relative;transition:color 140ms ease;
+    padding-left:1.5px;white-space:pre}
+
+/* ---------------- track record plate ---------------- */
+.plate{position:relative;background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px;border-radius:20px;overflow:hidden;
+       height:min(74vh,620px);margin-top:12px}
+.plate canvas{position:absolute;inset:0;width:100%;height:100%}
+.plate .cap{position:absolute;left:26px;bottom:22px;z-index:3;max-width:36ch}
+.plate .cap .t{font-family:var(--jak);font-weight:500;font-size:17px;color:var(--ink);margin:0 0 6px}
+.plate .cap .d{font-size:12.5px;line-height:1.6;color:var(--ink2);margin:0}
+.plate .tag{position:absolute;right:24px;top:20px;z-index:3;color:var(--ink3);
+            font-family:var(--jak);font-weight:600;font-size:10px;letter-spacing:.15em;text-transform:uppercase}
+
+/* ---------------- work ---------------- */
+.work{padding:96px 0 40px}
+/* filter tags: plain pills, the active one inked. Gold is only 1.6:1 here so the
+   active state is the ink itself, knocked out to paper -- the same move as the grid. */
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 48px}
+.tags button{font:500 13px var(--jak);letter-spacing:.01em;color:var(--ink);background:transparent;
+  border:1px solid var(--hair);border-radius:999px;padding:9px 16px;cursor:pointer;
+  transition:color .15s ease,border-color .15s ease,background .15s ease,transform .1s ease}
+.tags button:hover{color:var(--ink);border-color:var(--ink3)}
+.tags button:active{transform:scale(.96)}
+.tags button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+/* the panel: titles left, preview right. Concentric: preview radius 20 = inner 14 + 6. */
+/* his project page, off the screenshot: the titles ARE the page. Helvetica Neue Light
+   at 44 with tight leading, one under the other, no numbers, no years, no rules. The
+   preview lives on the right and only exists while a title is under the pointer, which
+   is why his right half is empty at rest. Hovering one title quiets the others. */
+.panel{display:grid;grid-template-columns:1.1fr 1fr;gap:64px;align-items:start}
+.rows{list-style:none;margin:0;padding:0}
+.rows a{display:block;padding:2px 0;text-decoration:none;font:300 44px/1.15 var(--hel);letter-spacing:-.015em;
+  color:var(--ink);transition:color .18s ease}
+.rows.hot a{color:var(--ink3)}
+.rows.hot li.on a{color:var(--ink)}
+.rows li.off{display:none}
+/* external work leaves the site: the arrow says so, quietly */
+.rows .ext{font-size:.5em;vertical-align:.9em;color:var(--ink3);margin-left:.1em}
+.preview{position:sticky;top:96px;aspect-ratio:16/11;border-radius:20px;overflow:hidden;
+  background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px;
+  opacity:0;transform:translateY(6px);transition:opacity .28s ease,transform .32s cubic-bezier(.22,1,.36,1)}
+.preview.show{opacity:1;transform:none}
+@media(max-width:900px){.rows a{font-size:32px}}
+.preview video,.preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.preview video.on,.preview img.on{display:block}
+/* THE CLIPS WERE SHOT FOR ANOTHER SITE. They carry that site's beige ground baked in, so
+   laid flat they would read as pasted cards. Multiplied into the plate the beige becomes
+   this paper, the white of a phone screen becomes the plate, and only the pigment of the
+   work remains: the same rule as every wash on the page. Dark mode cannot multiply, so
+   the clip sits on the lifted plate a little dimmed, with the grain doing the joining. */
+.preview video,.preview img{mix-blend-mode:multiply;filter:saturate(.72) brightness(1.02)}
+/* saturate(.72): the old ground was #FFF5EF, and multiplied straight it leaves a peach
+   tint on the paper. Pulling the chroma down first folds that beige into the ground and
+   mutes the work's own colours toward the palette at the same time. */
+[data-theme="dark"] .preview video,[data-theme="dark"] .preview img{mix-blend-mode:normal;filter:brightness(.9) contrast(1.04)}
+.preview{aspect-ratio:16/12.5}
+/* the caption is a bar at the plate's foot, the old card's meta row: it never sits on the
+   clip, and the clip is cropped only where the bar covers it */
+.pv-cap{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;flex-direction:column;gap:3px;
+  padding:12px 20px 16px;background:var(--plate);border-top:1px solid var(--outline)}
+.pv-cap b{font:500 15px var(--jak);color:var(--ink)}
+.pv-cap span{font:300 12.5px/1.5 var(--hel);color:var(--ink2);max-width:36ch}
+@media(max-width:900px){.panel{grid-template-columns:1fr}.preview{position:static;aspect-ratio:16/10}}
+/* Concentric: outer = inner + padding. 14 + 18 = 32. */
+.card{border:1px solid var(--hair);border-radius:32px;padding:18px;background:var(--paper);
+      text-decoration:none;color:inherit;display:flex;flex-direction:column;
+      transition:border-color .25s ease,transform .35s cubic-bezier(.22,1,.36,1)}
+.card:hover{border-color:var(--touch);transform:translateY(-3px)}
+.media{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:16/10;background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px}
+.media canvas{position:absolute;inset:0;width:100%;height:100%}
+.card .meta{display:flex;justify-content:space-between;align-items:baseline;margin:16px 4px 0}
+.card h3{font-size:17px;margin:7px 4px 0;line-height:1.3}
+.card .sub{font-size:13px;line-height:1.55;color:var(--ink2);margin:6px 4px 2px}
+.card .arrow{color:var(--ink3);transition:color .2s ease,transform .2s ease;font-size:12px}
+.card:hover .arrow{color:var(--touch);transform:translate(2px,-2px)}
+
+
+footer{padding:64px 0 46px}
+footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+footer a{color:var(--ink2);text-decoration:none;font-size:12.5px}
+footer a:hover{color:var(--touch)}
+.rule{height:1px;background:var(--hair);margin-bottom:26px}
+/* ---------- the nav highlight ----------
+   One drop of ink under the glass. It travels to whatever the pointer is over on a soft
+   spring (a hair of overshoot, then it settles), and on leaving the pill it draws back into
+   its own centre and fades. Nothing else: no stretch, no trail. */
+nav .links{position:relative;isolation:isolate}
+nav .links .drop{position:absolute;top:4px;bottom:4px;left:0;width:0;border-radius:999px;pointer-events:none;z-index:0;
+  background:color-mix(in srgb,var(--ink) 8%,transparent);opacity:0;will-change:transform,width;
+  transition:transform .46s cubic-bezier(.33,1.18,.37,1),width .46s cubic-bezier(.33,1.18,.37,1),opacity .46s cubic-bezier(.33,1.18,.37,1)}
+/* leaving: the spring's overshoot would push a width that is heading to zero below zero,
+   which pops. Retract on a plain ease-out instead, same length. */
+nav .links .drop.out{transition-timing-function:cubic-bezier(.22,1,.36,1)}
+nav .links .drop.on{opacity:1}
+nav .links>a,nav .links>button{position:relative;z-index:1}
+nav a.l:hover{color:var(--ink)}
+#theme:hover{background:transparent}
+#theme svg{transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .3s ease}
+html.theming #theme svg{transform:rotate(90deg) scale(.6);opacity:0}
+/* his mode change, exactly: nothing wipes, every colour on the page just eases to the
+   other one over half a second. The class is worn for the duration of the change only,
+   so the page's own quick transitions come back the moment it is over. */
+html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,border-color .5s ease,outline-color .5s ease,box-shadow .5s ease,fill .5s ease,stroke .5s ease!important}
+@media(prefers-reduced-motion:reduce){html.theming,html.theming *{transition:none!important}}
+/* ---------- the cursor ----------
+   His dot, in our ink: a flat charcoal disc with a soft coloured shadow beneath it,
+   which is the glow. No highlight, no sphere: it is a dot, not a bead. Over anything pressable it grows, softly, on his spring;
+   pressing shrinks it a little. Fine pointers only; the system cursor stays for text. */
+@media(pointer:fine){
+  html,body,a,button,[role=button]{cursor:none}
+  #cur{position:fixed;left:0;top:0;width:12px;height:12px;pointer-events:none;z-index:1000;
+    transform:translate(-100px,-100px);will-change:transform;opacity:0;transition:opacity .2s ease}
+  #cur i{position:absolute;inset:0;border-radius:50%;
+    background:var(--charcoal);
+    box-shadow:0 3px 14px rgba(28,26,23,.30);
+    transform:scale(1);transition:transform .46s cubic-bezier(.33,1.18,.37,1),opacity .32s ease,box-shadow .32s ease}
+  [data-theme="dark"] #cur i{background:var(--ink);box-shadow:0 3px 14px rgba(250,249,247,.26)}
+  #cur.on{opacity:1}
+  #cur.hot i{transform:scale(2.6);opacity:.62;box-shadow:0 6px 22px rgba(28,26,23,.22)}
+  [data-theme="dark"] #cur.hot i{box-shadow:0 6px 22px rgba(250,249,247,.2)}
+  #cur.down i{transform:scale(2.1);opacity:.75}
+  /* over the stamp's wet frame the bead becomes a point: you are aiming, not pointing */
+  #cur.fine i{transform:scale(.46);opacity:.95}
+  #cur.fine.down i{transform:scale(.34)}
+  #cur.text{opacity:0}
+}
+</style></head><body>
+
+<script>
+/* THEME, resolved before first paint so there is no flash of the wrong ground.
+   Order: ?theme= in the URL (for deep links and for checking), then what this
+   browser chose last time, then the OS preference. The OS is the default rather
+   than light: someone who set their whole machine dark has already told you. */
+(function(){
+  const q=new URLSearchParams(location.search).get('theme');
+  let t=q||localStorage.getItem('theme');
+  if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+  document.documentElement.setAttribute('data-theme',t);
+})();
+</script>
+<div id="load"><div class="ld" id="ld"><i class="head"></i><i class="foot"></i></div><span>loading</span></div>
+<nav><div class="wrap in">
+  <span class="mark">Jazlynn Kurniandra</span>
+  <span class="links">
+    <button id="theme" aria-label="Switch colour mode" title="Colour mode">
+      <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+    <a href="#work">Projects</a><a href="/about.html">About</a></span>
+</div></nav>
+
+<!-- HERO -->
+<header class="hero">
+  <!-- THE SHEETS. Not in a box any more: they run loose across the hero, middle to right,
+       and the type sits ON them. Everything above this layer is pointer-transparent, so a
+       drag started anywhere -- including straight across the name -- reaches the sheets. -->
+  <canvas id="sheets" aria-hidden="true"></canvas>
+  <div class="wrap hero-grid">
+  <div class="stack" id="stack"></div>
+  <!-- the hero foot: the time he is in on the left, the copyright on the right, and the
+       one thing to do centred between them, all on one line at the foot of the first screen -->
+  <div class="hero-foot">
+    <span>My local time <b class="clock"></b></span>
+    <a class="hint" href="#work"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>view projects</a>
+    <span class="cr">&copy; 2026 Jazlynn Kurniandra</span>
+  </div>
+</div></header>
+
+
+<!-- PROJECTS. His desktop-work-panel, read off the OCR: a filter row of tags, a left
+     column of titles, and a preview on the right that swaps on hover. The list is the
+     interface; the preview is what a title means. -->
+<section class="work" id="work"><div class="wrap">
+  <div class="label">Projects</div>
+  <div class="tags" id="tags"></div>
+  <div class="panel">
+    <ol class="rows" id="rows"></ol>
+    <div class="preview" id="preview"><video muted loop playsinline preload="none"></video><img alt=""><div class="grain" style="opacity:.4"></div>
+      <div class="pv-cap"><b id="pv-t"></b><span id="pv-s"></span></div></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="rule"></div>
+  <div class="in">
+    <span style="font-size:12.5px;color:var(--ink3)">My local time <b class="clock" style="font-weight:400;color:var(--ink2);font-variant-numeric:tabular-nums"></b></span>
+    <span style="display:flex;gap:20px"><a href="#">Email</a><a href="#">LinkedIn</a><a href="#">X</a></span>
+    <span style="font-size:12.5px;color:var(--ink3)">© 2026 Jazlynn Kurniandra</span>
+  </div>
+</div></footer>
+
+<script>
+/* ---------- the cursor ---------- */
+(function(){
+  if(!matchMedia('(hover: hover) and (pointer:fine)').matches) return;
+  const c=document.createElement('div'); c.id='cur'; c.appendChild(document.createElement('i')); document.body.appendChild(c);
+  let tx=-100,ty=-100,x=-100,y=-100,raf=0,shown=false;
+  const HOT='a,button,[role=button],label,summary,.rows li,.tags button';
+  function loop(){
+    /* a plain ease toward the pointer: a beat behind it, never bouncing */
+    x+=(tx-x)*.42; y+=(ty-y)*.42;
+    c.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-50%)`;
+    if(Math.abs(tx-x)+Math.abs(ty-y)>.05) raf=requestAnimationFrame(loop); else raf=0;
+  }
+  addEventListener('pointermove',e=>{
+    tx=e.clientX; ty=e.clientY;
+    if(!shown){ x=tx; y=ty; shown=true; c.classList.add('on'); }
+    /* a sheet under the hand is grabbable, and the page hides the system cursor, so the
+       bead has to say so itself */
+    const t=(e.target.dataset && e.target.dataset.grab === '1') ? e.target
+          : (e.target.closest ? e.target.closest(HOT) : null);
+    c.classList.toggle('hot',!!t);
+    c.classList.toggle('text',!t && getComputedStyle(e.target).cursor==='text');
+    if(!raf) raf=requestAnimationFrame(loop);
+  },{passive:true});
+  addEventListener('pointerdown',()=>c.classList.add('down'));
+  addEventListener('pointerup',()=>c.classList.remove('down'));
+  document.documentElement.addEventListener('pointerleave',()=>c.classList.remove('on'));
+  document.documentElement.addEventListener('pointerenter',()=>{ if(shown) c.classList.add('on'); });
+})();
+/* ---------- the nav highlight ---------- */
+(function(){
+  const pill=document.querySelector('nav .links'); if(!pill) return;
+  const drop=document.createElement('span'); drop.className='drop'; pill.prepend(drop);
+  const items=[...pill.querySelectorAll(':scope > a, :scope > button')];
+  let seeded=false, cx=0;
+  const set=(x,w)=>{ drop.style.transform=`translateX(${x.toFixed(1)}px)`; drop.style.width=w.toFixed(1)+'px'; };
+  function go(el){
+    const r=el.getBoundingClientRect(), p=pill.getBoundingClientRect(); const x=r.left-p.left, w=r.width;
+    if(!seeded){ /* first arrival grows out of the item itself instead of sliding in from the edge */
+      drop.style.transition='none'; set(x+w/2,0); void drop.offsetWidth; drop.style.transition=''; seeded=true; }
+    cx=x+w/2; drop.classList.remove('out'); set(x,w); drop.classList.add('on');
+  }
+  function leave(){ drop.classList.add('out'); set(cx,0); drop.classList.remove('on'); }
+  items.forEach(el=>{ el.addEventListener('pointerenter',()=>go(el)); el.addEventListener('focus',()=>go(el)); });
+  pill.addEventListener('pointerleave',leave); pill.addEventListener('focusout',e=>{ if(!pill.contains(e.relatedTarget)) leave(); });
+})();
+/* theme: every colour eases to the other mode, his way */
+(function(){
+  const b=document.getElementById('theme'); if(!b) return;
+  b.addEventListener('click',(e)=>{
+    const cur=document.documentElement.getAttribute('data-theme'); const t=cur==='dark'?'light':'dark';
+    const apply=()=>{ document.documentElement.setAttribute('data-theme',t); try{localStorage.setItem('theme',t);}catch(err){}
+      dispatchEvent(new CustomEvent('themechange',{detail:{theme:t}})); };
+    document.documentElement.classList.add('theming');
+    setTimeout(()=>document.documentElement.classList.remove('theming'),560);
+    apply();
+  },{capture:true});
+})();
+/* follow the OS only while the visitor has not chosen for themselves */
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{ if(localStorage.getItem('theme')) return;
+  document.documentElement.setAttribute('data-theme',e.matches?'dark':'light'); dispatchEvent(new CustomEvent('themechange')); });
+
+/* ---------- the loader: rules, stems, breath, sweep ---------- */
+(function(){
+  const host=document.getElementById('load'), row=document.getElementById('ld');
+  if(!host||!row) return;
+  const N=7, cells=[];
+  for(let i=0;i<N;i++){
+    const c=document.createElement('span'); c.className='lc';
+    c.style.setProperty('--d',(380+i*70)+'ms');
+    row.appendChild(c); cells.push(c);
+  }
+  /* every cell is oxblood or gold, dealt at random like the hero's tiles, with at
+     least two of each so the bar never comes out one colour */
+  let deal; do{ deal=cells.map(()=>Math.random()<.5); }while(deal.filter(Boolean).length<2||deal.filter(x=>!x).length<2);
+  deal.forEach((g,i)=>{ if(g) cells[i].classList.add('g'); });
+  const t0=performance.now(); let raf=0, inked=-1;
+  function frame(now){
+    const t=(now-t0)/1000;
+    /* the hero's breath: each cell's share of the row rises and falls on its own phase */
+    const W=row.clientWidth; let sum=0; const ws=[];
+    for(let i=0;i<N;i++){const k=.5+.5*Math.sin(t*.9*Math.PI*2*.5+i*.74*1.7); const w=1+k*k*1.6; ws.push(w); sum+=w;}
+    for(let i=0;i<N;i++) cells[i].style.width=(ws[i]/sum*W).toFixed(1)+'px';
+    /* the sweep: from 1.0s, one more cell inks every 110ms and stays */
+    const want=Math.min(N-1, Math.floor((t-1.0)/.11));
+    while(inked<want){inked++; cells[inked].classList.add('on');}
+    raf=requestAnimationFrame(frame);
+  }
+  raf=requestAnimationFrame(frame);
+  /* leaves when the bar is full AND the page has loaded; never later than 2.6s */
+  let left=false;
+  const done=()=>{ if(left) return; left=true; host.classList.add('gone');
+    setTimeout(()=>{ cancelAnimationFrame(raf); host.remove(); }, 560); };
+  const go=()=>setTimeout(done, Math.max(0, 2000-(performance.now()-t0)));
+  if(document.readyState==='complete') go(); else addEventListener('load', go);
+  setTimeout(done, 2600);
+})();
+
+/* one grain texture, shared by every layer */
+(function(){
+  const n=document.createElement('canvas'); n.width=n.height=170;
+  const g=n.getContext('2d'), d=g.createImageData(170,170);
+  for(let i=0;i<d.data.length;i+=4){const v=118+(Math.random()*72-36);
+    d.data[i]=d.data[i+1]=d.data[i+2]=v; d.data[i+3]=255;}
+  g.putImageData(d,0,0);
+  document.documentElement.style.setProperty('--noise',`url(${n.toDataURL()})`);
+})();
+
+/* ---------- HERO letter grid, locked values ---------- */
+const WORDS=["JAZLYNN","DESIGN","NEWYORK","PASSIONATE","CURIOUS","CHARM","PLAYFUL","MOTION","COGNITION","ENGINEERING"];
+const SPEED=.23, DRIFT=.74;
+/* FS follows the CSS row (0.85 of it) so the measured widths match what is drawn; the
+   locked stretch of 84 at a 34px letter is kept as a ratio, 2.47 letters' worth */
+let FS=34, STRETCH=84;
+const gauge=document.createElement('canvas').getContext('2d');
+const stack=document.getElementById('stack');
+function measure(){
+  /* THE WALL'S HEIGHT IS CAPPED. The block takes 88% of the hero's free height whatever
+     the row count, and the remaining 12% is the air the golden split divides 1.618 : 1.
+     Without this cap eleven rows swallowed the hero and the split had nothing to split;
+     at the strict golden share (61.8%) the letters fell to the floor and looked lost.
+     Rows stay between 38 and 72px. 70% and 80% both read as too small. */
+  const N=WORDS.length, free=innerHeight-72-96-120;         /* hero min-height minus its paddings */
+  const rowPx=Math.max(38,Math.min(72, (free*.88)/(N+(N-1)*.2)));
+  document.documentElement.style.setProperty('--row',rowPx.toFixed(2)+'px');
+  /* a custom property reads back as its declared text ("clamp(...)"), never as pixels,
+     so the row is measured off a real cell */
+  const probe=document.createElement('span'); probe.className='cell'; probe.style.cssText='position:absolute;visibility:hidden;width:1px';
+  stack.appendChild(probe); const row=probe.getBoundingClientRect().height||40; probe.remove();
+  FS=row*.9; STRETCH=FS*2.47; gauge.font=`400 ${FS}px "Helvetica Neue",Helvetica,Arial,sans-serif`;
+}
+measure();
+const lines=WORDS.map((w,li)=>{
+  const el=document.createElement('div'); el.className='line';
+  const cells=[...w].map((ch,ci)=>{
+    const c=document.createElement('span'); c.className='cell';
+    const s=document.createElement('span'); s.className='ch'; s.textContent=ch;
+    c.appendChild(s); el.appendChild(c);
+    /* each cell carries its OWN flicker schedule. One global timer picking a random
+       cell would make the whole wall pulse together; per-cell clocks with random
+       phases give an irregular scatter, which is what "occasionally" looks like. */
+    return {cell:c, glyph:s, ch, base:Math.ceil(gauge.measureText(ch).width)+4, ci,
+            next:2+Math.random()*22, until:0, lit:false, col:''};
+  });
+  stack.appendChild(el); return {cells, seed:li};
+});
+let rz=0; addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout(()=>{ measure();
+  lines.forEach(L=>L.cells.forEach(c=>{ c.base=Math.ceil(gauge.measureText(c.ch).width)+4; })); },120); });
+/* ============ INK: TWO BEHAVIOURS, ONE MECHANIC ==================================
+ * A cell fills with gold or oxblood and its letter knocks out to paper. That part is
+ * fixed: gold is 1.6:1 on this ground, so a gold LETTER would be invisible and the
+ * only way the colour can appear inside type here is by inking the tile and reversing
+ * the glyph.
+ *
+ * WHAT CHANGES IS WHY A CELL LIGHTS.
+ *
+ *   random  the first version. Sparse and pretty, and the wrong kind of motion for a
+ *           masthead: random timing is the one pattern the eye cannot habituate to,
+ *           because it keeps predicting and failing, so it never fades into the
+ *           background the way a regular rhythm does within seconds. It also means
+ *           nothing -- a cell going gold says nothing about that letter.
+ *
+ *   cursor  the same ink, caused. Cells near the pointer take colour. Now the motion
+ *           is FEEDBACK rather than decoration: it says the wall is alive, and it
+ *           teaches that without printing three verbs underneath it.
+ *
+ * Both open with the same ARRIVAL: the wall inks itself in once, over about two and a
+ * half seconds, then settles. Motion that ends is far easier to forgive than motion
+ * that never does, and it gets the palette on screen in the first moment either way.
+ * ================================================================================= */
+const FLICK = ['var(--flick-a)', 'var(--flick-b)'];
+const LIT_MAX = 4;
+const NEAR = 92;      // NEAR: pointer radius, in px (cursor mode only, retired)
+/* LOCKED 2026-09-03: random. The cursor behaviour was tried and dropped. */
+const mode = 'random'; let litNow = 0, t0 = 0;
+let px = -9999, py = -9999;
+
+/* the pointer in the stack's own coordinates. Read once per move rather than per
+   cell: 75 getBoundingClientRect calls a frame is exactly the kind of thing that
+   turns a smooth page into a slow one. */
+stack.addEventListener('pointermove', (e) => {
+  const r = stack.getBoundingClientRect();
+  px = e.clientX - r.left; py = e.clientY - r.top;
+});
+stack.addEventListener('pointerleave', () => { px = py = -9999; });
+
+/* colour is assigned ONCE per cell, not per lighting. Re-rolling it every time a cell
+   lights makes a hovered word strobe between two hues, which is worse than either. */
+lines.forEach(L => L.cells.forEach(c => { c.col = FLICK[(Math.random() * FLICK.length) | 0]; }));
+
+function ink(c, on) {
+  if (c.lit === on) return;              // the DOM is touched only on a real change
+  c.lit = on;
+  c.cell.style.background = on ? c.col : 'transparent';
+  c.glyph.style.color = on ? 'var(--paper)' : '';
+}
+
+(function tick(now){
+  const t=(now||0)/1000;
+  if(!t0) t0 = t;
+  const age = t - t0;
+  /* THE ARRIVAL. A wave that crosses the wall once and is never seen again. */
+  const arriving = age < 2.6;
+  const front = age * 46;                // px per second, down and to the right
+
+  for(const L of lines){
+    let x = 0;                           // walk the row, accumulating the widths we set
+    const cy = L.seed * (FS/.9*1.2) + FS/.9/2;
+    for(const c of L.cells){
+      /* LEFT-ALIGNED, ragged right. Each cell breathes on its own and the row is however
+         long its letters make it: the varying line lengths ARE the composition. The
+         justified version (every row the container's width) was tried and dropped. */
+      const k=.5+.5*Math.sin(t*SPEED*Math.PI*2 + L.seed*DRIFT + c.ci*DRIFT*1.7);
+      const w = c.base + k*k*STRETCH;
+      c.cell.style.width = w.toFixed(1)+'px';
+
+      if(arriving){
+        /* diagonal, so it reads as a sweep across the block rather than as eleven rows
+           each doing their own thing */
+        const d = x + w/2 + cy*0.6;
+        ink(c, d < front && d > front - 130);
+        x += w; continue;
+      }
+      if(mode === 'cursor'){
+        const dx = (x + w/2) - px, dy = cy - py;
+        ink(c, dx*dx + dy*dy < NEAR*NEAR);
+      } else {
+        if(c.lit && t>c.until){ ink(c,false); litNow--; c.next = t + 6 + Math.random()*26; }
+        else if(!c.lit && t>c.next){
+          if(litNow>=LIT_MAX){ c.next = t + 1 + Math.random()*4; }
+          else { ink(c,true); litNow++; c.until = t + 0.25 + Math.random()*0.9; }
+        }
+      }
+      x += w;
+    }
+  }
+  requestAnimationFrame(tick);
+})();
+
+/* ---------- the sheets ---------- */
+(function(){
+  const cv=document.getElementById('sheets'); if(!cv) return;
+  const V=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+  const hexA=(hex,a)=>hex+Math.round(Math.max(0,Math.min(1,a))*255).toString(16).padStart(2,'0');
+  const dark=()=>document.documentElement.getAttribute('data-theme')==='dark';
+
+  /* Scattered from the middle of the page out past the right edge, so the field reads as
+     something the page is lying on rather than an object sitting on it. Unit coordinates
+     of the hero, so a resize moves them with the layout instead of rescaling them. */
+  const SHEETS=[
+    {x:.47,y:.20,r:.115},{x:.63,y:.13,r:.130},{x:.80,y:.22,r:.120},{x:.95,y:.14,r:.105},
+    {x:.55,y:.34,r:.100},{x:.72,y:.36,r:.125},{x:.89,y:.40,r:.115},{x:1.02,y:.30,r:.100},
+    {x:.50,y:.56,r:.120},{x:.66,y:.58,r:.135},{x:.83,y:.62,r:.115},{x:.98,y:.54,r:.110},
+    {x:.58,y:.78,r:.110},{x:.76,y:.82,r:.125},{x:.92,y:.76,r:.105},{x:1.04,y:.86,r:.095}
+  ];
+
+  /* THE TOOTH. A sheet of vellum is not a gradient; the grain is half of what it is, and
+     without it these were just soft circles. One noise tile is built once and laid back
+     over the discs with source-atop, so it lands on the sheets and nowhere else -- the
+     bare paper between them stays clean. Two frequencies: a fine speckle for the fibre
+     and a slow swell so the sheet is not evenly toothed across its whole face. */
+  let fibre=null;
+  function buildFibre(){
+    const N=220, t=document.createElement('canvas'); t.width=t.height=N;
+    const tc=t.getContext('2d'), im=tc.createImageData(N,N), d=im.data;
+    for(let y=0;y<N;y++) for(let x=0;x<N;x++){
+      const i=(y*N+x)*4;
+      const swell=Math.sin(x*0.055)*Math.sin(y*0.041)*22 + Math.sin((x+y)*0.021)*14;
+      const v=128 + swell + (Math.random()*116-58);
+      d[i]=d[i+1]=d[i+2]=Math.max(0,Math.min(255,v)); d[i+3]=255;
+    }
+    tc.putImageData(im,0,0);
+    return tc.createPattern(t,'repeat');
+  }
+
+  let W=0,H=0,dpr=1,c=null,raf=0;
+  function size(){
+    const r=cv.getBoundingClientRect(); if(!r.width) return false;
+    dpr=Math.min(2,devicePixelRatio||1); W=r.width; H=r.height;
+    cv.width=W*dpr; cv.height=H*dpr; c=cv.getContext('2d'); c.setTransform(dpr,0,0,dpr,0,0);
+    return true;
+  }
+
+  function draw(){
+    raf=0; if(!c) return;
+    const d=dark();
+    const inks=d ? ['#EDE7D6','#DCD9E0','#E6E0CF'] : [V('--gold'),V('--oxblood'),V('--charcoal')];
+    /* pigment is diluted by how dark it is, so oxblood is laid far thinner than gold; on
+       the dark ground the sheets are pale and near enough equal */
+    const alpha=(ink)=> d ? .42 : (ink===V('--oxblood') ? .17 : ink===V('--charcoal') ? .155 : .31);
+    c.clearRect(0,0,W,H);
+    SHEETS.forEach((sh,i)=>{
+      const ink=inks[i%inks.length];
+      const cx=sh.x*W, cy=sh.y*H, r=sh.r*W;
+      const a=alpha(ink);
+      const g=c.createRadialGradient(cx,cy,r*.10,cx,cy,r);
+      g.addColorStop(0,    hexA(ink,a*.92));
+      g.addColorStop(.86,  hexA(ink,a));        /* even across the body */
+      g.addColorStop(.965, hexA(ink,a*.78));    /* then a short, defined edge */
+      g.addColorStop(1,    ink+'00');
+      c.fillStyle=g; c.beginPath(); c.arc(cx,cy,r,0,6.2832); c.fill();
+    });
+    /* the tooth, on the sheets only */
+    if(!fibre) fibre=buildFibre();
+    c.globalCompositeOperation='source-atop';
+    c.globalAlpha = d ? .58 : .76;
+    c.fillStyle=fibre; c.fillRect(0,0,W,H);
+    c.globalAlpha=1; c.globalCompositeOperation='source-over';
+  }
+  const paint=()=>{ if(!raf) raf=requestAnimationFrame(draw); };
+
+  /* DRAG. The whole hero is the surface, so a sheet can be pulled straight across the
+     name; it passes beneath the letters, which keep their paper and stay readable. */
+  let held=null, grabX=0, grabY=0;
+  const at=(e)=>{ const r=cv.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; };
+  function pick(p){
+    for(let i=SHEETS.length-1;i>=0;i--){
+      const sh=SHEETS[i];
+      if(Math.hypot(p.x-sh.x*W, p.y-sh.y*H) < sh.r*W) return sh;
+    }
+    return null;
+  }
+  cv.addEventListener('pointermove',e=>{
+    const p=at(e);
+    if(!held){ cv.dataset.grab = pick(p) ? '1' : '0'; return; }
+    held.x=(p.x-grabX)/W; held.y=(p.y-grabY)/H; paint();
+  });
+  cv.addEventListener('pointerdown',e=>{
+    const p=at(e), sh=pick(p); if(!sh) return;
+    held=sh; grabX=p.x-sh.x*W; grabY=p.y-sh.y*H;
+    /* the one the hand is on comes to the top of the stack, as a sheet of paper would */
+    SHEETS.splice(SHEETS.indexOf(sh),1); SHEETS.push(sh);
+    cv.setPointerCapture(e.pointerId); paint();
+  });
+  const drop=()=>{ held=null; };
+  addEventListener('pointerup',drop); addEventListener('pointercancel',drop);
+
+  /* Nothing animates on its own. The field is still until a hand moves it, which keeps a
+     page that is mostly read from holding a frame loop open. */
+  size(); paint();
+  new ResizeObserver(()=>{ if(size()) paint(); }).observe(cv);
+  addEventListener('themechange',paint);
+})();
+
+/* ---------- disc plates: mounted on intersection, not on load ---------- */
+const V=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+function discs(cv, opts){
+  const c=cv.getContext('2d'); let raf=0, t0=performance.now(), W=0,H=0,dpr=1, seed=0;
+  const cols=[V('--gold'),V('--oxblood'),V('--charcoal'),V('--gold')];
+  function size(){const r=cv.getBoundingClientRect();dpr=Math.min(2,devicePixelRatio||1);
+    W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;c.setTransform(dpr,0,0,dpr,0,0);}
+  function draw(now){
+    const t=(now-t0)/1000;
+    c.fillStyle=V('--plate'); c.fillRect(0,0,W,H);
+    /* PAINT, NOT LIGHT. On paper the discs are washes: two crossing go DARKER, so the
+       blend is multiply. Additive ('lighter') on a paper ground just bleaches the plate
+       to white, which is what this replaces. In dark mode the ground is the dark room
+       and transmitted light is the honest metaphor again, so it stays additive there.
+       Pigment is diluted by how dark it is: oxblood at the gold's alpha kills the paper,
+       so each colour carries its own weight in light mode. */
+    const dark=document.documentElement.getAttribute('data-theme')==='dark';
+    c.globalCompositeOperation=dark?'lighter':'multiply';
+    const wt=dark?[1,1,1,1]:[1,.42,.5,1];
+    const ah=(hex,w)=>Math.max(0,Math.min(255,Math.round(parseInt(hex,16)*w))).toString(16).padStart(2,'0');
+    const R=Math.min(W,H)*opts.r;
+    for(let i=0;i<opts.n;i++){
+      // the centre drifts, so successive discs land offset and cluster
+      const a=i*2.399 + seed*0.9 + t*opts.spin;
+      const wob=Math.sin(t*.21+i)*R*.16;
+      const x=W*.5+Math.cos(a)*(R*.5+wob), y=H*.5+Math.sin(a)*(R*.40+wob*.7);
+      const rad=R*(.5+(i%4)*.19);
+      const col=cols[i%cols.length], w=wt[i%cols.length];
+      const g=c.createRadialGradient(x,y,0,x,y,rad);
+      g.addColorStop(0,col+ah(opts.core,w)); g.addColorStop(.7,col+ah(opts.mid,w)); g.addColorStop(1,col+'00');
+      c.fillStyle=g; c.beginPath(); c.arc(x,y,rad,0,7); c.fill();
+    }
+    c.globalCompositeOperation='source-over';
+    raf=requestAnimationFrame(draw);
+  }
+  size(); new ResizeObserver(size).observe(cv);
+  return {start(){if(!raf)raf=requestAnimationFrame(draw)},stop(){cancelAnimationFrame(raf);raf=0},seed(v){seed=v;}};
+}
+const PRESET={track:{n:11,r:.46,spin:.05,core:'34',mid:'1a'},
+              bloom:{n:8, r:.60,spin:.03,core:'22',mid:'10'},
+              card :{n:6, r:.52,spin:.07,core:'2c',mid:'16'}};
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  const inst=e.target.__d; if(!inst)return;
+  e.isIntersecting?inst.start():inst.stop();
+}),{rootMargin:'120px'});
+function mount(cv,kind){ cv.__d=discs(cv,PRESET[kind]); io.observe(cv); }
+document.querySelectorAll('canvas[data-lazy]').forEach(cv=>mount(cv,cv.dataset.lazy));
+
+/* ---------- projects: rows, tags, hover preview ---------- */
+const PROJECTS=[
+  {n:'01',t:'Manus AI',        y:'2026',tags:['Internship','Approved & in dev'],       s:'Designing an AI community platform to drive adoption',                   href:'/work/manus-ai.html',          v:'/videos/work-manus.mp4',   img:'/videos/work-manus.jpg'},
+  {n:'02',t:'Clover',          y:'2026',tags:['Founding design engineer','0 to 1'],   s:'Designing the HUD interface and shipping the iOS companion app',        href:'/404.html?p=Clover',           v:'/videos/work-clover.mp4',  img:'/videos/work-clover.jpg'},
+  {n:'03',t:'Fostr',           y:'2026',tags:['Founding design engineer','0 to 1'],   s:'Building the brand, landing site and internal platform from 0 to 1',    href:'https://fostr.page/', ext:true, v:'/videos/work-fostr.mp4',   img:'/videos/work-fostr.jpg'},
+  {n:'04',t:'Olive',           y:'2026',tags:['Hackathon'],                            s:'Designing an AI-powered carbon tracking app',                            href:'https://drive.google.com/file/d/15-mX_sIkPU_Ww4R1UueWG10Wv9CQbhEy/view', ext:true, v:'/videos/work-olive.mp4', img:'/videos/work-olive.jpg'},
+  {n:'05',t:'Second Self',     y:'2026',tags:['Hackathon'],                            s:'Building an AI agent that lives on your own Mac',                        href:'https://devpost.com/software/second-self-giwmxh', ext:true, v:'/videos/second-self.mp4', img:'/videos/second-self.jpg'},
+  {n:'06',t:'Halodoc',         y:'2025',tags:['Internship','Shipped'],                 s:'Designing the onboarding journey for AI Prescription on mobile',         href:'/404.html?p=Halodoc',          v:'/videos/work-halodoc.mp4', img:'/videos/work-halodoc.jpg'},
+  {n:'07',t:'Conduit Commerce',y:'2025',tags:['Internship','Shipped'],                 s:'Designing and shipping a B2B SaaS website for an AI-feature launch',     href:'/work/conduit-commerce.html',  v:'/videos/work-conduit.mp4', img:'/videos/work-conduit.jpg'},
+  {n:'08',t:'SomiaCX',         y:'2025',tags:['Internship','0 to 1'],                  s:'Architecting a unified UVP system for three financial subsidiaries',     href:'/work/somia-cx.html',          img:'/images/work-somiacx.png'},
+];
+const rows=document.getElementById('rows'), tags=document.getElementById('tags');
+const pvT=document.getElementById('pv-t'), pvS=document.getElementById('pv-s');
+rows.innerHTML=PROJECTS.map((p,i)=>`<li data-i="${i}" data-tags="${p.tags.join('|')}">
+  <a href="${p.href}"${p.ext?' target="_blank" rel="noopener"':''}>${p.t}${p.ext?' <span class="ext">&#8599;</span>':''}</a></li>`).join('');
+const ALL=[...new Set(PROJECTS.flatMap(p=>p.tags))];
+tags.innerHTML=['All',...ALL].map((t,i)=>`<button aria-pressed="${i===0}">${t}</button>`).join('');
+/* the preview is the project's own clip from the shipped site; SomiaCX has a still */
+const pvV=document.querySelector('#preview video'), pvI=document.querySelector('#preview img');
+let pvCur=-1;
+function show(i){
+  const p=PROJECTS[i]; pvT.textContent=p.t; pvS.textContent=p.s;
+  [...rows.children].forEach((li,j)=>li.classList.toggle('on',j===i));
+  if(pvCur===i) return; pvCur=i;
+  if(p.v){ pvI.classList.remove('on'); pvV.poster=p.img||''; if(pvV.getAttribute('src')!==p.v){ pvV.src=p.v; pvV.load(); }
+    pvV.classList.add('on'); pvV.play().catch(()=>{}); }
+  else { pvV.pause(); pvV.classList.remove('on'); pvI.src=p.img; pvI.classList.add('on'); }
+}
+const preview=document.getElementById('preview');
+const hot=on=>{rows.classList.toggle('hot',on); preview.classList.toggle('show',on);
+  if(!on){ [...rows.children].forEach(li=>li.classList.remove('on')); pvV.pause(); } else if(pvV.classList.contains('on')) pvV.play().catch(()=>{});};
+rows.addEventListener('pointerover',e=>{const li=e.target.closest('li'); if(li){show(+li.dataset.i); hot(true);}});
+rows.addEventListener('pointerleave',()=>hot(false));
+rows.addEventListener('focusin',e=>{const li=e.target.closest('li'); if(li){show(+li.dataset.i); hot(true);}});
+rows.addEventListener('focusout',e=>{if(!rows.contains(e.relatedTarget)) hot(false);});
+tags.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  [...tags.children].forEach(x=>x.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true');
+  const t=b.textContent; let first=-1;
+  [...rows.children].forEach((li,j)=>{const off=t!=='All'&&!li.dataset.tags.split('|').includes(t);
+    li.classList.toggle('off',off); if(!off&&first<0) first=j;});
+  if(first>=0) show(first);
+});
+show(0);
+/* rest state is his: titles at full ink, the preview absent until a title is hovered */
+
+/* ---------- footer clock: hers is New York ---------- */
+(function(){const els=document.querySelectorAll('.clock'); if(!els.length) return;
+  const f=()=>{const t=new Date().toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit',second:'2-digit',timeZoneName:'short'}); els.forEach(el=>el.textContent=t);};
+  f(); setInterval(f,1000);})();
+</script></body></html>
