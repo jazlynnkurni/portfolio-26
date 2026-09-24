@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-cache">
-<title>SomiaCX — Architecting a unified UVP system for three financial subsidiaries — Jazlynn Kurniandra</title>
+<title>Art Gallery — Jazlynn Kurniandra</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="/site-mark.js"></script>
@@ -211,6 +211,75 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 .more a.cell .t{font:300 28px/1.15 var(--hel);letter-spacing:-.015em;color:var(--ink);display:block}
 .more a.cell p{margin-top:8px}
 .more a.cell .n{font:500 11px var(--jak);letter-spacing:.12em;color:var(--ink3);display:block;margin-bottom:12px}
+
+/* the hidden attribute has to beat the class rules below, or a hidden gate still shows */
+.gal [hidden]{display:none!important}
+.gal{padding:136px 0 0}
+/* the case study's head is a two column grid; this one is a stack */
+.gal .head{display:block}
+.gal .head h1{font-size:clamp(28px,4vw,44px);line-height:1.12;max-width:22ch;margin-top:12px}
+.gal .head p{font-size:17px;line-height:1.62;color:var(--ink2);margin-top:16px;max-width:52ch}
+/* ---- the desk: name, card colour, the canvas ---- */
+.desk{margin-top:48px;display:grid;grid-template-columns:680px 1fr;gap:48px;align-items:start}
+@media(max-width:1100px){.desk{grid-template-columns:1fr}}
+.desk .plate{width:680px;max-width:100%;aspect-ratio:680/380;position:relative;user-select:none}
+.desk canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
+@media(pointer:fine){.desk canvas{cursor:crosshair}}
+.desk .mono{position:absolute;top:18px;left:20px;font:600 13px var(--jak);letter-spacing:.08em;pointer-events:none;opacity:.9}
+.desk .side{display:grid;grid-template-columns:1fr}
+.desk .side .cell{padding:20px 24px;border-right:1px solid var(--hair)}
+.desk .side .cell+.cell{border-top:0}
+.desk input{width:100%;margin-top:10px;font:300 17px var(--hel);color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--hair);padding:6px 0 8px;outline:none;border-radius:0}
+.desk input:focus{border-bottom-color:var(--ink)}
+.desk input::placeholder{color:var(--ink3)}
+.sw{display:flex;gap:10px;margin-top:12px}
+.sw button{width:36px;height:36px;border-radius:8px;border:0;padding:0;cursor:pointer;outline:1px solid var(--outline);outline-offset:-1px;
+  transition:transform .18s cubic-bezier(.33,1.18,.37,1),box-shadow .18s ease}
+.sw button[aria-pressed=true]{box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--ink);transform:scale(1.06)}
+.sw button:active{transform:scale(.94)}
+.acts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.acts button{font:500 13px var(--jak);letter-spacing:.01em;color:var(--ink);background:transparent;border:1px solid var(--hair);border-radius:999px;padding:9px 16px;cursor:pointer;
+  transition:color .15s ease,border-color .15s ease,background .15s ease,transform .1s ease}
+.acts button:hover{border-color:var(--ink3)}
+.acts button:active{transform:scale(.96)}
+.acts button.go{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.acts button.go:disabled{background:transparent;color:var(--ink3);border-color:var(--hair);cursor:not-allowed}
+.gal .err{font-size:13px;color:var(--touch);margin-top:12px}
+/* ---- the wall: the grid's own cells, three across ---- */
+.wall{margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr)}
+.wall .slot{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);border-left:1px solid var(--hair);padding:20px;min-width:0;position:relative}
+.wall .slot:nth-child(3n){border-right:1px solid var(--hair)}
+.wall .slot:nth-child(n+4){border-top:0}
+.wall .slot.empty::after{content:"";display:block;aspect-ratio:680/380;border:1px dashed var(--hair);border-radius:8px}
+.wall .slot.empty{padding-bottom:49px}   /* 20 + the name line, so an empty slot is as tall as a full one */
+.card{position:relative;width:100%;aspect-ratio:680/380;border-radius:8px;overflow:hidden;outline:1px solid var(--outline);outline-offset:-1px;
+  transition:transform .46s cubic-bezier(.33,1.18,.37,1),box-shadow .32s ease}
+.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
+.card .mono{position:absolute;top:8px;left:9px;font:600 9px var(--jak);letter-spacing:.08em;pointer-events:none;opacity:.9}
+.slot:hover .card{transform:translateY(-3px);box-shadow:0 12px 28px rgba(20,23,27,.16)}
+[data-theme="dark"] .slot:hover .card{box-shadow:0 12px 28px rgba(0,0,0,.4)}
+.slot .who{display:block;font:300 12.5px var(--hel);color:var(--ink3);margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* the tag on your own card: an inked tile with the knocked out label, like the wall's letters */
+.you{position:absolute;top:10px;left:10px;z-index:2;font:600 10px var(--jak);letter-spacing:.14em;text-transform:uppercase;
+  background:var(--flick-a);color:var(--ink);padding:5px 9px;transform:rotate(-6deg);transform-origin:top left;pointer-events:none;
+  opacity:0;animation:you .5s cubic-bezier(.33,1.18,.37,1) .7s forwards}
+@keyframes you{to{opacity:1}}
+@media(max-width:900px){.wall{grid-template-columns:repeat(2,1fr)}.wall .slot:nth-child(3n){border-right:0}.wall .slot:nth-child(2n){border-right:1px solid var(--hair)}.wall .slot:nth-child(n+3){border-top:0}}
+/* ---- the works: her own pieces, three columns, packed by height ---- */
+.works{margin-top:96px;padding-bottom:32px}
+.works .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+.works .col{display:flex;flex-direction:column;gap:16px}
+.works .plate{margin:0}
+.works .plate img,.works .plate video{display:block;width:100%;height:auto}
+@media(max-width:700px){.works .cols{grid-template-columns:1fr}}
+/* the FLIP ghost: your card travelling from the desk to its slot */
+#ghost{position:fixed;z-index:80;border-radius:8px;overflow:hidden;pointer-events:none;transform-origin:top left;
+  transition:transform .7s cubic-bezier(.22,1,.36,1),opacity .2s ease .6s}
+#ghost img{width:100%;height:100%;display:block}
+/* the gate: drawing wants a desk, not a thumb */
+.gate{min-height:70vh;display:grid;place-items:center;text-align:center}
+.gate p{font-size:15px;line-height:1.62;color:var(--ink2);max-width:36ch}
+.gate a{display:inline-block;margin-top:16px;color:var(--ink);text-decoration:none}
 </style><script>(function(){const q=new URLSearchParams(location.search).get('theme');let t=q||localStorage.getItem('theme');
 if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script></head><body>
 <nav><div class="wrap in">
@@ -222,18 +291,31 @@ if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches
     </button>
     <a class="l" href="/#work">Projects</a><a class="l" href="http://localhost:3000/sandbox">Sandbox</a><a class="l" href="/art-gallery.html">Art Gallery</a><a class="l" href="/about.html">About</a></span>
 </div></nav>
-<header class="cs-hero"><div class="wrap">
-  <div class="eyebrow"><span class="label">Project 08</span><img class="logo" src="/images/somiacx/hero/somiacx-mufg-logo.png" alt="SomiaCX × MUFG Bank"></div>
-  <h1>Architecting a unified UVP system for three financial subsidiaries.</h1>
-  <div class="toc"><a href="#overview" class="">Overview</a><a href="#problem" class="g">Problem</a><a href="#research" class="">Research</a><a href="#development" class="g">Development</a><a href="#testing" class="">Testing</a><a href="#solution" class="g">Solution</a></div>
-  <div class="facts">
-    <div><div class="label">My role</div><p>UX designer: market research, product alignment, UVP architecture, LoFi and MidFi prototyping.</p></div>
-    <div><div class="label">Duration</div><p>3 months</p></div>
-    <div><div class="label">Team</div><ul><li>1 founder</li><li>1 PM</li><li>2 UX designers (me!)</li><li>1 SWE</li><li>1 UI designer</li></ul></div>
-    <div><div class="label">Results</div><div class="chips"><span>Support tickets −18%</span><span>~72% onboarding retention</span><span>~25% fewer branch visits</span></div></div>
-  </div>
-  <div class="plate pad"><img src="/images/somiacx/hero/phone-home.png" alt="SomiaCX × MUFG Bank" loading="lazy"></div>
-</div></header><section class="cs" id="overview"><div class="wrap"><div class="head"><div><div class="label">At a glance</div><h2>Three subsidiaries, one app, and users who had almost nothing in common.</h2></div><div class="lede"><p>My first product internship. I interned at SomiaCX as a UX designer, embedded inside a project for MUFG. They have three separate subsidiaries (a bank, an insurance company, and a vehicle financing arm) that were being merged into one unified financial app. Each had different users, different revenue models, and different internal teams who didn&#x27;t always agree on what the product should do.</p><p>I worked on the UVP architecture that would hold all of it together: a shared value framework that made each subsidiary feel coherent, not competing, and that served an incredibly diverse user base, from upper-income urban professionals to low-income, unbanked Indonesians with no digital literacy. By the end I had the chance to present to our stakeholders.</p></div></div></div></section><section class="cs" id="problem"><div class="wrap"><div class="head"><div><div class="label">Problem</div><h2>How might we design a scalable shared UVP architecture that unifies three subsidiaries, serving diverse financial users inclusively?</h2></div><div class="lede"><p>MUFG&#x27;s three subsidiaries had been operating independently for years, each with its own product logic, its own users, and its own definition of what &quot;financial services&quot; meant.</p><p>These three groups had almost nothing in common: different income levels, different relationships with technology, different mental models of what a financial app was even for. Yet all three were expected to converge inside a single unified ecosystem. This wasn&#x27;t just a design challenge. It was a product strategy, stakeholder alignment, and cultural inclusion challenge all at once.</p></div></div><p class="label" style="margin-top:24px">*Due to tight NDA restrictions, some end products can't be shown.</p><div class="label" style="margin-top:48px">Solution preview</div><div class="flow"><div class="cell"><p>User discovers the app</p><img class="ic" src="/images/somiacx/hero/phone.svg" alt=""></div><div class="cell"><p>UVP system shows their financial path</p><div class="m"><img src="/images/somiacx/problem/solution-preview-lofi-uvp-4.png" alt="" loading="lazy"></div></div><div class="cell"><p>Explores personalized financial features</p><div class="m"><img src="/images/somiacx/problem/solution-preview-midfi-uvp-5.png" alt="" loading="lazy"></div></div><div class="cell"><p>Users grow financial confidence with MUFG</p><img class="ic" src="/images/manus/flow-icons/people.svg" alt=""></div></div></div></section><section class="cs" id="research"><div class="wrap"><div class="head"><div><div class="label">Research</div><h2>Users were failing to see themselves in the product, given their diverse needs.</h2></div><div></div></div><div class="row r7"><div class="three" style="margin-top:0;grid-template-columns:1fr;gap:12px"><figure><div class="plate"><img src="/images/somiacx/research/research-card-1-comics.png" alt="" loading="lazy"></div><figcaption>Three customer comics: different priorities, constraints, expectations.</figcaption></figure><figure><div class="plate"><img src="/images/somiacx/research/research-card-2-ideas.png" alt="" loading="lazy"></div><figcaption>The ideation board.</figcaption></figure><figure><div class="plate"><img src="/images/somiacx/research/research-card-3-ranked.png" alt="" loading="lazy"></div><figcaption>Ranked priorities and findings.</figcaption></figure></div><div class="tx"><h3>Desk research <span class="a">&rarr;</span></h3><p>I conducted further analysis from company-shared private datasets (marketing, financial, and customer intelligence), and extensive desk research to really understand the problem.</p></div></div><div class="row r7"><figure class=""><div class="plate"><img src="/images/somiacx/research/news-article-affinity-map.png" alt="A Jakarta vehicle news article beside the UVP affinity map." loading="lazy"></div><figcaption>A Jakarta vehicle news article beside the UVP affinity map.</figcaption></figure><div class="tx"><h3>The insight that unlocked everything <span class="a">&rarr;</span></h3><p>At the end of 2023, Indonesia had approximately <b>132.43 million motorcycles and 17.17 million passenger cars.</b> Beyond pure numbers, vehicles in Indonesia carry deep cultural weight: social signals, shared family assets, and often the single largest financial commitment a household makes. Vehicle financing installments touch every one of MUFG&#x27;s three subsidiaries, and every one of their user segments.</p><p>It was the cultural anchor the unified experience needed.</p></div></div><div class="row r7"><figure class=""><div class="plate"><img src="/images/somiacx/research/field-research.png" alt="Testing photos, branch office visits, sticky-note workshops." loading="lazy"></div><figcaption>Testing photos, branch office visits, sticky-note workshops.</figcaption></figure><div class="tx"><h3>Field research <span class="a">&rarr;</span></h3><p>I created sacrificial lo-fi concepts and took them directly into the field and to branch offices.</p></div></div><div class="label" style="margin-top:96px">Finding the gaps in the market</div><div class="row r7" style="align-items:start"><figure class=""><div class="plate"><img src="/images/somiacx/understanding-users/bca-bri-mobile-phone.png" alt="BCA and BRI mobile home screens, each surfacing a separate set of fragmented features." loading="lazy"></div><figcaption>BCA and BRI mobile home screens, each surfacing a separate set of fragmented features.</figcaption></figure><div class="cells c2"><div class="cell "><h3>One feature per subsidiary</h3><p>Internal conflict with no visible unity. Not user-friendly, especially for users who are financially and digitally illiterate.</p><p class="st">Instead</p><p>Relevant financial services that unify all three subsidiaries into one coherent experience.</p></div><div class="cell "><h3>Lacks intuition</h3><p>Users couldn't figure out what to do for next steps.</p><p class="st">Instead</p><p>A path that shows the next step before it is asked for.</p></div><div class="cell "><h3>Findings lack "so what?"</h3><p>Data without meaning.</p><p class="st">Instead</p><p>Tie incentives to a culturally relevant commonality.</p></div><div class="cell "><h3>Feels cold or mechanical</h3><p>Blue color schemes tested as anxiety-inducing.</p><p class="st">Instead</p><p>Micro-joy, cultural warmth, and human tone throughout.</p></div></div></div><div class="label" style="margin-top:48px">Our direction</div><div class="cells c2"><div class="cell ink"><h3>How might we utilize collectivism as a design principle?</h3></div><div class="cell gold"><h3>How might we implement familiarity in innovation?</h3></div></div></div></section><section class="cs" id="testing"><div class="wrap"><div class="head"><div><div class="label">Testing</div><h2>Understanding our users.</h2></div><div></div></div><div class="three"><figure><div class="plate"><img src="/images/somiacx/usability/quote-car-owner.png" alt="" loading="lazy"></div><figcaption>A car owner: wants to save for family but has no idea where to start.</figcaption></figure><figure><div class="plate"><img src="/images/somiacx/usability/quote-motorcycle-customer.png" alt="" loading="lazy"></div><figcaption>A motorcycle customer: the language felt made for people richer than them.</figcaption></figure><figure><div class="plate"><img src="/images/somiacx/usability/quote-motorcycle-owner-2.png" alt="" loading="lazy"></div><figcaption>A motorcycle owner: pays installments, doesn&#x27;t know what else the app offers.</figcaption></figure></div><div class="row "><div class="tx"><h3>User interviews (12) and secondary research <span class="a">&rarr;</span></h3><ul><li>Users across income segments <b>couldn&#x27;t connect their installment payments</b> to broader financial services available within the same ecosystem.</li><li>Lower-income users felt the product tone and language <b>created distance.</b> It didn&#x27;t feel made for someone like them.</li><li>Internal teams had <b>no unified customer view.</b> Each subsidiary managed users independently, making holistic service slow.</li></ul></div><div></div></div><div class="cells c3"><div class="cell "><img class="av" src="/images/manus/research/persona-power-user.png" alt=""><h4>Motorcycle owners</h4><p class="kv">Income ~$193–$1,290/month</p><ul><li>Pays installments regularly but doesn&#x27;t know what other financial services they qualify for within the same app.</li><li>Wants to understand the total cost of vehicle ownership without going to a branch every time.</li></ul></div><div class="cell "><img class="av" src="/images/manus/research/persona-newcomer.png" alt=""><h4>Car owners</h4><p class="kv">Income ~$320–$1,290+/month</p><ul><li>Manages banking and financing separately; no single view of their full financial picture.</li><li>Wants one place to track installments, insurance, and savings without switching between apps or branches.</li></ul></div><div class="cell "><img class="av" src="/images/conduit/users/core-user-avatar.png" alt=""><h4>Internal subsidiary team</h4><p class="kv">Income ~$658–$1,290+/month</p><ul><li>Each subsidiary operates its own system. No shared logic, no unified customer view across the three.</li><li>Wants a platform architecture that lets them serve customers across subsidiaries.</li></ul></div></div></div></section><section class="cs" id="development"><div class="wrap"><div class="head"><div><div class="label">Development</div><h2>Six pillars built around culture. Four survived stakeholder reality.</h2></div><div></div></div><figure class=""><div class="plate"><img src="/images/somiacx/development/uvp-1.png" alt="UVP 1, Support (safety net). &quot;Make the unpredictable, predictable.&quot;" loading="lazy"></div><figcaption>UVP 1, Support (safety net). &quot;Make the unpredictable, predictable.&quot;</figcaption></figure><figure class="mt"><div class="plate"><img src="/images/somiacx/development/uvp-2.png" alt="UVP 2, Advisor (future planning). &quot;Optimize your future with your own advisor.&quot;" loading="lazy"></div><figcaption>UVP 2, Advisor (future planning). &quot;Optimize your future with your own advisor.&quot;</figcaption></figure><figure class="mt"><div class="plate"><img src="/images/somiacx/development/uvp-3.png" alt="UVP 3, Mentor (vehicle understanding). &quot;Knowledgeable companionship with your own vehicle mentor.&quot;" loading="lazy"></div><figcaption>UVP 3, Mentor (vehicle understanding). &quot;Knowledgeable companionship with your own vehicle mentor.&quot;</figcaption></figure><figure class="mt"><div class="plate"><img src="/images/somiacx/development/uvp-4.png" alt="UVP 4, Assistant (routine management). &quot;Manage life chores easier with your personalized assistant.&quot;" loading="lazy"></div><figcaption>UVP 4, Assistant (routine management). &quot;Manage life chores easier with your personalized assistant.&quot;</figcaption></figure><figure class="mt"><div class="plate"><img src="/images/somiacx/development/uvp-5.png" alt="UVP 5, Buddy (family and social savings). &quot;Better together with a Buddy.&quot;" loading="lazy"></div><figcaption>UVP 5, Buddy (family and social savings). &quot;Better together with a Buddy.&quot;</figcaption></figure><figure class="mt"><div class="plate"><img src="/images/somiacx/development/uvp-6.png" alt="UVP 6, Connector (local inclusion). &quot;Grow together with your local community.&quot;" loading="lazy"></div><figcaption>UVP 6, Connector (local inclusion). &quot;Grow together with your local community.&quot;</figcaption></figure></div></section><section class="cs" id="solution"><div class="wrap"><div class="head"><div><div class="label">Solution</div><h2>A shared UVP architecture that unifies subsidiaries without disregarding their users.</h2></div><div></div></div><div class="row r75" style="align-items:start"><div class="cells c2"><div class="cell "><h3>01 Support</h3><p>Safety net</p><p class="st">kept</p></div><div class="cell "><h3>02 Advisor</h3><p>Future planning</p><p class="st">kept</p></div><div class="cell dim"><h3>03 Mentor</h3><p>Vehicle understanding</p><p class="st">merged with 04</p></div><div class="cell "><h3>04 Assistant</h3><p>Routine management</p><p class="st">kept</p></div><div class="cell dim"><h3>05 Buddy</h3><p>Shared wallet</p><p class="st">cut, low ROI</p></div><div class="cell dim"><h3>06 Connector</h3><p>Local investment</p><p class="st">cut, misaligned KPI</p></div></div><div class="tx"><h3>Post stakeholder meeting <span class="a">&rarr;</span></h3><p>After presenting all six pillars, stakeholder feedback forced hard prioritization.</p><ul><li>UVP 3 (Mentor) was merged with UVP 4 (Assistant); their overlap was too significant to justify maintaining separately.</li><li>UVP 5 (Shared Wallet) was flagged as low ROI.</li><li>UVP 6 (Local Investment) was misaligned with KPIs at the subsidiary level.</li></ul><p><b>Four pillars moved forward. Two were cut.</b></p></div></div><div class="label" style="margin-top:96px">The results</div><p class="label" style="margin-top:6px;text-transform:none;letter-spacing:0;font-weight:500">Backed by the subsidiaries' final assessment report.</p><div class="cells c3"><div class="cell "><p class="big">−18%</p><p>user friction and support tickets in first-round UVP testing.</p></div><div class="cell "><p class="big">~72%</p><p>retention across onboarding flows, with culturally grounded choices resonating across income and literacy levels.</p></div><div class="cell "><p class="big">~25%</p><p>projected reduction in branch-visit dependency as users felt confident navigating financial decisions independently.</p></div></div><div class="tx"><p>I also learned that sometimes it&#x27;s okay to say no to stakeholders. Clarity under stakeholder pressure is a design skill. When everyone is asking for more, the ability to say &quot;this specific thing, done well, serves the goal better than adding another feature&quot; requires both research grounding and confidence in the process. This is the type of skill I couldn&#x27;t have learned from the books.</p></div><div class="take"><div><figure style="margin-top:0px"><div class="plate"><img src="/images/somiacx/final-thoughts/team-selfie.png" alt="SomiaCX team selfie" loading="lazy"></div></figure><figure style="margin-top:16px"><div class="plate"><img src="/images/somiacx/final-thoughts/meeting.png" alt="A working meeting" loading="lazy"></div></figure><figure style="margin-top:16px"><div class="plate"><img src="/images/somiacx/final-thoughts/working.png" alt="At the office" loading="lazy"></div></figure></div><div><div class="label">Final thoughts</div><h3 style="font-size:22px;margin-top:12px">Key takeaways and next steps.</h3><ol><li>Designing for financial inclusion across a diverse population taught me that systems-level thinking and cultural humility come to the forefront, before any other product decisions.</li><li>In-depth research is the way to go. The more participants, the more inclusive the design you&#x27;re able to craft.</li><li>Clarity, good communication, and general business knowledge under stakeholder pressure are important skills to have.</li></ol></div></div><div class="cells c3"><div class="cell "><div class="label">Next step 01</div><p style="color:var(--ink);margin-top:12px">Hand off to the design and dev team.</p></div><div class="cell "><div class="label">Next step 02</div><p style="color:var(--ink);margin-top:12px">Longitudinal testing of the personalization layer to validate the UVPs.</p></div><div class="cell "><div class="label">Next step 03</div><p style="color:var(--ink);margin-top:12px">Realign with stakeholder needs.</p></div></div></div></section><div class="wrap"><div class="thanks"><img src="/images/manus/thanks/cartoon-jaz.png" alt=""><div><h3>Thanks for visiting!</h3><p>I design better than I summarize. Let's fix that over a call or interview. Reach out <a href="mailto:jazkurnz06@gmail.com">here</a>.</p></div></div><div class="more"><div class="label">More projects</div><div class="cells c2"><a class="cell" href="/work/manus-ai.html"><span class="n">01 &middot; 2026</span><span class="t">Manus AI</span><p>Designing an AI community platform to drive adoption</p></a><a class="cell" href="/work/conduit-commerce.html"><span class="n">07 &middot; 2025</span><span class="t">Conduit Commerce</span><p>Designing and shipping a B2B SaaS website for an AI-feature launch</p></a></div></div></div>
+<main class="gal"><div class="wrap">
+  <div class="gate" id="gate" hidden><div><div class="label">Art gallery</div><p style="margin-top:12px">The gallery is a drawing experience, and drawing wants a desk. Come back on a bigger screen to leave your mark.</p><a href="/">&larr; Back to home</a></div></div>
+
+  <section id="intro">
+    <div class="head"><div class="label">Art gallery</div>
+      <h1>Everyone has an artist inside of them.</h1>
+      <p>Leave your mark and we&rsquo;ll give it a wall.</p></div>
+    <div class="desk">
+      <div class="plate" id="padPlate"><canvas id="pad" width="680" height="380"></canvas><span class="mono" id="mono">JK</span></div>
+      <div class="side">
+        <div class="cell"><div class="label">Name</div><input id="name" type="text" maxlength="60" placeholder="Your name here" autocomplete="off"></div>
+        <div class="cell"><div class="label">Card</div><div class="sw"><button type="button" data-c="gold" aria-label="gold card" aria-pressed="true" style="background:#A99939"></button><button type="button" data-c="oxblood" aria-label="oxblood card" aria-pressed="false" style="background:#340414"></button><button type="button" data-c="charcoal" aria-label="charcoal card" aria-pressed="false" style="background:#1C1A17"></button><button type="button" data-c="paper" aria-label="paper card" aria-pressed="false" style="background:#FAF9F7"></button></div></div>
+        <div class="cell"><div class="label">Then</div><div class="acts"><button type="button" id="clear">Clear</button><button type="button" id="go" class="go" disabled>Enter &rarr;</button></div><p class="err" id="err"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="wall" hidden>
+    <div class="head"><div class="label">The wall</div>
+      <h1>Welcome to Jazlynn&rsquo;s Art Exhibit.</h1>
+      <p>Thanks for being a part of it. Enjoy the rest of your stay!</p></div>
+    <div class="wall" id="grid"></div>
+    <div class="works"><div class="label">Works</div><div class="cols"><div class="col"><div class="plate"><img src="/images/art-gallery/works/ceramic-mask.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/anime-action.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/die-character-sheet.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/angel.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/spider-verse.png" alt="" loading="lazy"></div><div class="plate"><video src="/videos/art-gallery/process-reel-2.mp4" muted loop playsinline preload="metadata" data-io></video></div></div><div class="col"><div class="plate"><img src="/images/art-gallery/works/izakaya-sushi.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/sunflower-collage.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/green-alien.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/cat.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/tsk-art.png" alt="" loading="lazy"></div><div class="plate"><video src="/videos/art-gallery/process-reel-1.mp4" muted loop playsinline preload="metadata" data-io></video></div><div class="plate"><video src="/videos/art-gallery/animation-loop.mp4" muted loop playsinline preload="metadata" data-io></video></div></div><div class="col"><div class="plate"><img src="/images/art-gallery/works/metropolis-hands.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/fallen-angel.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/goggle-girl.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/police.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/yourclothes.png" alt="" loading="lazy"></div></div></div></div>
+  </section>
+</div></main>
 <footer><div class="wrap"><div class="rule"></div><div class="in">
   <span style="font-size:12.5px;color:var(--ink3)">My local time <b id="clock" style="font-weight:400;color:var(--ink2);font-variant-numeric:tabular-nums"></b></span>
   <span style="display:flex;gap:20px"><a href="mailto:jazkurnz06@gmail.com">Email</a><a href="#">LinkedIn</a><a href="#">X</a></span>
@@ -305,4 +387,90 @@ a.addEventListener('click',()=>{a.href=base+'?theme='+(document.documentElement.
 /* videos only play while on screen */
 (function(){const io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting){v.play().catch(()=>{});}else v.pause();}),{rootMargin:'160px'});
 document.querySelectorAll('video[data-io]').forEach(v=>io.observe(v));})();
+</script><script>
+(function(){
+  /* the two keys the live site already uses, so a visitor who drew there is remembered here */
+  const CARD_KEY='art-gallery:my-card', SEEN_KEY='art-gallery:intro-seen';
+  const W=680,H=380,BRUSH=4;
+  /* the palette as card stock. The stroke follows the hero grid's rule: a gold, oxblood or
+     charcoal card knocks the ink out to paper; the paper card takes ink. */
+  const STOCK={gold:'#A99939',oxblood:'#340414',charcoal:'#1C1A17',paper:'#FAF9F7'};
+  const INK=(c)=>c==='paper'?'#14171B':'#FAF9F7';
+  const $=(s,r=document)=>r.querySelector(s);
+  const intro=$('#intro'), wallSec=$('#wall'), gate=$('#gate');
+
+  if(innerWidth<900){ intro.hidden=true; wallSec.hidden=true; gate.hidden=false; return; }
+  gate.hidden=true;
+
+  /* ---------- the desk ---------- */
+  const cv=$('#pad'), ctx=cv.getContext('2d'), dpr=Math.min(devicePixelRatio||1,2);
+  cv.width=W*dpr; cv.height=H*dpr; ctx.scale(dpr,dpr);
+  let color='gold', strokes=[], cur=null, down=false;
+  const mono=$('#mono');
+  function repaint(){
+    ctx.fillStyle=STOCK[color]; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle=INK(color); ctx.fillStyle=INK(color); ctx.lineWidth=BRUSH; ctx.lineCap='round'; ctx.lineJoin='round';
+    for(const s of strokes){
+      if(s.length===1){ ctx.beginPath(); ctx.arc(s[0].x,s[0].y,BRUSH/2,0,6.2832); ctx.fill(); continue; }
+      ctx.beginPath(); ctx.moveTo(s[0].x,s[0].y); for(let i=1;i<s.length;i++) ctx.lineTo(s[i].x,s[i].y); ctx.stroke();
+    }
+    mono.style.color=INK(color);
+  }
+  const pt=(e)=>{ const r=cv.getBoundingClientRect(); return {x:(e.clientX-r.left)*(W/r.width), y:(e.clientY-r.top)*(H/r.height)}; };
+  cv.addEventListener('pointerdown',e=>{ down=true; cur=[pt(e)]; strokes.push(cur); cv.setPointerCapture(e.pointerId); if(strokes.length===1) go.disabled=false; });
+  cv.addEventListener('pointermove',e=>{ if(!down||!cur) return; const p=pt(e), q=cur[cur.length-1]; cur.push(p);
+    ctx.strokeStyle=INK(color); ctx.lineWidth=BRUSH; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.beginPath(); ctx.moveTo(q.x,q.y); ctx.lineTo(p.x,p.y); ctx.stroke(); });
+  const up=()=>{ down=false; cur=null; }; cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
+  document.querySelectorAll('.sw button').forEach(b=>b.addEventListener('click',()=>{ color=b.dataset.c;
+    document.querySelectorAll('.sw button').forEach(o=>o.setAttribute('aria-pressed',String(o===b))); repaint(); }));
+  const go=$('#go'), name=$('#name'), err=$('#err');
+  $('#clear').addEventListener('click',()=>{ strokes=[]; repaint(); go.disabled=true; });
+  repaint();
+
+  /* ---------- the wall ---------- */
+  const grid=$('#grid'), GRID=12;
+  function card(c, yours){
+    const d=document.createElement('div'); d.className='slot';
+    d.innerHTML=`${yours?'<span class="you">That\u2019s you</span>':''}<div class="card" style="background:${STOCK[c.color]||STOCK.gold}"><img src="${c.drawing}" alt=""><span class="mono" style="color:${INK(c.color)}">JK</span></div><span class="who" title="${esc(c.name)}">${esc(c.name)}</span>`;
+    return d;
+  }
+  const esc=(s)=>String(s||'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+  async function hang(mine){
+    grid.innerHTML=''; grid.appendChild(card(mine,true));
+    let others=[];
+    try{ const r=await fetch('/api/gallery/cards',{cache:'no-store'}); const j=await r.json(); others=(j.cards||[]).filter(c=>c.id!==mine.id).slice(0,GRID-1); }catch(e){}
+    others.forEach((c,i)=>{ const el=card(c,false); el.style.opacity='0'; el.style.transform='translateY(8px)'; grid.appendChild(el);
+      setTimeout(()=>{ el.style.transition='opacity .35s ease,transform .35s ease'; el.style.opacity='1'; el.style.transform='none'; }, 250+i*40); });
+    for(let i=1+others.length;i<GRID;i++){ const e=document.createElement('div'); e.className='slot empty'; grid.appendChild(e); }
+  }
+  function showWall(mine, from){
+    intro.hidden=true; wallSec.hidden=false;
+    hang(mine).then(()=>{
+      /* FLIP: your card travels from the desk to its slot, then the slot takes over */
+      const to=$('.slot .card',grid); if(!from||!to) return;
+      const t=to.getBoundingClientRect();
+      const g=document.createElement('div'); g.id='ghost'; g.innerHTML=`<img src="${mine.drawing}" alt="">`;
+      g.style.left=from.left+'px'; g.style.top=from.top+'px'; g.style.width=from.width+'px'; g.style.height=from.height+'px'; g.style.background=STOCK[mine.color];
+      document.body.appendChild(g); to.style.visibility='hidden';
+      requestAnimationFrame(()=>{ g.style.transform=`translate(${t.left-from.left}px,${t.top-from.top}px) scale(${t.width/from.width},${t.height/from.height})`; g.style.opacity='0'; });
+      setTimeout(()=>{ to.style.visibility=''; g.remove(); }, 720);
+    });
+    if(from) setTimeout(()=>scrollTo({top:0,behavior:'smooth'}), 80);
+  }
+
+  /* ---------- the memory layer ---------- */
+  try{ if(localStorage.getItem(SEEN_KEY)==='true'){ const j=localStorage.getItem(CARD_KEY); if(j){ showWall(JSON.parse(j), null); } } }catch(e){}
+
+  go.addEventListener('click', async ()=>{
+    if(go.disabled) return; go.disabled=true; go.textContent='Hanging your art\u2026'; err.textContent='';
+    const from=$('#padPlate').getBoundingClientRect();
+    try{
+      const r=await fetch('/api/gallery/cards',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name.value.trim(),color,drawing:cv.toDataURL('image/png')})});
+      if(!r.ok){ const j=await r.json().catch(()=>({})); throw new Error(j.error||'Couldn\u2019t save your card. Try again?'); }
+      const {card:mine}=await r.json();
+      try{ localStorage.setItem(CARD_KEY,JSON.stringify(mine)); localStorage.setItem(SEEN_KEY,'true'); }catch(e){}
+      showWall(mine, from);
+    }catch(e){ err.textContent=e.message||'Something went wrong.'; go.disabled=false; go.textContent='Enter \u2192'; }
+  });
+})();
 </script></body></html>

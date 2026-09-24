@@ -2,7 +2,8 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-cache">
 <title>Jazlynn Kurniandra — revamp</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="/site-mark.js"></script>
 <style>
 :root{
   --jak:"Plus Jakarta Sans",sans-serif; --hel:"Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -106,6 +107,7 @@ p{text-wrap:pretty}
 nav{position:fixed;top:0;left:0;right:0;z-index:60;pointer-events:none}
 nav .in{display:flex;justify-content:space-between;align-items:center;padding-top:24px}
 nav .mark{pointer-events:auto;font-family:var(--jak);font-weight:600;font-size:13px;letter-spacing:-.01em;padding:10px 0}
+
 /* measured off his pill: 46px tall, the icon 24px in from the left edge, ~44px between
    words, the last word 28px from the right edge. Pure white on the paper, no outline. */
 nav .links{pointer-events:auto;display:flex;align-items:center;gap:8px;background:var(--pill);border-radius:999px;
@@ -118,6 +120,18 @@ nav a{font-family:var(--hel);font-weight:400;font-size:14.5px;letter-spacing:0;c
 nav a:hover{color:var(--touch);background:color-mix(in srgb,var(--ink) 6%,transparent)}
 nav a:active{transform:scale(.96)}
 /* the mode icon: a sun in light, a moon in dark, 36px so it clears the hit-area floor */
+/* THE TIN TOGGLE. It sat in a free corner first and read as bolted on, because a made
+   object needs something to sit beside. It belongs on the rail with the clock: big enough
+   that the strike marks and the engraving are legible, and anchored to a line of the page
+   instead of to the viewport. It is the heaviest thing on an otherwise light rail, which
+   is what gives that line a left end. */
+.hero-foot .when{display:flex;align-items:center;gap:14px;pointer-events:auto}
+.tin{width:clamp(96px,9vw,124px);aspect-ratio:2.1;display:block;border:0;padding:0;
+  background:transparent;cursor:pointer;outline:none;flex:0 0 auto;
+  filter:drop-shadow(0 4px 12px rgba(20,23,27,.14))}
+[data-theme="dark"] .tin{filter:drop-shadow(0 5px 16px rgba(0,0,0,.45))}
+.tin:focus-visible{outline:2px solid var(--ink);outline-offset:5px;border-radius:999px}
+@media(max-width:640px){.tin{width:86px}}
 #theme{width:38px;height:38px;border-radius:50%;border:0;background:transparent;color:var(--ink2);
   cursor:pointer;padding:0;display:grid;place-items:center;transition:background .18s ease,color .18s ease}
 #theme:hover{background:color-mix(in srgb,var(--ink) 6%,transparent);color:var(--ink)}
@@ -141,10 +155,21 @@ nav a:active{transform:scale(.96)}
  *
  * They sit UNDER the wall on purpose: the name has to stay readable, so the sheets never
  * cover a letter, they tint the paper the letter is printed on. */
-.hero{position:relative;overflow:hidden}
-#sheets{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;
-  mix-blend-mode:multiply;touch-action:none}
-[data-theme="dark"] #sheets{mix-blend-mode:screen}
+/* ============ THE SCROLL ==========================================================
+ * The hero does not scroll away, it is scrolled OVER. It sits sticky at the top and
+ * the projects rise up across it, with a gradient cap on their leading edge so the
+ * wall and the sheets are engulfed rather than cut. As they go under, the two are
+ * faded out by scroll position and the wall drifts up a little, so the page reads as
+ * one motion rather than a stack of blocks. */
+.hero{position:sticky;top:0;overflow:hidden;z-index:0}
+.hero .stack,#sheets{will-change:opacity,transform}
+.work{position:relative;z-index:2;background:var(--paper)}
+.work::before{content:"";position:absolute;left:0;right:0;top:-220px;height:220px;pointer-events:none;
+  background:linear-gradient(to bottom,transparent,var(--paper))}
+/* THE SHEETS ARE THE VELLUM PIECE ITSELF NOW, on the GPU: see sheets-gl.js. The
+   canvas is opaque and paints the page colour under the sheets, so there is no
+   blend mode: the ground IS the page, and the hero edge is seamless. */
+#sheets{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;touch-action:none}
 .hero-grid{z-index:1}
 /* the type is a window onto the sheets, not a lid. The GRID has to be transparent too,
    not just its children -- it is a full-bleed box sitting over the canvas, and it was
@@ -171,11 +196,21 @@ section[id]{scroll-margin-top:24px}
 .hint svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 /* three columns, not space-between: the outer two are equal so the middle item sits on the
    page's centre line rather than halfway between two labels of different lengths */
-.hero-foot{position:absolute;left:30px;right:30px;bottom:22px;display:grid;
+/* THE RAIL IS ONE PLACE. It is pinned to the viewport on the page's own column (the
+   1180 measure, 30px gutters), and the footer's row is built on the same grid at the
+   same height, 22px off the bottom, so when the page runs out the footer's links land
+   exactly where the hint was and the clock and the copyright never move. */
+.hero-foot{position:fixed;left:0;right:0;bottom:22px;z-index:6;display:grid;
+  max-width:1180px;margin:0 auto;padding:0 30px;height:26px}
+footer .in a{font-size:13px}
+.hint{will-change:opacity}
+.hero-foot{
   grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;
-  font:300 13px var(--hel);color:var(--ink3);white-space:nowrap}
+  font:400 13px var(--hel);color:var(--ink2);white-space:nowrap}
 .hero-foot .cr{text-align:right}
-.hero-foot b{font-weight:400;color:var(--ink2);font-variant-numeric:tabular-nums}
+/* the rail is read, not glanced at: the values in full ink, the label a step back */
+.hero-foot b{font-weight:400;color:var(--ink);font-variant-numeric:tabular-nums}
+.hero-foot .cr{color:var(--ink)}
 @media(max-width:640px){.hero-foot{font-size:12px}}
 .hint:hover{color:var(--touch)}
 /* the negative space only exists on a wide screen. Below this the grid fills the width
@@ -184,6 +219,8 @@ section[id]{scroll-margin-top:24px}
   .hero-grid{grid-template-columns:1fr;row-gap:36px}
 }
 .stack{display:flex;flex-direction:column;gap:calc(var(--row) * .2)}
+/* what she does, in one line, above the fold: the wall says who, this says what */
+.stack .who{font:400 15px/1.5 var(--hel);color:var(--ink2);margin:0 0 10px;max-width:52ch}
 .line{display:flex;align-items:stretch}
 /* head + foot rules live on the CELL, so touching cells give one unbroken rule
    across the row. That continuity is what holds a word together while the
@@ -268,8 +305,11 @@ section[id]{scroll-margin-top:24px}
 .card:hover .arrow{color:var(--touch);transform:translate(2px,-2px)}
 
 
-footer{padding:64px 0 46px}
-footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+footer{padding:64px 0 22px}
+/* the same grid as the pinned rail, at the same height, so the links land in the rail's
+   middle slot when the page runs out and the clock and copyright never move */
+footer .in{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:26px;font:300 13px var(--hel)}
+footer .in>span{grid-column:2;display:flex;gap:20px}
 footer a{color:var(--ink2);text-decoration:none;font-size:12.5px}
 footer a:hover{color:var(--touch)}
 .rule{height:1px;background:var(--hair);margin-bottom:26px}
@@ -333,13 +373,16 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
 </script>
 <div id="load"><div class="ld" id="ld"><i class="head"></i><i class="foot"></i></div><span>loading</span></div>
 <nav><div class="wrap in">
-  <span class="mark">Jazlynn Kurniandra</span>
+  <site-mark></site-mark>
   <span class="links">
+
+    <!-- Sandbox is the experiments app, a separate Next build. Absolute in dev because it
+         runs on its own port; this is the one line that changes when the two ship together. -->
     <button id="theme" aria-label="Switch colour mode" title="Colour mode">
       <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
     </button>
-    <a href="#work">Projects</a><a href="/about.html">About</a></span>
+    <a href="#work">Projects</a><a href="http://localhost:3000/sandbox">Sandbox</a><a href="/art-gallery.html">Art Gallery</a><a href="/about.html">About</a></span>
 </div></nav>
 
 <!-- HERO -->
@@ -349,15 +392,19 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
        drag started anywhere -- including straight across the name -- reaches the sheets. -->
   <canvas id="sheets" aria-hidden="true"></canvas>
   <div class="wrap hero-grid">
-  <div class="stack" id="stack"></div>
-  <!-- the hero foot: the time he is in on the left, the copyright on the right, and the
-       one thing to do centred between them, all on one line at the foot of the first screen -->
-  <div class="hero-foot">
-    <span>My local time <b class="clock"></b></span>
-    <a class="hint" href="#work"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>view projects</a>
-    <span class="cr">&copy; 2026 Jazlynn Kurniandra</span>
-  </div>
+  <div class="stack" id="stack"><p class="who">Product designer and design engineer. Cognitive science and HCI at Columbia, previously Manus AI.</p></div>
 </div></header>
+<!-- THE RAIL LIVES OUTSIDE THE HERO. The hero is sticky with its own stacking context, and
+     the projects' gradient cap (z 2) sits over its last 220px, which is exactly where the
+     rail is. Inside the hero the rail could never get above that cap, so it read as faded
+     even at full ink. As a sibling at z 6 it is above everything but the nav. -->
+  <!-- the hero foot: the time he is in on the left, the copyright on the right, and the
+     one thing to do centred between them, all on one line at the foot of the first screen -->
+<div class="hero-foot">
+  <span>My local time <b class="clock"></b></span>
+  <a class="hint" href="#work"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>view projects</a>
+  <span class="cr">&copy; 2026 Jazlynn Kurniandra</span>
+</div>
 
 
 <!-- PROJECTS. His desktop-work-panel, read off the OCR: a filter row of tags, a left
@@ -376,13 +423,14 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
 <footer><div class="wrap">
   <div class="rule"></div>
   <div class="in">
-    <span style="font-size:12.5px;color:var(--ink3)">My local time <b class="clock" style="font-weight:400;color:var(--ink2);font-variant-numeric:tabular-nums"></b></span>
-    <span style="display:flex;gap:20px"><a href="#">Email</a><a href="#">LinkedIn</a><a href="#">X</a></span>
-    <span style="font-size:12.5px;color:var(--ink3)">© 2026 Jazlynn Kurniandra</span>
+    <span><a href="mailto:jazkurnz06@gmail.com">Email</a><a href="#">LinkedIn</a><a href="#">X</a></span>
   </div>
 </div></footer>
 
 <script>
+/* the sandbox is another origin, so the colour mode travels in the URL */
+(function(){document.querySelectorAll('a[href*="localhost:3000/sandbox"]').forEach(a=>{const base=a.getAttribute('href');
+a.addEventListener('click',()=>{a.href=base+'?theme='+(document.documentElement.getAttribute('data-theme')||'light');});});})();
 /* ---------- the cursor ---------- */
 (function(){
   if(!matchMedia('(hover: hover) and (pointer:fine)').matches) return;
@@ -431,13 +479,13 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
 /* theme: every colour eases to the other mode, his way */
 (function(){
   const b=document.getElementById('theme'); if(!b) return;
-  b.addEventListener('click',(e)=>{
+  b.addEventListener('click',()=>{
     const cur=document.documentElement.getAttribute('data-theme'); const t=cur==='dark'?'light':'dark';
-    const apply=()=>{ document.documentElement.setAttribute('data-theme',t); try{localStorage.setItem('theme',t);}catch(err){}
-      dispatchEvent(new CustomEvent('themechange',{detail:{theme:t}})); };
     document.documentElement.classList.add('theming');
     setTimeout(()=>document.documentElement.classList.remove('theming'),560);
-    apply();
+    document.documentElement.setAttribute('data-theme',t);
+    try{localStorage.setItem('theme',t);}catch(err){}
+    dispatchEvent(new CustomEvent('themechange',{detail:{theme:t}}));
   },{capture:true});
 })();
 /* follow the OS only while the visitor has not chosen for themselves */
@@ -621,111 +669,6 @@ function ink(c, on) {
   requestAnimationFrame(tick);
 })();
 
-/* ---------- the sheets ---------- */
-(function(){
-  const cv=document.getElementById('sheets'); if(!cv) return;
-  const V=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
-  const hexA=(hex,a)=>hex+Math.round(Math.max(0,Math.min(1,a))*255).toString(16).padStart(2,'0');
-  const dark=()=>document.documentElement.getAttribute('data-theme')==='dark';
-
-  /* Scattered from the middle of the page out past the right edge, so the field reads as
-     something the page is lying on rather than an object sitting on it. Unit coordinates
-     of the hero, so a resize moves them with the layout instead of rescaling them. */
-  const SHEETS=[
-    {x:.47,y:.20,r:.115},{x:.63,y:.13,r:.130},{x:.80,y:.22,r:.120},{x:.95,y:.14,r:.105},
-    {x:.55,y:.34,r:.100},{x:.72,y:.36,r:.125},{x:.89,y:.40,r:.115},{x:1.02,y:.30,r:.100},
-    {x:.50,y:.56,r:.120},{x:.66,y:.58,r:.135},{x:.83,y:.62,r:.115},{x:.98,y:.54,r:.110},
-    {x:.58,y:.78,r:.110},{x:.76,y:.82,r:.125},{x:.92,y:.76,r:.105},{x:1.04,y:.86,r:.095}
-  ];
-
-  /* THE TOOTH. A sheet of vellum is not a gradient; the grain is half of what it is, and
-     without it these were just soft circles. One noise tile is built once and laid back
-     over the discs with source-atop, so it lands on the sheets and nowhere else -- the
-     bare paper between them stays clean. Two frequencies: a fine speckle for the fibre
-     and a slow swell so the sheet is not evenly toothed across its whole face. */
-  let fibre=null;
-  function buildFibre(){
-    const N=220, t=document.createElement('canvas'); t.width=t.height=N;
-    const tc=t.getContext('2d'), im=tc.createImageData(N,N), d=im.data;
-    for(let y=0;y<N;y++) for(let x=0;x<N;x++){
-      const i=(y*N+x)*4;
-      const swell=Math.sin(x*0.055)*Math.sin(y*0.041)*22 + Math.sin((x+y)*0.021)*14;
-      const v=128 + swell + (Math.random()*116-58);
-      d[i]=d[i+1]=d[i+2]=Math.max(0,Math.min(255,v)); d[i+3]=255;
-    }
-    tc.putImageData(im,0,0);
-    return tc.createPattern(t,'repeat');
-  }
-
-  let W=0,H=0,dpr=1,c=null,raf=0;
-  function size(){
-    const r=cv.getBoundingClientRect(); if(!r.width) return false;
-    dpr=Math.min(2,devicePixelRatio||1); W=r.width; H=r.height;
-    cv.width=W*dpr; cv.height=H*dpr; c=cv.getContext('2d'); c.setTransform(dpr,0,0,dpr,0,0);
-    return true;
-  }
-
-  function draw(){
-    raf=0; if(!c) return;
-    const d=dark();
-    const inks=d ? ['#EDE7D6','#DCD9E0','#E6E0CF'] : [V('--gold'),V('--oxblood'),V('--charcoal')];
-    /* pigment is diluted by how dark it is, so oxblood is laid far thinner than gold; on
-       the dark ground the sheets are pale and near enough equal */
-    const alpha=(ink)=> d ? .42 : (ink===V('--oxblood') ? .17 : ink===V('--charcoal') ? .155 : .31);
-    c.clearRect(0,0,W,H);
-    SHEETS.forEach((sh,i)=>{
-      const ink=inks[i%inks.length];
-      const cx=sh.x*W, cy=sh.y*H, r=sh.r*W;
-      const a=alpha(ink);
-      const g=c.createRadialGradient(cx,cy,r*.10,cx,cy,r);
-      g.addColorStop(0,    hexA(ink,a*.92));
-      g.addColorStop(.86,  hexA(ink,a));        /* even across the body */
-      g.addColorStop(.965, hexA(ink,a*.78));    /* then a short, defined edge */
-      g.addColorStop(1,    ink+'00');
-      c.fillStyle=g; c.beginPath(); c.arc(cx,cy,r,0,6.2832); c.fill();
-    });
-    /* the tooth, on the sheets only */
-    if(!fibre) fibre=buildFibre();
-    c.globalCompositeOperation='source-atop';
-    c.globalAlpha = d ? .58 : .76;
-    c.fillStyle=fibre; c.fillRect(0,0,W,H);
-    c.globalAlpha=1; c.globalCompositeOperation='source-over';
-  }
-  const paint=()=>{ if(!raf) raf=requestAnimationFrame(draw); };
-
-  /* DRAG. The whole hero is the surface, so a sheet can be pulled straight across the
-     name; it passes beneath the letters, which keep their paper and stay readable. */
-  let held=null, grabX=0, grabY=0;
-  const at=(e)=>{ const r=cv.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; };
-  function pick(p){
-    for(let i=SHEETS.length-1;i>=0;i--){
-      const sh=SHEETS[i];
-      if(Math.hypot(p.x-sh.x*W, p.y-sh.y*H) < sh.r*W) return sh;
-    }
-    return null;
-  }
-  cv.addEventListener('pointermove',e=>{
-    const p=at(e);
-    if(!held){ cv.dataset.grab = pick(p) ? '1' : '0'; return; }
-    held.x=(p.x-grabX)/W; held.y=(p.y-grabY)/H; paint();
-  });
-  cv.addEventListener('pointerdown',e=>{
-    const p=at(e), sh=pick(p); if(!sh) return;
-    held=sh; grabX=p.x-sh.x*W; grabY=p.y-sh.y*H;
-    /* the one the hand is on comes to the top of the stack, as a sheet of paper would */
-    SHEETS.splice(SHEETS.indexOf(sh),1); SHEETS.push(sh);
-    cv.setPointerCapture(e.pointerId); paint();
-  });
-  const drop=()=>{ held=null; };
-  addEventListener('pointerup',drop); addEventListener('pointercancel',drop);
-
-  /* Nothing animates on its own. The field is still until a hand moves it, which keeps a
-     page that is mostly read from holding a frame loop open. */
-  size(); paint();
-  new ResizeObserver(()=>{ if(size()) paint(); }).observe(cv);
-  addEventListener('themechange',paint);
-})();
-
 /* ---------- disc plates: mounted on intersection, not on load ---------- */
 const V=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
 function discs(cv, opts){
@@ -824,4 +767,45 @@ show(0);
 (function(){const els=document.querySelectorAll('.clock'); if(!els.length) return;
   const f=()=>{const t=new Date().toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit',second:'2-digit',timeZoneName:'short'}); els.forEach(el=>el.textContent=t);};
   f(); setInterval(f,1000);})();
-</script></body></html>
+</script>
+
+<script>
+/* ---------- the scroll: engulf the hero, fade the hint, pin the rail ---------- */
+(function(){
+  const hero=document.querySelector('.hero'), stack=document.getElementById('stack'),
+        sheets=document.getElementById('sheets'), hint=document.querySelector('.hint');
+  if(!hero||!stack||!sheets) return;
+  let raf=0;
+  function apply(){
+    raf=0;
+    const h=hero.offsetHeight||innerHeight;
+    /* the hero is gone by the time the projects have climbed two thirds of it */
+    const p=Math.max(0,Math.min(1,scrollY/(h*.66)));
+    const e=p*p*(3-2*p);
+    sheets.style.opacity=(1-e).toFixed(3);
+    stack.style.opacity=(1-e).toFixed(3);
+    stack.style.transform=`translateY(${(-e*48).toFixed(1)}px)`;
+    /* the hint goes first: it is an instruction, and the reader has followed it */
+    /* full ink until the reader has actually started down, then it goes first */
+    if(hint){ const o=Math.max(0,1-Math.max(0,p-.14)*3); hint.style.opacity=o.toFixed(3); hint.style.visibility=o>0?'':'hidden'; }
+  }
+  const tick=()=>{ if(!raf) raf=requestAnimationFrame(apply); };
+  addEventListener('scroll',tick,{passive:true}); addEventListener('resize',tick); apply();
+})();
+</script>
+<script type="module">
+  /* the vellum discs, laid across the hero. Everything above this layer is
+     pointer transparent, so a drag started anywhere reaches the sheets. */
+  import { mountSheets } from './sheets-gl.js';
+  const SHEETS=[
+    {x:.47,y:.20,r:.115},{x:.63,y:.13,r:.130},{x:.80,y:.22,r:.120},{x:.95,y:.14,r:.105},
+    {x:.55,y:.34,r:.100},{x:.72,y:.36,r:.125},{x:.89,y:.40,r:.115},{x:1.02,y:.30,r:.100},
+    {x:.50,y:.56,r:.120},{x:.66,y:.58,r:.135},{x:.83,y:.62,r:.115},{x:.98,y:.54,r:.110},
+    {x:.58,y:.78,r:.110},{x:.76,y:.82,r:.125},{x:.92,y:.76,r:.105},{x:1.04,y:.86,r:.095}
+  ];
+  /* LOCKED 2026-09-23. Her eight, picked in the riso lab against frosted glass: two
+     creams, two greys, a dusky mauve, a grey green, a lilac grey, a sage. */
+  const SWATCH=['#dfddc8','#c7c7c7','#827a85','#9ba69c','#c4c1c8','#dfddc8','#c2beb3','#dfdac8'];
+  mountSheets(document.getElementById('sheets'), SHEETS, SWATCH, { paper: '#FAF9F7', ground: '#1C1A17' });
+</script>
+</body></html>

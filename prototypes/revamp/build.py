@@ -28,6 +28,7 @@ a{color:inherit}
 nav{position:fixed;top:0;left:0;right:0;z-index:60;pointer-events:none}
 nav .in{display:flex;justify-content:space-between;align-items:center;padding-top:24px}
 nav .mark{pointer-events:auto;font-family:var(--jak);font-weight:600;font-size:13px;letter-spacing:-.01em;padding:10px 0;text-decoration:none;color:var(--ink)}
+
 nav .links{pointer-events:auto;display:flex;align-items:center;gap:8px;background:var(--pill);border-radius:999px;
   padding:4px 12px 4px 8px;box-shadow:var(--pill-shadow)}
 [data-theme="dark"] nav .links{outline:1px solid var(--outline);outline-offset:-1px}
@@ -215,13 +216,13 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 .more a.cell .n{font:500 11px var(--jak);letter-spacing:.12em;color:var(--ink3);display:block;margin-bottom:12px}
 """
 NAV = """<nav><div class="wrap in">
-  <a class="mark" href="/">Jazlynn Kurniandra</a>
+  <site-mark href="/"></site-mark>
   <span class="links">
     <button id="theme" aria-label="Switch colour mode" title="Colour mode">
       <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
     </button>
-    <a class="l" href="/#work">Projects</a><a class="l" href="/about.html">About</a></span>
+    <a class="l" href="/#work">Projects</a><a class="l" href="http://localhost:3000/sandbox">Sandbox</a><a class="l" href="/art-gallery.html">Art Gallery</a><a class="l" href="/about.html">About</a></span>
 </div></nav>"""
 THEME_HEAD = """<script>(function(){const q=new URLSearchParams(location.search).get('theme');let t=q||localStorage.getItem('theme');
 if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>"""
@@ -284,6 +285,9 @@ SITE_JS = """<script>
 (function(){const n=document.createElement('canvas');n.width=n.height=170;const g=n.getContext('2d'),d=g.createImageData(170,170);
 for(let i=0;i<d.data.length;i+=4){const v=118+(Math.random()*72-36);d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}
 g.putImageData(d,0,0);document.documentElement.style.setProperty('--noise',`url(${n.toDataURL()})`);})();
+/* the sandbox is another origin, so the colour mode travels in the URL */
+(function(){document.querySelectorAll('a[href*="localhost:3000/sandbox"]').forEach(a=>{const base=a.getAttribute('href');
+a.addEventListener('click',()=>{a.href=base+'?theme='+(document.documentElement.getAttribute('data-theme')||'light');});});})();
 (function(){const el=document.getElementById('clock');if(!el)return;const f=()=>el.textContent=new Date().toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit',second:'2-digit',timeZoneName:'short'});f();setInterval(f,1000);})();
 /* videos only play while on screen */
 (function(){const io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting){v.play().catch(()=>{});}else v.pause();}),{rootMargin:'160px'});
@@ -300,7 +304,8 @@ def page(title, body, extra_css=""):
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-cache">
 <title>{html.escape(title)} — Jazlynn Kurniandra</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="/site-mark.js"></script>
 <style>{TOKENS}{BASE}{extra_css}</style>{THEME_HEAD}</head><body>
 {NAV}
 {body}
@@ -614,47 +619,338 @@ four = page('404', f"""<main class="four"><div class="wrap">
 </div></main>{FOUR_JS}""", CASE_CSS+FOUR_CSS)
 
 # ------------------------------------------------------------------ ABOUT, its own page
+# The skeleton is yichenxie.com/about: eyebrow, a one line thesis, one object beside a
+# short hello, then ruled rows for what she does, where she has worked and studied, and a
+# way to reach her. 350 words, not 900. The material is hers: the object is a DIE, one photo
+# per face, each face a postcard on stock with the toothed edge, dragged to roll and left
+# to tumble. Six photos, six faces. Nothing on the page is decorated.
 ABOUT_CSS = """
-.about{padding:160px 0 64px;min-height:calc(100vh - 200px)}
-.about .grid{display:grid;grid-template-columns:7fr 5fr;gap:64px;align-items:start}
-.about h1{font-size:clamp(26px,3vw,36px);line-height:1.18;max-width:24ch}
-.about .bio{margin-top:32px;max-width:58ch}
-.about .bio p{font-size:19px;line-height:1.62;color:var(--ink2)}
-.about .bio p+p{margin-top:16px}
-.about .bio b{font-weight:400;color:var(--ink)}
-/* the facts live in cells, the grid's own object, stacked into one column */
-.about .facts{display:grid;grid-template-columns:1fr}
-.about .facts .cell{padding:20px 24px;border-right:1px solid var(--hair)}
-.about .facts .cell+.cell{border-top:0}
-.about .facts .cell p{margin-top:8px;color:var(--ink);font-size:14.5px}
-.about .facts .cell p span{color:var(--ink3)}
-.about .facts .cell a{color:var(--ink);text-decoration:none;font-weight:400;transition:color .18s ease}
-.about .facts .cell a:hover{color:var(--touch)}
-.about .facts .cell .links{display:flex;gap:18px;margin-top:10px}
-.about .facts .ext{font-size:.75em;vertical-align:.2em;color:var(--ink3)}
-.about .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);margin:0 8px 1px 0}
-@media(max-width:900px){.about .grid{grid-template-columns:1fr;gap:40px}}
+.ab{padding:136px 0 0}
+.ab .thesis h1{font-size:clamp(28px,4vw,44px);line-height:1.12;max-width:20ch;margin-top:12px}
+.ab .thesis p{font-size:17px;line-height:1.62;color:var(--ink2);margin-top:16px;max-width:52ch}
+/* the object and the hello */
+.ab .hello{display:grid;grid-template-columns:5fr 7fr;gap:64px;align-items:center;margin-top:64px}
+.ab .hello .bio p{font-size:17px;line-height:1.62;color:var(--ink2);max-width:52ch}
+.ab .hello .bio p+p{margin-top:16px}
+.ab .hello .bio b{font-weight:400;color:var(--ink)}
+@media(max-width:900px){.ab .hello{grid-template-columns:1fr;gap:40px}}
+/* THE DIE. CSS 3D, six faces, --s in px set by the page so translateZ has a length. */
+.die-wrap{aspect-ratio:1;display:grid;place-items:center;perspective:1400px;touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none}
+.die-wrap:active{cursor:grabbing}
+.die{position:relative;width:var(--s,260px);height:var(--s,260px);transform-style:preserve-3d;will-change:transform;
+  transform:rotateX(-22deg) rotateY(32deg)}
+.die .face{position:absolute;inset:0;background:#f4efe3;backface-visibility:hidden;--r:5.5%;
+  -webkit-mask:radial-gradient(circle at 0 0,transparent var(--r),#000 calc(var(--r) + .5px)) 0 0/12.5% 12.5% repeat;
+  mask:radial-gradient(circle at 0 0,transparent var(--r),#000 calc(var(--r) + .5px)) 0 0/12.5% 12.5% repeat}
+.die .face i{position:absolute;inset:8%;border:1px solid var(--oxblood);opacity:.7;pointer-events:none}
+.die .face img{position:absolute;left:11%;top:11%;width:78%;height:78%;object-fit:cover;display:block;filter:saturate(.88);-webkit-user-drag:none}
+.die .f1{transform:translateZ(calc(var(--s,260px) / 2))}
+.die .f2{transform:rotateY(180deg) translateZ(calc(var(--s,260px) / 2))}
+.die .f3{transform:rotateY(90deg) translateZ(calc(var(--s,260px) / 2))}
+.die .f4{transform:rotateY(-90deg) translateZ(calc(var(--s,260px) / 2))}
+.die .f5{transform:rotateX(90deg) translateZ(calc(var(--s,260px) / 2))}
+.die .f6{transform:rotateX(-90deg) translateZ(calc(var(--s,260px) / 2))}
+/* the ruled sections */
+.ab .sec{margin-top:96px}
+.ab .sec h2{font-size:clamp(22px,2.6vw,30px);line-height:1.2;margin-top:12px}
+.ab .sec .cells{margin-top:24px}
+.ab .cell .n{font:500 11px var(--jak);letter-spacing:.12em;color:var(--ink3);display:block;margin-bottom:10px}
+.ab .cell h3{font-size:15.5px}
+.ab .rows{margin-top:24px;border-top:1px solid var(--hair)}
+.ab .row{display:grid;grid-template-columns:110px 1.1fr 1.6fr;gap:24px;padding:18px 0;border-bottom:1px solid var(--hair);font-size:14.5px;line-height:1.55;margin:0;align-items:start}
+.ab .row .y{color:var(--ink3);font-variant-numeric:tabular-nums}
+.ab .row .o{color:var(--ink)}.ab .row .o small{display:block;color:var(--ink3);font-size:12.5px;margin-top:2px}
+.ab .row p{color:var(--ink2)}
+@media(max-width:700px){.ab .row{grid-template-columns:90px 1fr}.ab .row p{grid-column:2}}
+.ab .off .cell .plate{margin-top:12px}
+.ab .reach{margin-top:24px;display:flex;gap:24px;flex-wrap:wrap;font-size:15px}
+.ab .reach a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--hair);padding-bottom:2px;transition:color .18s ease,border-color .18s ease}
+.ab .reach a:hover{color:var(--touch);border-color:var(--touch)}
+.ab .reach .now{color:var(--ink2)}.ab .reach .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);margin:0 8px 1px 0}
 """
-about = page('About', f"""<main class="about"><div class="wrap">
-  <div class="label">About</div>
-  <div class="grid" style="margin-top:12px">
-    <div>
-      <h1>Hailing from Jakarta, Indonesia, Jazlynn Kurniandra is a lighthearted designer.</h1>
-      <div class="bio">
-        <p>She has a lasting interest in how people notice things, and translates a background in drawing and cognitive science into <b>charming consumer products and wearables</b>. Most recently that has meant a heads-up display for glasses and the iPhone app that runs it, a community platform for an AI agent, and a brand and internal platform for a foster-care startup, built from nothing.</p>
-        <p>She is currently studying at Columbia University in New York.</p>
-      </div>
-    </div>
-    <div class="facts">
-      <div class="cell"><div class="label">Now</div><p><i class="dot"></i>Available for 2026 roles</p></div>
-      <div class="cell"><div class="label">Previously</div><p>Clover <span>&middot;</span> Manus AI <span>(acquired by Meta)</span><br>Fostr <span>&middot;</span> Halodoc <span>&middot;</span> Conduit Commerce <span>&middot;</span> SomiaCX</p></div>
-      <div class="cell"><div class="label">Education</div><p>Columbia University <span>&middot;</span> New York</p></div>
-      <div class="cell"><div class="label">Reach</div><div class="links"><a href="#">Resume <span class="ext">&#8599;</span></a><a href="mailto:jazkurnz06@gmail.com">Email</a><a href="#">LinkedIn</a></div></div>
+DIE_JS = """<script>
+/* the die: drag to roll it, let go and it carries a little, then tumbles slowly on its
+   own. --s is the cube's edge in px, read off the slot so the faces can be placed. */
+(function(){
+  const w=document.getElementById('die-wrap'), d=document.getElementById('die'); if(!w||!d) return;
+  let rx=-22, ry=32, vx=0, vy=0, held=false, lx=0, ly=0;
+  const size=()=>{ const s=Math.round(w.getBoundingClientRect().width*.58); d.style.setProperty('--s', s+'px'); };
+  size(); new ResizeObserver(size).observe(w);
+  w.addEventListener('pointerdown',e=>{ held=true; lx=e.clientX; ly=e.clientY; vx=vy=0; w.setPointerCapture(e.pointerId); });
+  w.addEventListener('pointermove',e=>{ if(!held) return; const dx=e.clientX-lx, dy=e.clientY-ly; lx=e.clientX; ly=e.clientY;
+    ry+=dx*.45; rx-=dy*.45; vx=dx*.45; vy=-dy*.45; });
+  const drop=()=>{ held=false; }; addEventListener('pointerup',drop); addEventListener('pointercancel',drop);
+  const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  (function tick(){
+    if(!held){ ry+=vx+(still?0:.05); rx+=vy; vx*=.94; vy*=.94; rx=Math.max(-70,Math.min(70,rx)); }
+    d.style.transform=`rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+    requestAnimationFrame(tick);
+  })();
+})();
+</script>"""
+FACES = ['bagels','camera','dog-beach','mun','snowboarding','teaching']
+FOCUS = ['Design engineering','Product design','Product management','HCI research','Brand and identity','Illustration and motion']
+WORKED = [  # years and the one line are the projects list's own; roles are hers to fill in
+  ('2026','Clover','HUD and companion app','Designing the HUD interface and shipping the iOS companion app.'),
+  ('2026','Manus AI','Community platform','Designing an AI community platform to drive adoption. Acquired by Meta.'),
+  ('2026','Fostr','Brand, site and platform','Building the brand, landing site and internal platform from 0 to 1.'),
+  ('2025','Halodoc','AI Prescription onboarding','Designing the onboarding journey for AI Prescription on mobile.'),
+  ('2025','Conduit Commerce','B2B SaaS website','Designing and shipping a B2B SaaS website for an AI feature launch.'),
+  ('2025','SomiaCX','UVP system','Architecting a unified UVP system for three financial subsidiaries.'),
+]
+OFF = [('Toolkit','/images/about/toolkit/toolkit.png'),('Music','/images/about/music/albums.png'),('Films','/images/about/films/films.png'),('Reads','/images/about/books/books.png')]
+about = page('About', f"""<main class="ab"><div class="wrap">
+  <div class="thesis"><div class="label">About</div>
+    <h1>I make things people can feel, from paper to product.</h1>
+    <p>Product designer and design engineer in New York. Cognitive science and HCI at Columbia.</p></div>
+
+  <div class="hello">
+    <div class="die-wrap" id="die-wrap" aria-label="A die of six photographs. Drag to roll it."><div class="die" id="die">{''.join(f'<div class="face f{i+1}"><img src="/images/about/about-me-stack/{f}.jpg" alt="" decoding="async"><i></i></div>' for i,f in enumerate(FACES))}</div></div>
+    <div class="bio"><div class="label">Hello</div>
+      <p style="margin-top:12px">I used to be a proper artist. At fifteen my work was being exhibited, auctioned and sold, and most of it came from the beach. I spent my childhood going back and forth to Bali, and nature was what I drew from. Starting that young shaped how I see things: <b>the best ideas, the ones that feel new, arrive where unrelated fields meet.</b></p>
+      <p>That is why I ended up in design engineering and product management. Both sit where people meet technology, just through different mediums, and I have never liked being confined to one. What started as paper and pencil became paintings, then products.</p>
+      <p>Life is too short to be constrained to one medium. Learning new forms of knowledge with empathy, care and intent is the quality I carry into every piece of work.</p>
     </div>
   </div>
-</div></main>""", CASE_CSS+ABOUT_CSS)
+
+  <div class="sec"><div class="label">What I do</div><h2>Focus areas</h2>
+    {CELLS([CELL(f'<span class="n">{i+1:02d}</span><h3>{E(x)}</h3>') for i,x in enumerate(FOCUS)], 3)}</div>
+
+  <div class="sec"><div class="label">Experience</div><h2>Where I&rsquo;ve worked</h2>
+    <div class="rows">{''.join(f'<div class="row"><span class="y">{y}</span><span class="o">{E(o)}<small>{E(r)}</small></span><p>{E(l)}</p></div>' for y,o,r,l in WORKED)}</div></div>
+
+  <div class="sec"><div class="label">Education</div><h2>Where I&rsquo;ve studied</h2>
+    <div class="rows"><div class="row"><span class="y">Now</span><span class="o">Columbia University<small>New York</small></span><p>Cognitive Science, with a specialization in Human-Computer Interaction.</p></div></div></div>
+
+  <div class="sec off"><div class="label">Off the clock</div><h2>What I keep close</h2>
+    {CELLS([CELL(f'<div class="label">{E(n)}</div><div class="plate"><img src="{src}" alt="{E(n)}" loading="lazy"></div>') for n,src in OFF], 4)}</div>
+
+  <div class="sec"><div class="label">Contact</div><h2>Let&rsquo;s work together.</h2>
+    <div class="reach"><span class="now"><i class="dot"></i>Available for 2026 roles</span><a href="mailto:jazkurnz06@gmail.com">jazkurnz06@gmail.com</a><a href="#">LinkedIn &#8599;</a><a href="#">X &#8599;</a></div></div>
+</div></main>""", CASE_CSS+ABOUT_CSS).replace('</body></html>', DIE_JS+'</body></html>')
+
+
+# ------------------------------------------------------------------ ART GALLERY
+# The guestbook wall from jazlynnwashere.com/art-gallery, rebuilt in this system. What
+# carries over unchanged is the MECHANISM: draw a card, it is hung on a shared wall of the
+# twelve most recent, and the memory layer (localStorage: your card and that you have been
+# here) means a returning visitor lands straight on the wall with their card already up.
+# The API contract is the live one, so this page drops onto the existing Redis route.
+#
+# What changes is the material. The four card colours are the palette itself (gold,
+# oxblood, charcoal, paper) and the brush follows the hero grid's rule: on an inked card the
+# stroke knocks out to paper, on the paper card it is ink. The picture frame is gone; the
+# wall is the grid's own object, hairline cells. Nothing here is decorated.
+GALLERY_CSS = """
+/* the hidden attribute has to beat the class rules below, or a hidden gate still shows */
+.gal [hidden]{display:none!important}
+.gal{padding:136px 0 0}
+/* the case study's head is a two column grid; this one is a stack */
+.gal .head{display:block}
+.gal .head h1{font-size:clamp(28px,4vw,44px);line-height:1.12;max-width:22ch;margin-top:12px}
+.gal .head p{font-size:17px;line-height:1.62;color:var(--ink2);margin-top:16px;max-width:52ch}
+/* ---- the desk: name, card colour, the canvas ---- */
+.desk{margin-top:48px;display:grid;grid-template-columns:680px 1fr;gap:48px;align-items:start}
+@media(max-width:1100px){.desk{grid-template-columns:1fr}}
+.desk .plate{width:680px;max-width:100%;aspect-ratio:680/380;position:relative;user-select:none}
+.desk canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
+@media(pointer:fine){.desk canvas{cursor:crosshair}}
+.desk .mono{position:absolute;top:18px;left:20px;font:600 13px var(--jak);letter-spacing:.08em;pointer-events:none;opacity:.9}
+.desk .side{display:grid;grid-template-columns:1fr}
+.desk .side .cell{padding:20px 24px;border-right:1px solid var(--hair)}
+.desk .side .cell+.cell{border-top:0}
+.desk input{width:100%;margin-top:10px;font:300 17px var(--hel);color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--hair);padding:6px 0 8px;outline:none;border-radius:0}
+.desk input:focus{border-bottom-color:var(--ink)}
+.desk input::placeholder{color:var(--ink3)}
+.sw{display:flex;gap:10px;margin-top:12px}
+.sw button{width:36px;height:36px;border-radius:8px;border:0;padding:0;cursor:pointer;outline:1px solid var(--outline);outline-offset:-1px;
+  transition:transform .18s cubic-bezier(.33,1.18,.37,1),box-shadow .18s ease}
+.sw button[aria-pressed=true]{box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--ink);transform:scale(1.06)}
+.sw button:active{transform:scale(.94)}
+.acts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.acts button{font:500 13px var(--jak);letter-spacing:.01em;color:var(--ink);background:transparent;border:1px solid var(--hair);border-radius:999px;padding:9px 16px;cursor:pointer;
+  transition:color .15s ease,border-color .15s ease,background .15s ease,transform .1s ease}
+.acts button:hover{border-color:var(--ink3)}
+.acts button:active{transform:scale(.96)}
+.acts button.go{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.acts button.go:disabled{background:transparent;color:var(--ink3);border-color:var(--hair);cursor:not-allowed}
+.gal .err{font-size:13px;color:var(--touch);margin-top:12px}
+/* ---- the wall: the grid's own cells, three across ---- */
+.wall{margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr)}
+.wall .slot{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);border-left:1px solid var(--hair);padding:20px;min-width:0;position:relative}
+.wall .slot:nth-child(3n){border-right:1px solid var(--hair)}
+.wall .slot:nth-child(n+4){border-top:0}
+.wall .slot.empty::after{content:"";display:block;aspect-ratio:680/380;border:1px dashed var(--hair);border-radius:8px}
+.wall .slot.empty{padding-bottom:49px}   /* 20 + the name line, so an empty slot is as tall as a full one */
+.card{position:relative;width:100%;aspect-ratio:680/380;border-radius:8px;overflow:hidden;outline:1px solid var(--outline);outline-offset:-1px;
+  transition:transform .46s cubic-bezier(.33,1.18,.37,1),box-shadow .32s ease}
+.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
+.card .mono{position:absolute;top:8px;left:9px;font:600 9px var(--jak);letter-spacing:.08em;pointer-events:none;opacity:.9}
+.slot:hover .card{transform:translateY(-3px);box-shadow:0 12px 28px rgba(20,23,27,.16)}
+[data-theme="dark"] .slot:hover .card{box-shadow:0 12px 28px rgba(0,0,0,.4)}
+.slot .who{display:block;font:300 12.5px var(--hel);color:var(--ink3);margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* the tag on your own card: an inked tile with the knocked out label, like the wall's letters */
+.you{position:absolute;top:10px;left:10px;z-index:2;font:600 10px var(--jak);letter-spacing:.14em;text-transform:uppercase;
+  background:var(--flick-a);color:var(--ink);padding:5px 9px;transform:rotate(-6deg);transform-origin:top left;pointer-events:none;
+  opacity:0;animation:you .5s cubic-bezier(.33,1.18,.37,1) .7s forwards}
+@keyframes you{to{opacity:1}}
+@media(max-width:900px){.wall{grid-template-columns:repeat(2,1fr)}.wall .slot:nth-child(3n){border-right:0}.wall .slot:nth-child(2n){border-right:1px solid var(--hair)}.wall .slot:nth-child(n+3){border-top:0}}
+/* ---- the works: her own pieces, three columns, packed by height ---- */
+.works{margin-top:96px;padding-bottom:32px}
+.works .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+.works .col{display:flex;flex-direction:column;gap:16px}
+.works .plate{margin:0}
+.works .plate img,.works .plate video{display:block;width:100%;height:auto}
+@media(max-width:700px){.works .cols{grid-template-columns:1fr}}
+/* the FLIP ghost: your card travelling from the desk to its slot */
+#ghost{position:fixed;z-index:80;border-radius:8px;overflow:hidden;pointer-events:none;transform-origin:top left;
+  transition:transform .7s cubic-bezier(.22,1,.36,1),opacity .2s ease .6s}
+#ghost img{width:100%;height:100%;display:block}
+/* the gate: drawing wants a desk, not a thumb */
+.gate{min-height:70vh;display:grid;place-items:center;text-align:center}
+.gate p{font-size:15px;line-height:1.62;color:var(--ink2);max-width:36ch}
+.gate a{display:inline-block;margin-top:16px;color:var(--ink);text-decoration:none}
+"""
+GALLERY_JS = """<script>
+(function(){
+  /* the two keys the live site already uses, so a visitor who drew there is remembered here */
+  const CARD_KEY='art-gallery:my-card', SEEN_KEY='art-gallery:intro-seen';
+  const W=680,H=380,BRUSH=4;
+  /* the palette as card stock. The stroke follows the hero grid's rule: a gold, oxblood or
+     charcoal card knocks the ink out to paper; the paper card takes ink. */
+  const STOCK={gold:'#A99939',oxblood:'#340414',charcoal:'#1C1A17',paper:'#FAF9F7'};
+  const INK=(c)=>c==='paper'?'#14171B':'#FAF9F7';
+  const $=(s,r=document)=>r.querySelector(s);
+  const intro=$('#intro'), wallSec=$('#wall'), gate=$('#gate');
+
+  if(innerWidth<900){ intro.hidden=true; wallSec.hidden=true; gate.hidden=false; return; }
+  gate.hidden=true;
+
+  /* ---------- the desk ---------- */
+  const cv=$('#pad'), ctx=cv.getContext('2d'), dpr=Math.min(devicePixelRatio||1,2);
+  cv.width=W*dpr; cv.height=H*dpr; ctx.scale(dpr,dpr);
+  let color='gold', strokes=[], cur=null, down=false;
+  const mono=$('#mono');
+  function repaint(){
+    ctx.fillStyle=STOCK[color]; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle=INK(color); ctx.fillStyle=INK(color); ctx.lineWidth=BRUSH; ctx.lineCap='round'; ctx.lineJoin='round';
+    for(const s of strokes){
+      if(s.length===1){ ctx.beginPath(); ctx.arc(s[0].x,s[0].y,BRUSH/2,0,6.2832); ctx.fill(); continue; }
+      ctx.beginPath(); ctx.moveTo(s[0].x,s[0].y); for(let i=1;i<s.length;i++) ctx.lineTo(s[i].x,s[i].y); ctx.stroke();
+    }
+    mono.style.color=INK(color);
+  }
+  const pt=(e)=>{ const r=cv.getBoundingClientRect(); return {x:(e.clientX-r.left)*(W/r.width), y:(e.clientY-r.top)*(H/r.height)}; };
+  cv.addEventListener('pointerdown',e=>{ down=true; cur=[pt(e)]; strokes.push(cur); cv.setPointerCapture(e.pointerId); if(strokes.length===1) go.disabled=false; });
+  cv.addEventListener('pointermove',e=>{ if(!down||!cur) return; const p=pt(e), q=cur[cur.length-1]; cur.push(p);
+    ctx.strokeStyle=INK(color); ctx.lineWidth=BRUSH; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.beginPath(); ctx.moveTo(q.x,q.y); ctx.lineTo(p.x,p.y); ctx.stroke(); });
+  const up=()=>{ down=false; cur=null; }; cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
+  document.querySelectorAll('.sw button').forEach(b=>b.addEventListener('click',()=>{ color=b.dataset.c;
+    document.querySelectorAll('.sw button').forEach(o=>o.setAttribute('aria-pressed',String(o===b))); repaint(); }));
+  const go=$('#go'), name=$('#name'), err=$('#err');
+  $('#clear').addEventListener('click',()=>{ strokes=[]; repaint(); go.disabled=true; });
+  repaint();
+
+  /* ---------- the wall ---------- */
+  const grid=$('#grid'), GRID=12;
+  function card(c, yours){
+    const d=document.createElement('div'); d.className='slot';
+    d.innerHTML=`${yours?'<span class="you">That\\u2019s you</span>':''}<div class="card" style="background:${STOCK[c.color]||STOCK.gold}"><img src="${c.drawing}" alt=""><span class="mono" style="color:${INK(c.color)}">JK</span></div><span class="who" title="${esc(c.name)}">${esc(c.name)}</span>`;
+    return d;
+  }
+  const esc=(s)=>String(s||'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+  async function hang(mine){
+    grid.innerHTML=''; grid.appendChild(card(mine,true));
+    let others=[];
+    try{ const r=await fetch('/api/gallery/cards',{cache:'no-store'}); const j=await r.json(); others=(j.cards||[]).filter(c=>c.id!==mine.id).slice(0,GRID-1); }catch(e){}
+    others.forEach((c,i)=>{ const el=card(c,false); el.style.opacity='0'; el.style.transform='translateY(8px)'; grid.appendChild(el);
+      setTimeout(()=>{ el.style.transition='opacity .35s ease,transform .35s ease'; el.style.opacity='1'; el.style.transform='none'; }, 250+i*40); });
+    for(let i=1+others.length;i<GRID;i++){ const e=document.createElement('div'); e.className='slot empty'; grid.appendChild(e); }
+  }
+  function showWall(mine, from){
+    intro.hidden=true; wallSec.hidden=false;
+    hang(mine).then(()=>{
+      /* FLIP: your card travels from the desk to its slot, then the slot takes over */
+      const to=$('.slot .card',grid); if(!from||!to) return;
+      const t=to.getBoundingClientRect();
+      const g=document.createElement('div'); g.id='ghost'; g.innerHTML=`<img src="${mine.drawing}" alt="">`;
+      g.style.left=from.left+'px'; g.style.top=from.top+'px'; g.style.width=from.width+'px'; g.style.height=from.height+'px'; g.style.background=STOCK[mine.color];
+      document.body.appendChild(g); to.style.visibility='hidden';
+      requestAnimationFrame(()=>{ g.style.transform=`translate(${t.left-from.left}px,${t.top-from.top}px) scale(${t.width/from.width},${t.height/from.height})`; g.style.opacity='0'; });
+      setTimeout(()=>{ to.style.visibility=''; g.remove(); }, 720);
+    });
+    if(from) setTimeout(()=>scrollTo({top:0,behavior:'smooth'}), 80);
+  }
+
+  /* ---------- the memory layer ---------- */
+  try{ if(localStorage.getItem(SEEN_KEY)==='true'){ const j=localStorage.getItem(CARD_KEY); if(j){ showWall(JSON.parse(j), null); } } }catch(e){}
+
+  go.addEventListener('click', async ()=>{
+    if(go.disabled) return; go.disabled=true; go.textContent='Hanging your art\\u2026'; err.textContent='';
+    const from=$('#padPlate').getBoundingClientRect();
+    try{
+      const r=await fetch('/api/gallery/cards',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name.value.trim(),color,drawing:cv.toDataURL('image/png')})});
+      if(!r.ok){ const j=await r.json().catch(()=>({})); throw new Error(j.error||'Couldn\\u2019t save your card. Try again?'); }
+      const {card:mine}=await r.json();
+      try{ localStorage.setItem(CARD_KEY,JSON.stringify(mine)); localStorage.setItem(SEEN_KEY,'true'); }catch(e){}
+      showWall(mine, from);
+    }catch(e){ err.textContent=e.message||'Something went wrong.'; go.disabled=false; go.textContent='Enter \\u2192'; }
+  });
+})();
+</script>"""
+
+# her works, as on the live site: no titles, no captions. width/height ratios from the files.
+WORKS = [
+  ('/images/art-gallery/works/ceramic-mask.jpg',1.138),('/images/art-gallery/works/izakaya-sushi.png',1.699),
+  ('/images/art-gallery/works/metropolis-hands.png',0.707),('/images/art-gallery/works/sunflower-collage.png',0.707),
+  ('/images/art-gallery/works/anime-action.png',1.415),('/images/art-gallery/works/fallen-angel.png',1.415),
+  ('/images/art-gallery/works/die-character-sheet.png',1.415),('/images/art-gallery/works/green-alien.png',1.0),
+  ('/images/art-gallery/works/goggle-girl.png',1.0),('/images/art-gallery/works/angel.png',0.707),
+  ('/images/art-gallery/works/cat.png',1.0),('/images/art-gallery/works/police.png',0.698),
+  ('/images/art-gallery/works/spider-verse.png',0.707),('/images/art-gallery/works/tsk-art.png',1.415),
+  ('/images/art-gallery/works/yourclothes.png',1.0),
+  ('/videos/art-gallery/process-reel-1.mp4',1.816),('/videos/art-gallery/process-reel-2.mp4',1.831),('/videos/art-gallery/animation-loop.mp4',1.778),
+]
+def WORKS_HTML():
+    # shortest column first, the same packing the live site does, resolved at build time
+    cols=[[],[],[]]; h=[0,0,0]
+    for src,ar in WORKS:
+        i=h.index(min(h)); cols[i].append(src); h[i]+=1/ar
+    out=''
+    for col in cols:
+        out+='<div class="col">'+''.join(media(s,'') for s in col)+'</div>'
+    return f'<div class="works"><div class="label">Works</div><div class="cols">{out}</div></div>'
+
+SWATCHES=''.join(f'<button type="button" data-c="{c}" aria-label="{c} card" aria-pressed="{str(c=="gold").lower()}" style="background:{v}"></button>'
+                 for c,v in [('gold','#A99939'),('oxblood','#340414'),('charcoal','#1C1A17'),('paper','#FAF9F7')])
+gallery = page('Art Gallery', f"""<main class="gal"><div class="wrap">
+  <div class="gate" id="gate" hidden><div><div class="label">Art gallery</div><p style="margin-top:12px">The gallery is a drawing experience, and drawing wants a desk. Come back on a bigger screen to leave your mark.</p><a href="/">&larr; Back to home</a></div></div>
+
+  <section id="intro">
+    <div class="head"><div class="label">Art gallery</div>
+      <h1>Everyone has an artist inside of them.</h1>
+      <p>Leave your mark and we&rsquo;ll give it a wall.</p></div>
+    <div class="desk">
+      <div class="plate" id="padPlate"><canvas id="pad" width="680" height="380"></canvas><span class="mono" id="mono">JK</span></div>
+      <div class="side">
+        <div class="cell"><div class="label">Name</div><input id="name" type="text" maxlength="60" placeholder="Your name here" autocomplete="off"></div>
+        <div class="cell"><div class="label">Card</div><div class="sw">{SWATCHES}</div></div>
+        <div class="cell"><div class="label">Then</div><div class="acts"><button type="button" id="clear">Clear</button><button type="button" id="go" class="go" disabled>Enter &rarr;</button></div><p class="err" id="err"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="wall" hidden>
+    <div class="head"><div class="label">The wall</div>
+      <h1>Welcome to Jazlynn&rsquo;s Art Exhibit.</h1>
+      <p>Thanks for being a part of it. Enjoy the rest of your stay!</p></div>
+    <div class="wall" id="grid"></div>
+    {WORKS_HTML()}
+  </section>
+</div></main>""", CASE_CSS+GALLERY_CSS) + ""
+gallery = gallery.replace('</body></html>', GALLERY_JS + '</body></html>')
 
 # ------------------------------------------------------------------ write
 os.makedirs('work', exist_ok=True)
-for path, doc in [('work/manus-ai.html', manus), ('work/conduit-commerce.html', conduit), ('work/somia-cx.html', somia), ('404.html', four), ('about.html', about)]:
+for path, doc in [('work/manus-ai.html', manus), ('work/conduit-commerce.html', conduit), ('work/somia-cx.html', somia), ('404.html', four), ('about.html', about), ('art-gallery.html', gallery)]:
     open(path,'w').write(doc); print(f'{path:28s} {len(doc)//1024} KB')
