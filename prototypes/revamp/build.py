@@ -44,6 +44,7 @@ nav a.l:hover{color:var(--ink)}
 :root:not([data-theme="dark"]) #theme .moon{display:none}
 @media(max-width:640px){nav .in{padding-top:16px} nav a.l{padding:9px 10px;font-size:12.5px}}
 footer{padding:64px 0 46px}
+body>.pushing{transition:transform .5s cubic-bezier(.22,1,.36,1)}
 footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 footer a{color:var(--ink2);text-decoration:none;font-size:12.5px}
 footer a:hover{color:var(--touch)}
@@ -66,6 +67,7 @@ footer a:hover{color:var(--touch)}
   #cur.hot i{transform:scale(2.6);opacity:.62;box-shadow:0 6px 22px rgba(28,26,23,.22)}
   [data-theme="dark"] #cur.hot i{box-shadow:0 6px 22px rgba(250,249,247,.2)}
   #cur.down i{transform:scale(2.1);opacity:.75}
+
   #cur.text{opacity:0}
 }
 /* ---------- the nav highlight ----------
@@ -109,6 +111,16 @@ CASE_CSS = """
 @media(max-width:900px){.cs-hero .facts>div{grid-column:span 6}}
 @media(max-width:560px){.cs-hero .facts>div{grid-column:span 12}}
 .cs-hero .plate{margin-top:48px}
+/* ============ THE PRINT ==========================================================
+ * Every cover goes through the same press: reduced to tone, the tone mapped onto her three
+ * (oxblood in the shadows, gold through the middle, paper in the lights), and a screen laid
+ * over the top. The riso disc's logic on a photograph. An SVG filter rather than a canvas,
+ * so it costs nothing and it works on the videos. The colourway lives in the tableValues. */
+.cs-hero .plate img,.cs-hero .plate video{filter:url(#print-light) contrast(1.06);mix-blend-mode:normal}
+[data-theme="dark"] .cs-hero .plate img,[data-theme="dark"] .cs-hero .plate video{filter:url(#print-dark) contrast(1.04)}
+.cs-hero .plate::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(circle,rgba(20,23,27,.9) 0 27%,transparent 33%) 0 0/4px 4px;mix-blend-mode:multiply;opacity:.16}
+[data-theme="dark"] .cs-hero .plate::after{background:radial-gradient(circle,rgba(250,249,247,.8) 0 27%,transparent 33%) 0 0/4px 4px;mix-blend-mode:screen;opacity:.10}
 /* the table of contents is a row of the hero's cells */
 .toc{display:flex;flex-wrap:wrap;margin-top:24px}
 .toc a{display:flex;align-items:center;height:40px;padding:0 18px;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
@@ -227,6 +239,24 @@ NAV = """<nav><div class="wrap in">
 THEME_HEAD = """<script>(function(){const q=new URLSearchParams(location.search).get('theme');let t=q||localStorage.getItem('theme');
 if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>"""
 SITE_JS = """<script>
+/* ---------- THE PAGE MAKES ROOM ----------
+   When the line drops out from under the name, everything below the nav moves down just
+   far enough to clear its foot, on the site's ease, and comes back to its place when the
+   line goes. Measured live off the line and the first piece of content, so it is the
+   same gesture on every page whatever sits at the top of it. */
+(function(){
+  const EXCLUDE='nav,.hero-foot,script,style,svg,#load,#cur,#gooL,site-mark,#ghost';
+  const pushed=()=>[...document.body.children].filter(el=>!el.matches(EXCLUDE));
+  const firstContent=()=>[...document.querySelectorAll('.hero .stack, .cs-hero .label, main .label, main h1')].find(el=>el.getBoundingClientRect().height>0);
+  let peek=0, t=0;
+  addEventListener('markpeek',e=>{
+    const els=pushed(); clearTimeout(t);
+    if(e.detail.on){ const f=firstContent(); const top=f?f.getBoundingClientRect().top-peek:0; peek=Math.max(0,e.detail.bottom+20-top); }
+    else peek=0;
+    els.forEach(el=>{ el.classList.add('pushing'); el.style.transform=peek?`translateY(${peek.toFixed(1)}px)`:''; });
+    t=setTimeout(()=>els.forEach(el=>el.classList.remove('pushing')),560);
+  });
+})();
 /* ---------- the cursor ---------- */
 (function(){
   if(!matchMedia('(hover: hover) and (pointer:fine)').matches) return;
@@ -305,9 +335,21 @@ def page(title, body, extra_css=""):
 <title>{html.escape(title)} — Jazlynn Kurniandra</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="/site-mark.js"></script>
+<script src="/site-mark.js?v=sig6"></script>
 <style>{TOKENS}{BASE}{extra_css}</style>{THEME_HEAD}</head><body>
 {NAV}
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- DUOTONE, locked from the cover lab: oxblood to paper. tableValues are the R, G, B at 0 and 1 -->
+  <filter id="print-light" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"/>
+    <feComponentTransfer><feFuncR type="table" tableValues="0.204 0.980"/><feFuncG type="table" tableValues="0.016 0.976"/><feFuncB type="table" tableValues="0.078 0.969"/></feComponentTransfer>
+  </filter>
+  <!-- on charcoal the shadows are the ground itself -->
+  <filter id="print-dark" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"/>
+    <feComponentTransfer><feFuncR type="table" tableValues="0.110 0.980"/><feFuncG type="table" tableValues="0.102 0.976"/><feFuncB type="table" tableValues="0.090 0.969"/></feComponentTransfer>
+  </filter>
+</defs></svg>
 {body}
 {FOOTER}
 {SITE_JS}</body></html>"""
@@ -729,7 +771,6 @@ about = page('About', f"""<main class="ab"><div class="wrap">
     <div class="reach"><span class="now"><i class="dot"></i>Available for 2026 roles</span><a href="mailto:jazkurnz06@gmail.com">jazkurnz06@gmail.com</a><a href="#">LinkedIn &#8599;</a><a href="#">X &#8599;</a></div></div>
 </div></main>""", CASE_CSS+ABOUT_CSS).replace('</body></html>', DIE_JS+'</body></html>')
 
-
 # ------------------------------------------------------------------ ART GALLERY
 # The guestbook wall from jazlynnwashere.com/art-gallery, rebuilt in this system. What
 # carries over unchanged is the MECHANISM: draw a card, it is hung on a shared wall of the
@@ -802,6 +843,14 @@ GALLERY_CSS = """
 .works .plate{margin:0}
 .works .plate img,.works .plate video{display:block;width:100%;height:auto}
 @media(max-width:700px){.works .cols{grid-template-columns:1fr}}
+/* ---- THE STOCK. Every card is printed on the postcard stock from the texture lab: a
+   coarse felt-side tooth lit by the one lamp, built once as a tile by the page and laid over
+   the card as relief. Overlay, so it darkens the shade and brightens the ridges of whatever
+   colour the card is, and stays out of the pointer's way so the pen still draws. ---- */
+.desk .plate::after,.card::after,#ghost::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+  background-image:var(--stock);background-size:190px 190px;mix-blend-mode:overlay;opacity:.5}
+[data-theme="dark"] .desk .plate::after,[data-theme="dark"] .card::after{opacity:.4}
+.desk .plate .mono,.card .mono{z-index:3}
 /* the FLIP ghost: your card travelling from the desk to its slot */
 #ghost{position:fixed;z-index:80;border-radius:8px;overflow:hidden;pointer-events:none;transform-origin:top left;
   transition:transform .7s cubic-bezier(.22,1,.36,1),opacity .2s ease .6s}
@@ -822,6 +871,29 @@ GALLERY_JS = """<script>
   const INK=(c)=>c==='paper'?'#14171B':'#FAF9F7';
   const $=(s,r=document)=>r.querySelector(s);
   const intro=$('#intro'), wallSec=$('#wall'), gate=$('#gate');
+
+  /* the stock, as a tile: the postcard's tooth from the texture lab, relit here once.
+     A height field of coarse fibre, shaded by the lamp from the upper left, written out
+     around mid grey so overlay leaves the card's colour alone and adds only the relief. */
+  (function stock(){
+    const N=256, cv=document.createElement('canvas'); cv.width=cv.height=N; const c=cv.getContext('2d');
+    const hash=(x,y,s)=>{ const n=Math.sin((x%N)*127.1+(y%N)*311.7+s*74.7)*43758.5453; return n-Math.floor(n); };
+    const swell=(x,y,f,ph)=>Math.sin((x/N)*6.2832*f+ph)*Math.sin((y/N)*6.2832*f+ph*1.7);
+    const h=new Float32Array(N*N);
+    for(let y=0;y<N;y++) for(let x=0;x<N;x++) h[y*N+x]=(hash(x,y,6)-.5)*.2+(hash(x>>1,y>>1,12)-.5)*.26+swell(x,y,3,.2)*.08;
+    const L=[-0.58,-0.66,0.48], m=Math.hypot(...L); L[0]/=m; L[1]/=m; L[2]/=m;
+    const at=(x,y)=>h[((y+N)%N)*N+((x+N)%N)];
+    const img=c.createImageData(N,N), d=img.data;
+    for(let y=0;y<N;y++) for(let x=0;x<N;x++){
+      const dx=(at(x+1,y)-at(x-1,y))*46, dy=(at(x,y+1)-at(x,y-1))*46, nz=1, nm=Math.hypot(dx,dy,nz);
+      const diff=Math.max(0,(-dx/nm)*L[0]+(-dy/nm)*L[1]+(nz/nm)*L[2]);
+      /* a breath of relief, not a rasp: the lab's postcard sits at about a third of this gain's first cut */
+      const v=Math.max(0,Math.min(255,128+(diff-0.74)*110));
+      const o=(y*N+x)*4; d[o]=d[o+1]=d[o+2]=v; d[o+3]=255;
+    }
+    c.putImageData(img,0,0);
+    document.documentElement.style.setProperty('--stock',`url(${cv.toDataURL()})`);
+  })();
 
   if(innerWidth<900){ intro.hidden=true; wallSec.hidden=true; gate.hidden=false; return; }
   gate.hidden=true;

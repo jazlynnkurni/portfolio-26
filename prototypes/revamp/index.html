@@ -3,7 +3,7 @@
 <title>Jazlynn Kurniandra — revamp</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="/site-mark.js"></script>
+<script src="/site-mark.js?v=sig6"></script>
 <style>
 :root{
   --jak:"Plus Jakarta Sans",sans-serif; --hel:"Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -142,7 +142,7 @@ nav a:active{transform:scale(.96)}
 @media(max-width:640px){nav .in{padding-top:16px} nav a{padding:9px 10px;font-size:12.5px}}
 
 /* ---------------- hero: the locked letter grid ---------------- */
-.hero{padding:0 0 72px}
+.hero{padding:0}
 .hero-grid{display:grid;grid-template-columns:1fr;grid-template-rows:1.618fr auto 1fr;min-height:calc(100vh - 72px);position:relative;padding-top:96px;padding-bottom:120px}
 /* ============ THE SHEETS =========================================================
  * Her vellum piece, off its black plate and laid across the page.
@@ -163,9 +163,12 @@ nav a:active{transform:scale(.96)}
  * one motion rather than a stack of blocks. */
 .hero{position:sticky;top:0;overflow:hidden;z-index:0}
 .hero .stack,#sheets{will-change:opacity,transform}
+body>.pushing{transition:transform .5s cubic-bezier(.22,1,.36,1)}
 .work{position:relative;z-index:2;background:var(--paper)}
-.work::before{content:"";position:absolute;left:0;right:0;top:-220px;height:220px;pointer-events:none;
-  background:linear-gradient(to bottom,transparent,var(--paper))}
+/* the cap is short and eased: a long linear ramp read as a white block sliding up the
+   hero. Half the height, and most of the fade happens in its lower third. */
+.work::before{content:"";position:absolute;left:0;right:0;top:-110px;height:110px;pointer-events:none;
+  background:linear-gradient(to bottom,transparent 0%,color-mix(in srgb,var(--paper) 35%,transparent) 45%,color-mix(in srgb,var(--paper) 80%,transparent) 78%,var(--paper) 100%)}
 /* THE SHEETS ARE THE VELLUM PIECE ITSELF NOW, on the GPU: see sheets-gl.js. The
    canvas is opaque and paints the page colour under the sheets, so there is no
    blend mode: the ground IS the page, and the hero edge is seamless. */
@@ -266,24 +269,37 @@ footer .in a{font-size:13px}
 .rows li.off{display:none}
 /* external work leaves the site: the arrow says so, quietly */
 .rows .ext{font-size:.5em;vertical-align:.9em;color:var(--ink3);margin-left:.1em}
-.preview{position:sticky;top:96px;aspect-ratio:16/11;border-radius:20px;overflow:hidden;
+/* THE PLATE IS EXACTLY THE FILE. Each project's plate takes that recording's own
+   proportions, read off the file the moment it loads, and the media is fitted inside it
+   whole: no crop, no zoom, no stretch. A 16:9 recording gets a 16:9 plate, a 2:1 gets 2:1.
+   The plate changes shape between projects; that is the honest cost of showing each one
+   at its own size. --ar is width over height. */
+.preview{position:sticky;top:96px;aspect-ratio:var(--ar,16/9);border-radius:20px;overflow:hidden;
   background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px;
   opacity:0;transform:translateY(6px);transition:opacity .28s ease,transform .32s cubic-bezier(.22,1,.36,1)}
 .preview.show{opacity:1;transform:none}
 @media(max-width:900px){.rows a{font-size:32px}}
-.preview video,.preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.preview video,.preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:none}
 .preview video.on,.preview img.on{display:block}
 /* THE CLIPS WERE SHOT FOR ANOTHER SITE. They carry that site's beige ground baked in, so
    laid flat they would read as pasted cards. Multiplied into the plate the beige becomes
    this paper, the white of a phone screen becomes the plate, and only the pigment of the
    work remains: the same rule as every wash on the page. Dark mode cannot multiply, so
    the clip sits on the lifted plate a little dimmed, with the grain doing the joining. */
-.preview video,.preview img{mix-blend-mode:multiply;filter:saturate(.72) brightness(1.02)}
+/* ============ THE PRINT ==========================================================
+ * Every cover goes through the same press: reduced to tone, the tone mapped onto her three
+ * (oxblood in the shadows, gold through the middle, paper in the lights), and a screen laid
+ * over the top. The riso disc's logic on a photograph. An SVG filter rather than a canvas,
+ * so it costs nothing and it works on the videos. The colourway lives in the tableValues. */
+.print img,.print video{filter:url(#print-light) contrast(1.06);mix-blend-mode:normal}
+[data-theme="dark"] .print img,[data-theme="dark"] .print video{filter:url(#print-dark) contrast(1.04)}
+.print::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(circle,rgba(20,23,27,.9) 0 27%,transparent 33%) 0 0/4px 4px;mix-blend-mode:multiply;opacity:.16}
+[data-theme="dark"] .print::after{background:radial-gradient(circle,rgba(250,249,247,.8) 0 27%,transparent 33%) 0 0/4px 4px;mix-blend-mode:screen;opacity:.10}
 /* saturate(.72): the old ground was #FFF5EF, and multiplied straight it leaves a peach
    tint on the paper. Pulling the chroma down first folds that beige into the ground and
    mutes the work's own colours toward the palette at the same time. */
-[data-theme="dark"] .preview video,[data-theme="dark"] .preview img{mix-blend-mode:normal;filter:brightness(.9) contrast(1.04)}
-.preview{aspect-ratio:16/12.5}
+
 /* the caption is a bar at the plate's foot, the old card's meta row: it never sits on the
    clip, and the clip is cropped only where the bar covers it */
 .pv-cap{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;flex-direction:column;gap:3px;
@@ -303,7 +319,6 @@ footer .in a{font-size:13px}
 .card .sub{font-size:13px;line-height:1.55;color:var(--ink2);margin:6px 4px 2px}
 .card .arrow{color:var(--ink3);transition:color .2s ease,transform .2s ease;font-size:12px}
 .card:hover .arrow{color:var(--touch);transform:translate(2px,-2px)}
-
 
 footer{padding:64px 0 22px}
 /* the same grid as the pinned rail, at the same height, so the links land in the rail's
@@ -352,6 +367,7 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
   #cur.hot i{transform:scale(2.6);opacity:.62;box-shadow:0 6px 22px rgba(28,26,23,.22)}
   [data-theme="dark"] #cur.hot i{box-shadow:0 6px 22px rgba(250,249,247,.2)}
   #cur.down i{transform:scale(2.1);opacity:.75}
+
   /* over the stamp's wet frame the bead becomes a point: you are aiming, not pointing */
   #cur.fine i{transform:scale(.46);opacity:.95}
   #cur.fine.down i{transform:scale(.34)}
@@ -385,6 +401,18 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
     <a href="#work">Projects</a><a href="http://localhost:3000/sandbox">Sandbox</a><a href="/art-gallery.html">Art Gallery</a><a href="/about.html">About</a></span>
 </div></nav>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- DUOTONE, locked from the cover lab: oxblood to paper. tableValues are the R, G, B at 0 and 1 -->
+  <filter id="print-light" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"/>
+    <feComponentTransfer><feFuncR type="table" tableValues="0.204 0.980"/><feFuncG type="table" tableValues="0.016 0.976"/><feFuncB type="table" tableValues="0.078 0.969"/></feComponentTransfer>
+  </filter>
+  <!-- on charcoal the shadows are the ground itself -->
+  <filter id="print-dark" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"/>
+    <feComponentTransfer><feFuncR type="table" tableValues="0.110 0.980"/><feFuncG type="table" tableValues="0.102 0.976"/><feFuncB type="table" tableValues="0.090 0.969"/></feComponentTransfer>
+  </filter>
+</defs></svg>
 <!-- HERO -->
 <header class="hero">
   <!-- THE SHEETS. Not in a box any more: they run loose across the hero, middle to right,
@@ -392,7 +420,7 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
        drag started anywhere -- including straight across the name -- reaches the sheets. -->
   <canvas id="sheets" aria-hidden="true"></canvas>
   <div class="wrap hero-grid">
-  <div class="stack" id="stack"><p class="who">Product designer and design engineer. Cognitive science and HCI at Columbia, previously Manus AI.</p></div>
+  <div class="stack" id="stack"></div>
 </div></header>
 <!-- THE RAIL LIVES OUTSIDE THE HERO. The hero is sticky with its own stacking context, and
      the projects' gradient cap (z 2) sits over its last 220px, which is exactly where the
@@ -406,7 +434,6 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
   <span class="cr">&copy; 2026 Jazlynn Kurniandra</span>
 </div>
 
-
 <!-- PROJECTS. His desktop-work-panel, read off the OCR: a filter row of tags, a left
      column of titles, and a preview on the right that swaps on hover. The list is the
      interface; the preview is what a title means. -->
@@ -415,7 +442,7 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
   <div class="tags" id="tags"></div>
   <div class="panel">
     <ol class="rows" id="rows"></ol>
-    <div class="preview" id="preview"><video muted loop playsinline preload="none"></video><img alt=""><div class="grain" style="opacity:.4"></div>
+    <div class="preview print" id="preview"><video muted loop playsinline preload="none"></video><img alt=""><div class="grain" style="opacity:.4"></div>
       <div class="pv-cap"><b id="pv-t"></b><span id="pv-s"></span></div></div>
   </div>
 </div></section>
@@ -431,6 +458,24 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
 /* the sandbox is another origin, so the colour mode travels in the URL */
 (function(){document.querySelectorAll('a[href*="localhost:3000/sandbox"]').forEach(a=>{const base=a.getAttribute('href');
 a.addEventListener('click',()=>{a.href=base+'?theme='+(document.documentElement.getAttribute('data-theme')||'light');});});})();
+/* ---------- THE PAGE MAKES ROOM ----------
+   When the line drops out from under the name, everything below the nav moves down just
+   far enough to clear its foot, on the site's ease, and comes back to its place when the
+   line goes. Measured live off the line and the first piece of content, so it is the
+   same gesture on every page whatever sits at the top of it. */
+(function(){
+  const EXCLUDE='nav,.hero-foot,script,style,svg,#load,#cur,#gooL,site-mark,#ghost';
+  const pushed=()=>[...document.body.children].filter(el=>!el.matches(EXCLUDE));
+  const firstContent=()=>[...document.querySelectorAll('.hero .stack, .cs-hero .label, main .label, main h1')].find(el=>el.getBoundingClientRect().height>0);
+  let peek=0, t=0;
+  addEventListener('markpeek',e=>{
+    const els=pushed(); clearTimeout(t);
+    if(e.detail.on){ const f=firstContent(); const top=f?f.getBoundingClientRect().top-peek:0; peek=Math.max(0,e.detail.bottom+20-top); }
+    else peek=0;
+    els.forEach(el=>{ el.classList.add('pushing'); el.style.transform=peek?`translateY(${peek.toFixed(1)}px)`:''; });
+    t=setTimeout(()=>els.forEach(el=>el.classList.remove('pushing')),560);
+  });
+})();
 /* ---------- the cursor ---------- */
 (function(){
   if(!matchMedia('(hover: hover) and (pointer:fine)').matches) return;
@@ -576,6 +621,17 @@ const lines=WORDS.map((w,li)=>{
   });
   stack.appendChild(el); return {cells, seed:li};
 });
+/* THE FURTHEST THE WALL CAN REACH. The cells breathe on their own phases, so the ragged
+   edge is a range, not a place. One period of the cycle is sampled and the widest row kept,
+   as unit x of the hero, plus a gutter. The sheets are laid out to the right of it. */
+window.wallClear=function(){
+  const hero=document.querySelector('.hero'); if(!hero) return 0;
+  const hw=hero.getBoundingClientRect().width||innerWidth, sl=stack.getBoundingClientRect().left-hero.getBoundingClientRect().left;
+  const period=1/SPEED; let widest=0;
+  for(let n=0;n<120;n++){ const t=(n/120)*period;
+    for(const L of lines){ let x=0; for(const c of L.cells){ const k=.5+.5*Math.sin(t*SPEED*Math.PI*2+L.seed*DRIFT+c.ci*DRIFT*1.7); x+=c.base+k*k*STRETCH; } if(x>widest) widest=x; } }
+  return (sl+widest+28)/hw;
+};
 let rz=0; addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout(()=>{ measure();
   lines.forEach(L=>L.cells.forEach(c=>{ c.base=Math.ceil(gauge.measureText(c.ch).width)+4; })); },120); });
 /* ============ INK: TWO BEHAVIOURS, ONE MECHANIC ==================================
@@ -736,6 +792,10 @@ const ALL=[...new Set(PROJECTS.flatMap(p=>p.tags))];
 tags.innerHTML=['All',...ALL].map((t,i)=>`<button aria-pressed="${i===0}">${t}</button>`).join('');
 /* the preview is the project's own clip from the shipped site; SomiaCX has a still */
 const pvV=document.querySelector('#preview video'), pvI=document.querySelector('#preview img');
+/* the plate takes the file's own proportions: a video reports them at loadedmetadata, an image at load */
+const fitPlate=(w,h)=>{ if(w&&h) document.getElementById('preview').style.setProperty('--ar',(w/h).toFixed(4)); };
+pvV.addEventListener('loadedmetadata',()=>fitPlate(pvV.videoWidth,pvV.videoHeight));
+pvI.addEventListener('load',()=>fitPlate(pvI.naturalWidth,pvI.naturalHeight));
 let pvCur=-1;
 function show(i){
   const p=PROJECTS[i]; pvT.textContent=p.t; pvS.textContent=p.s;
@@ -779,33 +839,41 @@ show(0);
   function apply(){
     raf=0;
     const h=hero.offsetHeight||innerHeight;
-    /* the hero is gone by the time the projects have climbed two thirds of it */
-    const p=Math.max(0,Math.min(1,scrollY/(h*.66)));
+    /* THE HERO STAYS UNTIL IT IS COVERED. It used to be gone by two thirds of the scroll,
+       so the projects always rose over blank paper. Now nothing fades until the projects
+       have climbed past the hero's midpoint, and the last of it goes only as they cover
+       it: the discs and the wall are still there under the cap as the list arrives. */
+    const p=Math.max(0,Math.min(1,(scrollY-h*.55)/(h*.45)));
     const e=p*p*(3-2*p);
+    const ph=Math.max(0,Math.min(1,scrollY/(h*.66)));   /* the hint keeps its own, earlier clock */
     sheets.style.opacity=(1-e).toFixed(3);
     stack.style.opacity=(1-e).toFixed(3);
     stack.style.transform=`translateY(${(-e*48).toFixed(1)}px)`;
     /* the hint goes first: it is an instruction, and the reader has followed it */
     /* full ink until the reader has actually started down, then it goes first */
-    if(hint){ const o=Math.max(0,1-Math.max(0,p-.14)*3); hint.style.opacity=o.toFixed(3); hint.style.visibility=o>0?'':'hidden'; }
+    if(hint){ const o=Math.max(0,1-Math.max(0,ph-.14)*3); hint.style.opacity=o.toFixed(3); hint.style.visibility=o>0?'':'hidden'; }
   }
   const tick=()=>{ if(!raf) raf=requestAnimationFrame(apply); };
   addEventListener('scroll',tick,{passive:true}); addEventListener('resize',tick); apply();
+  window.__heroApply=apply;   /* so a test can drive the scroll engulf without a frame */
 })();
 </script>
 <script type="module">
   /* the vellum discs, laid across the hero. Everything above this layer is
      pointer transparent, so a drag started anywhere reaches the sheets. */
   import { mountSheets } from './sheets-gl.js';
+  /* TWELVE. The leftmost column of the sixteen sat under the wall by design and the wall
+     grew into it; those four are gone, and the rest are fitted right of the wall's furthest
+     reach at whatever window this is (see sheets-gl.js). */
   const SHEETS=[
-    {x:.47,y:.20,r:.115},{x:.63,y:.13,r:.130},{x:.80,y:.22,r:.120},{x:.95,y:.14,r:.105},
-    {x:.55,y:.34,r:.100},{x:.72,y:.36,r:.125},{x:.89,y:.40,r:.115},{x:1.02,y:.30,r:.100},
-    {x:.50,y:.56,r:.120},{x:.66,y:.58,r:.135},{x:.83,y:.62,r:.115},{x:.98,y:.54,r:.110},
-    {x:.58,y:.78,r:.110},{x:.76,y:.82,r:.125},{x:.92,y:.76,r:.105},{x:1.04,y:.86,r:.095}
+    {x:.63,y:.13,r:.130},{x:.80,y:.22,r:.120},{x:.95,y:.14,r:.105},
+    {x:.72,y:.36,r:.125},{x:.89,y:.40,r:.115},{x:1.02,y:.30,r:.100},
+    {x:.66,y:.58,r:.135},{x:.83,y:.62,r:.115},{x:.98,y:.54,r:.110},
+    {x:.76,y:.82,r:.125},{x:.92,y:.76,r:.105},{x:1.04,y:.86,r:.095}
   ];
   /* LOCKED 2026-09-23. Her eight, picked in the riso lab against frosted glass: two
      creams, two greys, a dusky mauve, a grey green, a lilac grey, a sage. */
   const SWATCH=['#dfddc8','#c7c7c7','#827a85','#9ba69c','#c4c1c8','#dfddc8','#c2beb3','#dfdac8'];
-  mountSheets(document.getElementById('sheets'), SHEETS, SWATCH, { paper: '#FAF9F7', ground: '#1C1A17' });
+  mountSheets(document.getElementById('sheets'), SHEETS, SWATCH, { paper: '#FAF9F7', ground: '#1C1A17', clear: () => window.wallClear ? window.wallClear() : 0 });
 </script>
 </body></html>

@@ -350,7 +350,7 @@ export function mountSheets(cv, sheets, swatch, opts) {
   let W = 0, H = 0, dpr = 1, unit = 1, cssW = 1, cssH = 1, target = null;
   const rnd = mulberry(20260913);
   const discs = sheets.map((s, i) => ({
-    ux: s.x, uy: s.y, ur: s.r,                 /* unit hero coords, the source of truth for layout */
+    ux: s.x, ux0: s.x, uy: s.y, ur: s.r, moved: false,   /* unit hero coords; ux0 is the designed x, ux the fitted one */
     x: 0, y: 0, r: 0, tx: 0, ty: 0, vx: 0, vy: 0,
     rot: rnd() * Math.PI * 2, rotV: (rnd() - 0.5) * 0.010,
     ink: i % swatch.length, op: 0.84 + rnd() * 0.38, seed: rnd() * 100,
@@ -358,12 +358,25 @@ export function mountSheets(cv, sheets, swatch, opts) {
   }));
   const toComp = (ux, uy) => [((ux * cssW) - cssW / 2) / unit, (cssH / 2 - uy * cssH) / unit];
 
+  /* THE SHEETS NEVER TOUCH THE WALL. The wall's reach is set by its row height, which
+     follows the viewport's height; the room to the right of it follows the width. Those
+     are independent, so no fixed layout is safe on every window. The page hands over
+     the furthest the wall can ever reach (opts.clear, in unit x, gutter included), and
+     the whole group is fitted into the column to the right of it: same shapes, same
+     order, same overlaps, moved and squeezed sideways as one. */
+  const SPAN_L = Math.min(...sheets.map((d) => d.x - d.r)), SPAN_R = Math.max(...sheets.map((d) => d.x + d.r));
+  function fit(d) {
+    const clear = typeof opts.clear === "function" ? opts.clear() : 0;
+    if (!(clear > 0)) return d.ux0;
+    const left = clear, right = Math.max(clear + 0.25, 1.12);
+    return left + (d.ux0 - SPAN_L) / (SPAN_R - SPAN_L) * (right - left);
+  }
   function resize() {
     const r = cv.getBoundingClientRect(); if (!r.width) return false;
     dpr = Math.min(2, devicePixelRatio || 1); cssW = r.width; cssH = r.height;
     W = Math.round(cssW * dpr); H = Math.round(cssH * dpr); cv.width = W; cv.height = H;
     unit = UNIT_CSS;
-    for (const d of discs) { const [x, y] = toComp(d.ux, d.uy); d.x = d.tx = x; d.y = d.ty = y; d.r = (d.ur * cssW) / unit; d.vx = d.vy = 0; }
+    for (const d of discs) { if (!d.moved) d.ux = fit(d); const [x, y] = toComp(d.ux, d.uy); d.x = d.tx = x; d.y = d.ty = y; d.r = (d.ur * cssW) / unit; d.vx = d.vy = 0; }
     target = makeTarget(gl, W, H, target);
     return true;
   }
@@ -389,7 +402,7 @@ export function mountSheets(cv, sheets, swatch, opts) {
     discs.splice(discs.indexOf(d), 1); discs.push(d);
     drag = d; grab.x = d.x - x; grab.y = d.y - y; cv.setPointerCapture(e.pointerId); lastInput = now; wake();
   });
-  const drop = () => { if (drag) { drag.ux = (drag.x * unit + cssW / 2) / cssW; drag.uy = (cssH / 2 - drag.y * unit) / cssH; } drag = null; lastInput = now; };
+  const drop = () => { if (drag) { drag.ux = (drag.x * unit + cssW / 2) / cssW; drag.uy = (cssH / 2 - drag.y * unit) / cssH; drag.moved = true; } drag = null; lastInput = now; };
   addEventListener("pointerup", drop); addEventListener("pointercancel", drop);
 
   function step(dt) {

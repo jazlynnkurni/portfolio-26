@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-cache">
+<title>Covers — four presses</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--jak:"Plus Jakarta Sans",sans-serif;--hel:"Helvetica Neue",Helvetica,Arial,sans-serif;--gold:#A99939;--oxblood:#340414;--charcoal:#1C1A17}
+:root,[data-theme="light"]{--paper:#FAF9F7;--ink:#14171B;--ink2:rgba(20,23,27,.66);--ink3:rgba(20,23,27,.42);--hair:rgba(20,23,27,.16);--plate:#FAF9F7;--outline:oklch(0 0 0 / 0.1);--pill:#fff;--pill-shadow:0 1px 2px rgba(20,23,27,.04),0 6px 20px rgba(20,23,27,.07);color-scheme:light}
+[data-theme="dark"]{--paper:#1C1A17;--ink:#FAF9F7;--ink2:rgba(250,249,247,.66);--ink3:rgba(250,249,247,.42);--hair:rgba(250,249,247,.16);--plate:#262320;--outline:oklch(1 0 0 / 0.1);--pill:#262320;--pill-shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);color-scheme:dark}
+*{box-sizing:border-box}html,body{background:var(--paper)}body{margin:0;color:var(--ink);font-family:var(--hel);font-weight:300;-webkit-font-smoothing:antialiased}
+h1,h3{font-family:var(--jak);font-weight:500;letter-spacing:-.012em;margin:0}p{margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding:0 30px}
+.label{font-family:var(--jak);font-weight:600;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3)}
+nav{position:fixed;top:0;left:0;right:0;z-index:60;pointer-events:none}nav .in{display:flex;justify-content:space-between;align-items:center;padding-top:24px}
+nav .mark{pointer-events:auto;font-family:var(--jak);font-weight:600;font-size:13px}
+nav .links{pointer-events:auto;display:flex;gap:6px;align-items:center;background:var(--pill);border-radius:999px;padding:4px 8px;box-shadow:var(--pill-shadow)}
+nav button{font:400 13px var(--hel);color:var(--ink2);background:transparent;border:0;padding:8px 12px;border-radius:999px;cursor:pointer}
+nav button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+main{padding:136px 0 96px}.head h1{font-size:clamp(28px,4vw,44px);line-height:1.12;max-width:22ch;margin-top:12px}.head p{font-size:17px;line-height:1.62;color:var(--ink2);margin-top:16px;max-width:56ch}
+.cells{display:grid;grid-template-columns:repeat(2,1fr);margin-top:48px}
+.cell{border:1px solid var(--hair);padding:24px;min-width:0}.cell:nth-child(2n){border-left:0}.cell:nth-child(n+3){border-top:0}
+.cell .n{font:500 11px var(--jak);letter-spacing:.12em;color:var(--ink3)}.cell h3{font-size:15.5px;margin-top:14px}.cell p{font-size:13.5px;line-height:1.55;color:var(--ink2);margin-top:6px}
+.plate{position:relative;border-radius:20px;overflow:hidden;background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px;aspect-ratio:16/10;margin-top:16px}
+.plate img,.plate video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+/* the four presses. same screen on all of them; only the ink map changes */
+.p1 img,.p1 video{filter:url(#p1)}.p2 img,.p2 video{filter:url(#p2)}.p3 img,.p3 video{filter:url(#p3)}.p4 img,.p4 video{filter:url(#p4)}
+[data-theme="dark"] .p1 img,[data-theme="dark"] .p1 video{filter:url(#p1d)}[data-theme="dark"] .p2 img,[data-theme="dark"] .p2 video{filter:url(#p2d)}
+[data-theme="dark"] .p3 img,[data-theme="dark"] .p3 video{filter:url(#p3d)}[data-theme="dark"] .p4 img,[data-theme="dark"] .p4 video{filter:url(#p4d)}
+.plate::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle,rgba(20,23,27,.9) 0 27%,transparent 33%) 0 0/4px 4px;mix-blend-mode:multiply;opacity:.16}
+[data-theme="dark"] .plate::after{background:radial-gradient(circle,rgba(250,249,247,.8) 0 27%,transparent 33%) 0 0/4px 4px;mix-blend-mode:screen;opacity:.10}
+.p3.plate::after{background:radial-gradient(circle,rgba(20,23,27,.9) 0 27%,transparent 33%) 0 0/4px 4px,radial-gradient(circle,rgba(20,23,27,.9) 0 27%,transparent 33%) 2px 1px/5px 5px;opacity:.14}
+.p4.plate::after{background-image:var(--noise);background-size:170px 170px;mix-blend-mode:overlay;opacity:.5}
+.grain{display:none}
+</style>
+<script>(function(){const q=new URLSearchParams(location.search).get('theme');let t=q||localStorage.getItem('cover-theme');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="lum"><feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0"/></filter>
+  <!-- 01 tritone: oxblood, gold, paper (what the site uses now) -->
+  <filter id="p1" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues="0.204 0.663 0.980"/><feFuncG type="table" tableValues="0.016 0.600 0.976"/><feFuncB type="table" tableValues="0.078 0.224 0.969"/></feComponentTransfer></filter>
+  <filter id="p1d" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues="0.110 0.663 0.980"/><feFuncG type="table" tableValues="0.102 0.600 0.976"/><feFuncB type="table" tableValues="0.090 0.224 0.969"/></feComponentTransfer></filter>
+  <!-- 02 duotone: oxblood to paper, no gold. quieter, more "print" -->
+  <filter id="p2" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues="0.204 0.980"/><feFuncG type="table" tableValues="0.016 0.976"/><feFuncB type="table" tableValues="0.078 0.969"/></feComponentTransfer></filter>
+  <filter id="p2d" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues="0.110 0.980"/><feFuncG type="table" tableValues="0.102 0.976"/><feFuncB type="table" tableValues="0.090 0.969"/></feComponentTransfer></filter>
+  <!-- 03 charcoal to paper with a second, turned screen: a riso in one ink -->
+  <filter id="p3" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues="0.110 0.980"/><feFuncG type="table" tableValues="0.102 0.976"/><feFuncB type="table" tableValues="0.090 0.969"/></feComponentTransfer></filter>
+  <filter id="p3d" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues="0.110 0.925"/><feFuncG type="table" tableValues="0.102 0.922"/><feFuncB type="table" tableValues="0.090 0.910"/></feComponentTransfer></filter>
+  <!-- 04 gold-led: charcoal, gold, paper, with paper grain instead of a screen -->
+  <filter id="p4" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues="0.110 0.663 0.980"/><feFuncG type="table" tableValues="0.102 0.600 0.976"/><feFuncB type="table" tableValues="0.090 0.224 0.969"/></feComponentTransfer></filter>
+  <filter id="p4d" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues="0.110 0.663 0.980"/><feFuncG type="table" tableValues="0.102 0.600 0.976"/><feFuncB type="table" tableValues="0.090 0.224 0.969"/></feComponentTransfer></filter>
+</defs></svg>
+<nav><div class="wrap in"><span class="mark">Cover lab</span><span class="links">
+  <button data-src="/videos/work-manus.jpg" aria-pressed="true">Manus</button><button data-src="/videos/work-clover.jpg">Clover</button><button data-src="/videos/work-fostr.jpg">Fostr</button><button data-src="/videos/work-halodoc.jpg">Halodoc</button><button data-src="/images/work-somiacx.png">Somia</button>
+  <button id="theme">mode</button></span></div></nav>
+<main><div class="wrap">
+  <div class="head"><div class="label">Covers</div><h1>One press for every project.</h1>
+    <p>The same cover through four presses. Each reduces the image to tone and maps the tone onto the palette, so every project reads as one body of work whatever it was shot in. Pick the project above to see how each press handles it; mode flips the ground.</p></div>
+  <div class="cells">
+    <div class="cell"><span class="n">01 &middot; TRITONE</span><div class="plate p1"><img alt=""></div><h3>Oxblood, gold, paper.</h3><p>All three inks: oxblood in the shadows, gold through the middle, paper in the lights, under a 4px screen.</p></div>
+    <div class="cell"><span class="n">02 &middot; DUOTONE</span><div class="plate p2"><img alt=""></div><h3>Oxblood to paper.</h3><p>Two inks. Quieter and more like a print; the gold is left for the wall and the sheets. Locked: this is what the site runs.</p></div>
+    <div class="cell"><span class="n">03 &middot; ONE INK, TWO SCREENS</span><div class="plate p3"><img alt=""></div><h3>Charcoal, screened twice.</h3><p>A single ink through two screens at different pitches, so the overlap makes the rosette the riso disc makes. The most "printed" of the four.</p></div>
+    <div class="cell"><span class="n">04 &middot; GOLD LED</span><div class="plate p4"><img alt=""></div><h3>Charcoal, gold, paper, on grain.</h3><p>The same three as 01 with charcoal in the shadows instead of oxblood, and paper grain instead of a dot screen. Warmer, less graphic.</p></div>
+  </div>
+</div></main>
+<script>
+(function(){const n=document.createElement('canvas');n.width=n.height=170;const g=n.getContext('2d'),d=g.createImageData(170,170);for(let i=0;i<d.data.length;i+=4){const v=118+(Math.random()*72-36);d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}g.putImageData(d,0,0);document.documentElement.style.setProperty('--noise',`url(${n.toDataURL()})`);})();
+const imgs=[...document.querySelectorAll('.plate img')];
+function set(src){imgs.forEach(i=>i.src=src);document.querySelectorAll('nav button[data-src]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.src===src)));}
+document.querySelectorAll('nav button[data-src]').forEach(b=>b.addEventListener('click',()=>set(b.dataset.src)));
+document.getElementById('theme').addEventListener('click',()=>{const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('cover-theme',t);}catch(e){}});
+set(new URLSearchParams(location.search).get('src')||'/videos/work-manus.jpg');
+</script>
+</body></html>
