@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-cache">
+<title>jaz — the blob mark</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#0b0b0b;color:#d7d1c0;font:300 13px/1.5 "Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:56px 30px 96px}
+  .label{font:600 10.5px "Plus Jakarta Sans",sans-serif;letter-spacing:.15em;text-transform:uppercase;color:rgba(215,209,192,.42)}
+  h1{font:500 28px "Plus Jakarta Sans",sans-serif;letter-spacing:-.012em;margin:12px 0 0;color:#FAF9F7}
+  p{max-width:56ch;color:rgba(215,209,192,.66);margin:12px 0 0}
+  .lab{display:grid;grid-template-columns:1fr 300px;gap:24px;margin-top:40px;align-items:start}
+  .plate{aspect-ratio:4/3;display:grid;place-items:center;border-radius:20px;outline:1px solid rgba(255,255,255,.1);outline-offset:-1px;background:#000;position:relative;overflow:hidden}
+  .plate svg{width:70%;height:auto;display:block}
+  .strip{display:flex;gap:16px;margin-top:16px;align-items:center}
+  .strip .chip{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;font:600 13px "Plus Jakarta Sans",sans-serif}
+  .strip .chip svg{height:26px;width:auto}
+  .panel{border-radius:16px;background:rgba(19,19,18,.9);box-shadow:inset 0 0 0 1px rgba(215,209,192,.13);padding:16px 16px 14px;position:sticky;top:24px}
+  .row{display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin-bottom:10px}
+  .row span{color:rgba(215,209,192,.5);font-size:11.5px;letter-spacing:.015em}
+  .row b{font-weight:500;font-size:11.5px;font-variant-numeric:tabular-nums;color:#d7d1c0}
+  .row input[type=range]{grid-column:1/-1;-webkit-appearance:none;appearance:none;width:100%;height:15px;background:transparent;cursor:pointer}
+  .row input::-webkit-slider-runnable-track{height:2px;border-radius:2px;background:rgba(215,209,192,.22)}
+  .row input::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;margin-top:-4.5px;border-radius:50%;background:#d7d1c0}
+  .sw{display:flex;gap:8px;grid-column:1/-1;margin-top:4px}
+  .sw button{width:26px;height:26px;border-radius:7px;border:0;cursor:pointer;outline:1px solid rgba(255,255,255,.15);outline-offset:-1px}
+  .sw button[aria-pressed=true]{box-shadow:0 0 0 2px #0b0b0b,0 0 0 3.5px #d7d1c0}
+  .acts{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(215,209,192,.13)}
+  .acts button{font:500 12px "Plus Jakarta Sans",sans-serif;color:#d7d1c0;background:transparent;border:1px solid rgba(215,209,192,.22);border-radius:999px;padding:7px 12px;cursor:pointer}
+  .acts button:hover{border-color:rgba(215,209,192,.5)}
+  code{display:block;margin-top:10px;font:11px ui-monospace,monospace;color:rgba(215,209,192,.5);white-space:pre-wrap;word-break:break-all;max-height:90px;overflow:auto}
+</style></head><body><div class="wrap">
+<div class="label">Mark</div><h1>jaz, as one blob.</h1>
+<p>Built from strokes with round caps and joins, then fused with a goo filter so every join is a fillet. Everything on the right is live. Copy gives you a standalone SVG with the settings baked in; the line under it is the settings themselves, so a version you like can be brought back.</p>
+
+<div class="lab">
+  <div>
+    <div class="plate" id="plate"><svg id="mark" viewBox="0 0 340 300"></svg></div>
+    <div class="strip">
+      <span class="label">at size</span>
+      <span class="chip" style="background:#000;color:#FAF9F7"><svg id="s1" viewBox="0 0 340 300"></svg>Jazlynn Kurniandra</span>
+      <span class="chip" style="background:#FAF9F7;color:#14171B"><svg id="s2" viewBox="0 0 340 300"></svg>Jazlynn Kurniandra</span>
+    </div>
+  </div>
+  <div class="panel" id="panel"></div>
+</div>
+</div>
+<script>
+/* ---------------- the settings ---------------- */
+/* LOCKED: her settings, read back from the SVG she chose. reset returns here. */
+const DEF = { weight:28, blur:2.8, fuse:.68, gapA:54, gapZ:25, hook:25, jdot:15, period:1, dot:16, zTop:67, xh:67, tilt:0, ink:'#FAF9F7', bg:'#000000' };
+const S = Object.assign({}, DEF);
+try { Object.assign(S, JSON.parse(localStorage.getItem('jaz-settings') || '{}')); } catch {}
+
+const CONTROLS = [
+  ['weight',  'weight',  22, 60, 1],
+  ['goo blur','blur',    0, 10, .1],
+  ['fuse',    'fuse',    0, 1, .01],
+  ['j to a',  'gapA',    30, 120, 1],
+  ['a to z',  'gapZ',    20, 110, 1],
+  ['j hook',  'hook',    10, 70, 1],
+  ['j dot',   'jdot',    8, 26, 1],
+  ['period',  'dot',     0, 26, 1],
+  ['z width', 'zTop',    40, 90, 1],
+  ['x height','xh',      40, 90, 1],
+  ['lean',    'tilt',    -12, 12, .5],
+];
+const INKS = [['#FAF9F7','paper'],['#14171B','ink'],['#340414','oxblood'],['#A99939','gold']];
+const BGS  = [['#000000','black'],['#1C1A17','charcoal'],['#FAF9F7','paper']];
+
+/* ---------------- the mark ----------------
+   Baseline at y=216, x height S.xh above it. j stem at x=92.
+   Everything is a stroke; the goo does the fusing. */
+function markInner(s) {
+  const base = 216, top = base - s.xh, jx = 92;
+  const ax = jx + s.gapA, ar = s.xh * .46;               // the a's bowl centre and radius
+  const ay = base - ar;                                   // bowl sits on the baseline
+  const stemX = ax + ar;                                  // the a's stem, on the bowl's right
+  const zx = stemX + s.gapZ, zw = s.zTop;
+  const dot = s.dot > 0 ? `<circle cx="${jx - 62}" cy="${base - s.dot}" r="${s.dot}" fill="currentColor" stroke="none"/>` : '';
+  return `<g fill="none" stroke="currentColor" stroke-width="${s.weight}" stroke-linecap="round" stroke-linejoin="round" transform="skewX(${-s.tilt})">
+    ${dot}
+    <circle cx="${jx}" cy="${top - 18 - s.jdot}" r="${s.jdot}" fill="currentColor" stroke="none"/>
+    <path d="M${jx} ${top} V${base - 8} Q${jx} ${base + s.hook} ${jx - 34} ${base + s.hook} Q${jx - 52} ${base + s.hook} ${jx - 62} ${base + s.hook - 14}"/>
+    <circle cx="${ax}" cy="${ay}" r="${ar}"/>
+    <path d="M${stemX} ${top + 4} V${base}"/>
+    <path d="M${zx} ${top + 2} H${zx + zw} L${zx} ${base} H${zx + zw + 2}"/>
+  </g>`;
+}
+function filterDef(id, s) {
+  const slope = 18 + s.blur * 1.2, inter = -(slope * s.fuse);
+  return `<filter id="${id}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="${s.blur}" result="b"/><feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 ${slope.toFixed(2)} ${inter.toFixed(2)}" result="g"/><feComposite in="SourceGraphic" in2="g" operator="atop"/></filter>`;
+}
+function svgFor(s, id) {
+  return `<defs>${filterDef(id, s)}</defs><g filter="url(#${id})">${markInner(s)}</g>`;
+}
+function standalone(s) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 300" style="color:${s.ink}">${svgFor(s, 'goo')}</svg>`;
+}
+
+/* ---------------- render ---------------- */
+const mark = document.getElementById('mark'), plate = document.getElementById('plate');
+const s1 = document.getElementById('s1'), s2 = document.getElementById('s2');
+function render() {
+  mark.innerHTML = svgFor(S, 'gooA'); mark.style.color = S.ink; plate.style.background = S.bg;
+  s1.innerHTML = svgFor(S, 'gooB'); s2.innerHTML = svgFor(S, 'gooC');
+  document.getElementById('out').textContent = JSON.stringify(S);
+  try { localStorage.setItem('jaz-settings', JSON.stringify(S)); } catch {}
+}
+
+/* ---------------- the panel ---------------- */
+const panel = document.getElementById('panel');
+const fmt = (v, st) => st >= 1 ? String(Math.round(v)) : Number(v).toFixed(st < .05 ? 2 : 1);
+for (const [label, key, lo, hi, step] of CONTROLS) {
+  const row = document.createElement('label'); row.className = 'row';
+  const nm = document.createElement('span'); nm.textContent = label;
+  const val = document.createElement('b'); val.textContent = fmt(S[key], step);
+  const inp = document.createElement('input'); inp.type = 'range'; inp.min = lo; inp.max = hi; inp.step = step; inp.value = S[key];
+  inp.addEventListener('input', () => { S[key] = parseFloat(inp.value); val.textContent = fmt(S[key], step); render(); });
+  row.append(nm, val, inp); panel.appendChild(row);
+}
+function swatchRow(label, list, key) {
+  const row = document.createElement('div'); row.className = 'row';
+  const nm = document.createElement('span'); nm.textContent = label; row.appendChild(nm);
+  const sw = document.createElement('div'); sw.className = 'sw';
+  list.forEach(([hex, name]) => { const b = document.createElement('button'); b.type = 'button'; b.style.background = hex; b.title = name; b.setAttribute('aria-pressed', String(S[key] === hex));
+    b.addEventListener('click', () => { S[key] = hex; sw.querySelectorAll('button').forEach(o => o.setAttribute('aria-pressed', String(o === b))); render(); }); sw.appendChild(b); });
+  row.appendChild(sw); panel.appendChild(row);
+}
+swatchRow('ink', INKS, 'ink'); swatchRow('ground', BGS, 'bg');
+const acts = document.createElement('div'); acts.className = 'acts';
+const copy = document.createElement('button'); copy.type = 'button'; copy.textContent = 'copy SVG';
+copy.addEventListener('click', async () => { try { await navigator.clipboard.writeText(standalone(S)); copy.textContent = 'copied'; setTimeout(() => copy.textContent = 'copy SVG', 1200); } catch {} });
+const reset = document.createElement('button'); reset.type = 'button'; reset.textContent = 'reset';
+reset.addEventListener('click', () => { Object.assign(S, DEF); panel.innerHTML = ''; location.reload(); });
+const save = document.createElement('button'); save.type = 'button'; save.textContent = 'download';
+save.addEventListener('click', () => { const a = document.createElement('a'); a.href = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(standalone(S)); a.download = 'jaz.svg'; a.click(); });
+acts.append(copy, save, reset); panel.appendChild(acts);
+const out = document.createElement('code'); out.id = 'out'; panel.appendChild(out);
+render();
+</script>
+</body></html>

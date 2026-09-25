@@ -41,6 +41,11 @@ class H(SimpleHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.end_headers(); self.wfile.write(body)
 
+    def end_headers(self):
+        # a dev server must never let the browser keep yesterday's script
+        self.send_header("Cache-Control", "no-store, must-revalidate")
+        super().end_headers()
+
     def do_GET(self):
         if self.path.split("?")[0] == "/api/gallery/cards":
             with LOCK: cards = load()[:MAX_CARDS]
