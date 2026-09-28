@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-cache">
-<title>About — Jazlynn Kurniandra</title>
+<title>About · Jazlynn Kurniandra</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="/site-mark.js?v=sig8"></script>
+<script src="/site-mark.js?v=sig11"></script>
 <style>
 :root{--jak:"Plus Jakarta Sans",sans-serif;--hel:"Helvetica Neue",Helvetica,Arial,sans-serif;
   --gold:#A99939;--oxblood:#340414;--charcoal:#1C1A17}
@@ -24,7 +24,15 @@ a{color:inherit}
 .label{font-family:var(--jak);font-weight:600;font-size:10.5px;line-height:1.5;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3)}
 /* nav: the pill from index.html, verbatim */
 nav{position:fixed;top:0;left:0;right:0;z-index:60;pointer-events:none}
-nav .in{display:flex;justify-content:space-between;align-items:center;padding-top:24px}
+nav .in{display:flex;justify-content:space-between;align-items:center;padding-top:24px;position:relative}
+/* THE NAV HAS A GROUND. It is fixed, and headlines scroll up under it, so the mark and the pill sit
+   on a band of paper that fades out below them; the content dims into it instead of crashing. */
+nav::before{content:"";position:absolute;left:0;right:0;top:0;height:104px;pointer-events:none;
+  background:linear-gradient(var(--paper) 46%,color-mix(in srgb,var(--paper) 70%,transparent) 72%,transparent);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-mask:linear-gradient(#000 50%,transparent);mask:linear-gradient(#000 50%,transparent);
+  opacity:0;transition:opacity .3s ease}
+nav.grounded::before{opacity:1}
+
 nav .mark{pointer-events:auto;font-family:var(--jak);font-weight:600;font-size:13px;letter-spacing:-.01em;padding:10px 0;text-decoration:none;color:var(--ink)}
 
 nav .links{pointer-events:auto;display:flex;align-items:center;gap:8px;background:var(--pill);border-radius:999px;
@@ -53,7 +61,7 @@ footer a:hover{color:var(--touch)}
    which is the glow. No highlight, no sphere: it is a dot, not a bead. Over anything pressable it grows, softly, on his spring;
    pressing shrinks it a little. Fine pointers only; the system cursor stays for text. */
 @media(pointer:fine){
-  html,body,a,button,[role=button]{cursor:none}
+  html,body,*,*::before,*::after{cursor:none!important}
   #cur{position:fixed;left:0;top:0;width:12px;height:12px;pointer-events:none;z-index:1000;
     transform:translate(-100px,-100px);will-change:transform;opacity:0;transition:opacity .2s ease}
   #cur i{position:absolute;inset:0;border-radius:50%;
@@ -140,6 +148,8 @@ section.cs:last-of-type{padding-bottom:32px}
 .head .lede p+p{margin-top:16px}
 @media(max-width:900px){.head{grid-template-columns:1fr;gap:24px}}
 .row{display:grid;grid-template-columns:6fr 6fr;gap:48px;align-items:center;margin-top:48px}
+/* two text blocks side by side start on the same line; centring only fits a picture beside text */
+.row.text{align-items:start}
 .row.r7{grid-template-columns:5fr 7fr}
 .row.r75{grid-template-columns:7fr 5fr}
 @media(max-width:900px){.row,.row.r7,.row.r75{grid-template-columns:1fr;gap:24px}}
@@ -163,6 +173,7 @@ section.cs:last-of-type{padding-bottom:32px}
 .plate.pad{padding:24px}
 /* a bare plate is no plate: the picture draws its own edges, so a box around it was a box in a box */
 .plate.bare{background:transparent;outline:0;border-radius:0}
+[data-theme="dark"] .plate.bare.paper{background:#FAF9F7;border-radius:20px;padding:24px}
 .plate.pad img,.plate.pad video{border-radius:8px}
 figure{margin:0}
 figure.mt{margin-top:48px}
@@ -182,14 +193,14 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 /* the pile takes the FIRST card's own proportions (set on load), so the cards in a group,
    which come from the same flow, are shown whole and all at one size */
 .deck .card .plate img,.deck .card .plate video{height:100%;object-fit:contain}
-.deck .card figcaption{position:absolute;left:0;right:0;top:calc(100% + 12px);opacity:0;transition:opacity .25s ease}
+.deck .card figcaption{position:absolute;left:0;right:0;top:calc(100% + 32px);opacity:0;transition:opacity .25s ease}
 .deck .card.top figcaption{opacity:1;transition-delay:.18s}
 .deck .card.top{z-index:3}
 .deck .card.next{z-index:2;transform:translateY(10px) scale(.965)}
 .deck .card.after{z-index:1;transform:translateY(20px) scale(.93)}
 .deck .card.gone{z-index:0;opacity:0;transform:translateY(20px) scale(.93)}
 .deck .card.leaving{z-index:4;transform:translateY(56px) scale(1.02);opacity:0}
-.deck .deck-foot{display:flex;justify-content:space-between;align-items:baseline;margin-top:44px;font-family:var(--jak);font-weight:500;font-size:12.5px;color:var(--ink3)}
+.deck .deck-foot{display:flex;justify-content:space-between;align-items:baseline;margin-top:64px;font-family:var(--jak);font-weight:500;font-size:12.5px;color:var(--ink3)}
 .deck .deck-foot b{font-weight:600;color:var(--ink)}
 .deck:focus-visible .pile{outline:2px solid var(--ink);outline-offset:6px;border-radius:20px}
 .deck .card figcaption{margin-top:0}
@@ -198,8 +209,8 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 .cells{display:grid;grid-template-columns:repeat(3,1fr);margin-top:48px}
 .cells.c2{grid-template-columns:repeat(2,1fr)}
 .cells.c4{grid-template-columns:repeat(4,1fr)}
-.cell{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);border-left:1px solid var(--hair);padding:24px;min-width:0}
-.cell:last-child{border-right:1px solid var(--hair)}
+.cells{padding:1px 0 0 1px}
+.cell{border:1px solid var(--hair);margin:-1px 0 0 -1px;padding:24px;min-width:0}
 .cell h3{font-size:15.5px;line-height:1.3}
 .cell h4{font-size:15.5px}
 .cell p{font-size:14.5px;line-height:1.55;color:var(--ink2);margin-top:10px}
@@ -228,17 +239,21 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 /* flow: the solution preview as a strip of cells with the arrow as a stem */
 .flow{display:grid;grid-template-columns:repeat(4,1fr);margin-top:48px}
 .flow .cell{display:flex;flex-direction:column;gap:14px}
-.flow .cell p{margin:0;font-size:14px;color:var(--ink)}
+.flow .cell p{margin:0;font-size:14px;line-height:1.5;color:var(--ink);min-height:3em}
 /* four equal plates: the recordings fill theirs, the icons sit centred in the same frame,
    so a step that is a drawing and a step that is a recording are the same object */
 .flow .cell .m{border-radius:12px;overflow:hidden;outline:1px solid var(--outline);outline-offset:-1px;background:var(--plate);
   aspect-ratio:1920/1042;display:grid;place-items:center}
 .flow .cell .m video,.flow .cell .m img{display:block;width:100%;height:100%;object-fit:cover}
-.flow .cell .m.icon .ic{width:auto;height:44%;color:var(--ink2)}
+.flow .cell .m.icon .ic{width:36%;height:44%;color:var(--ink2)}
 @media(max-width:900px){.flow{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.flow{grid-template-columns:1fr}}
 /* takeaways */
 .take{margin-top:48px;display:grid;grid-template-columns:6fr 6fr;gap:48px;align-items:start}
+/* one photo beside the takeaways: it fills its column and no more, rounded like every plate */
+.take .take-one{margin:0}
+.take .take-one .plate.bare{border-radius:20px;overflow:hidden}
+.take .take-one img{display:block;width:100%;height:auto;border-radius:20px}
 .take ol{list-style:none;margin:16px 0 0;padding:0;counter-reset:t}
 .take li{counter-increment:t;display:grid;grid-template-columns:40px 1fr;gap:16px;padding:16px 0;border-top:1px solid var(--hair);font-size:15.5px;line-height:1.6;color:var(--ink2)}
 .take li:before{content:counter(t,decimal-leading-zero);font:300 20px/1.4 var(--hel);color:var(--ink3)}
@@ -247,6 +262,9 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 /* thanks + more */
 .thanks{margin-top:96px;display:flex;gap:24px;align-items:center;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:24px 0}
 .thanks img.sig{width:118px;height:auto;flex:0 0 auto}
+.thanks .sm-paper{display:none}
+[data-theme="dark"] .thanks .sm-ink{display:none}
+[data-theme="dark"] .thanks .sm-paper{display:block}
 .thanks h3{font-size:17px}
 .thanks p{font-size:15px;color:var(--ink2);margin-top:6px;line-height:1.55}
 .thanks a{color:var(--touch)}
@@ -304,20 +322,86 @@ html.sheet body{background:transparent}
 .ab .row p{color:var(--ink2)}
 @media(max-width:700px){.ab .row{grid-template-columns:90px 1fr}.ab .row p{grid-column:2}}
 .ab .off .cell .plate{margin-top:12px}
+/* ---- the flip phone, from flip-lab: closed until the reader comes near ---- */
+:root{--shell-a:#5a1d2c;--shell-b:#340414;--shell-c:#22030d;--key:#3f0c1b;--lx:50%;--ly:30%;--hx:-1px;--hy:-1px}
+/* ---------- the stage ---------- */
+.ab .flip-stage{aspect-ratio:1/1.18;display:grid;place-items:center;perspective:1500px;perspective-origin:50% 40%;user-select:none;touch-action:none}
+.ab .phone{position:relative;width:236px;height:236px;margin-top:180px;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+/* the shell: matte plastic, lit from the cursor. Four custom properties carry the light. */
+.ab .shell{background:linear-gradient(180deg,var(--shell-a) 0%,var(--shell-b) 40%,var(--shell-c) 100%);border-radius:30px;
+  box-shadow:inset var(--hx) var(--hy) 2px -.5px rgba(255,252,246,.16),inset calc(var(--hx)*-1) calc(var(--hy)*-1) 3px -1px rgba(0,0,0,.6),0 30px 60px -20px rgba(0,0,0,.45)}
+.ab .shell::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(130% 100% at var(--lx) var(--ly),rgba(255,252,246,.09),rgba(255,252,246,.02) 45%,transparent 70%)}
+/* BASE: keypad half. Stands upright; the hinge is its top edge. */
+.ab .base{position:absolute;left:0;top:0;width:236px;height:236px;transform-style:preserve-3d}
+.ab .base .shell{position:absolute;inset:0;border-radius:18px 18px 30px 30px;transform:translateZ(14px)}
+.ab .base .slab{position:absolute;inset:0;border-radius:18px 18px 30px 30px;background:var(--shell-c);transform:translateZ(0)}
+.ab .base .keys,.base .hinge{transform:translateZ(14px)}
+.ab .keys{position:absolute;left:22px;right:22px;top:26px;bottom:22px;display:grid;grid-template-rows:auto 1fr;gap:12px}
+.ab .nav{display:grid;grid-template-columns:44px 1fr 44px;gap:8px;align-items:center;justify-items:center}
+.ab .nav .ring{width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#3b3936,#1b1a19 70%);box-shadow:inset 0 1px 1px rgba(255,255,255,.12),inset 0 -2px 3px rgba(0,0,0,.6),0 2px 3px rgba(0,0,0,.5);display:grid;place-items:center;position:relative}
+.ab .nav .ring i{position:absolute;width:5px;height:5px;border-radius:50%;background:rgba(255,252,246,.28)}
+.ab .nav .ring i:nth-child(1){top:8px}.nav .ring i:nth-child(2){bottom:8px}.nav .ring i:nth-child(3){left:8px}.nav .ring i:nth-child(4){right:8px}
+.ab .nav .ring b{width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#4a4744,#262421);box-shadow:0 1px 2px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.14);cursor:pointer}
+.ab .nav .ring b:active{transform:translateY(1px)}
+.ab .soft{width:44px;height:26px;border-radius:9px;background:var(--key);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 2px 2px rgba(0,0,0,.5);display:grid;place-items:center;color:rgba(255,252,246,.55);cursor:pointer}
+.ab .soft:active{transform:translateY(1px)}
+.ab .soft svg{width:16px;height:12px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+.ab .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px}
+.ab .pad span{height:100%;min-height:22px;border-radius:7px;background:var(--key);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 2px rgba(0,0,0,.5);display:grid;place-items:center;font:500 12px var(--jak);color:rgba(255,252,246,.55)}
+.ab .hinge{position:absolute;left:14px;right:14px;top:-7px;height:14px;border-radius:7px;background:linear-gradient(180deg,#2c2a27,#151413);box-shadow:0 1px 2px rgba(0,0,0,.6)}
+/* LID: screen half. Hangs from the hinge; closed it lies over the base, open it stands above it. */
+.ab .lid{position:absolute;left:0;bottom:236px;width:236px;height:236px;transform-origin:50% 100%;transform-style:preserve-3d;
+  transform:translateZ(14px) rotateX(180deg);will-change:transform}
+.ab .lid .edge{position:absolute;left:14px;right:14px;top:0;height:12px;transform-origin:50% 0;transform:rotateX(-90deg);background:linear-gradient(90deg,var(--shell-c),var(--shell-b) 30%,var(--shell-b) 70%,var(--shell-c));border-radius:0 0 4px 4px}
+.ab .lid .face{position:absolute;inset:0}
+.ab .lid.shut .in{visibility:hidden}
+.ab .lid:not(.shut) .out{visibility:hidden}
+.ab .lid .in.shell{border-radius:30px 30px 18px 18px;transform:translateZ(0)}
+.ab .lid .out.shell{border-radius:18px 18px 30px 30px;transform:rotateX(180deg) translateZ(12px)}
+.ab .screen{position:absolute;left:18px;right:18px;top:18px;bottom:22px;border-radius:16px;overflow:hidden;background:#0d0c0b;box-shadow:0 1px 0 rgba(255,252,246,.06),0 -1px 0 rgba(0,0,0,.5)}
+.ab .screen canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ab .screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.1)}
+.ab .glare{position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.1),transparent 38%)}
+.ab .ext{position:absolute;left:50%;top:34px;width:120px;height:44px;transform:translateX(-50%);border-radius:10px;background:#0d0c0b;box-shadow:inset 0 0 0 1px rgba(255,252,246,.06);
+  display:grid;place-items:center;font:600 13px var(--jak);letter-spacing:.06em;color:rgba(200,214,178,.85);text-shadow:0 0 8px rgba(200,214,178,.35)}
+.ab .cam{position:absolute;left:50%;top:104px;width:12px;height:12px;border-radius:50%;transform:translateX(-50%);background:radial-gradient(circle at 40% 35%,#3c4448,#0b0d0e 65%);box-shadow:0 0 0 3px #1b1a19,0 0 0 4px rgba(255,255,255,.06)}
+.ab .brand{position:absolute;left:0;right:0;bottom:24px;text-align:center;font:600 9px var(--jak);letter-spacing:.3em;color:rgba(255,252,246,.28)}
+
+
+/* ---- what I keep close: four identical boxes, one item each ---- */
+.ab .keeps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
+.ab .keep{cursor:pointer;outline:0;user-select:none}
+.ab .keep .box{position:relative;margin-top:12px;aspect-ratio:1/1.15;border-radius:16px;background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px;
+  padding:28px;display:grid;place-items:center;transition:background .28s ease,outline-color .28s ease}
+.ab .keep .box img{grid-area:1/1;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;opacity:0;
+  transform:translateY(6px) scale(.98);transition:opacity .32s ease,transform .5s cubic-bezier(.33,1.18,.37,1);filter:drop-shadow(0 8px 18px rgba(0,0,0,.12));pointer-events:none}
+.ab .keep .box img.on{opacity:1;transform:none}
+.ab .keep .box img.out{opacity:0;transform:translateY(-14px) scale(1.02);transition:opacity .22s ease,transform .3s ease}
+/* hover: the item floats, the box takes the signature colour */
+.ab .keep:hover .box,.ab .keep:focus-visible .box{outline-color:transparent}
+.ab .keep.green:hover .box,.ab .keep.green:focus-visible .box{background:#9ba69c}
+.ab .keep.purple:hover .box,.ab .keep.purple:focus-visible .box{background:#827a85}
+.ab .keep:hover .box img.on,.ab .keep:focus-visible .box img.on{transform:translateY(-10px);filter:drop-shadow(0 22px 30px rgba(0,0,0,.24))}
+.ab .keep .foot{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:12px;font:500 12.5px var(--jak);color:var(--ink2)}
+.ab .keep .foot .n{color:var(--ink3);white-space:nowrap}.ab .keep .foot .n b{font-weight:600;color:var(--ink)}
+.ab .keep .foot .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:900px){.ab .keeps{grid-template-columns:repeat(2,1fr)}}
+
 .ab .reach{margin-top:24px;display:flex;gap:24px;flex-wrap:wrap;font-size:15px}
 .ab .reach a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--hair);padding-bottom:2px;transition:color .18s ease,border-color .18s ease}
 .ab .reach a:hover{color:var(--touch);border-color:var(--touch)}
 .ab .reach .now{color:var(--ink2)}.ab .reach .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);margin:0 8px 1px 0}
 </style><script>(function(){if(new URLSearchParams(location.search).get('sheet')=='1')document.documentElement.classList.add('sheet');const q=new URLSearchParams(location.search).get('theme');let t=q||localStorage.getItem('theme');
 if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script></head><body>
-<nav><div class="wrap in">
+<nav class="grounded"><div class="wrap in">
   <site-mark href="/"></site-mark>
   <span class="links">
     <button id="theme" aria-label="Switch colour mode" title="Colour mode">
       <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
     </button>
-    <a class="l" href="/#work">Projects</a><a class="l" href="http://localhost:3000/sandbox">Sandbox</a><a class="l" href="/art-gallery.html">Art Gallery</a><a class="l" href="/about.html">About</a></span>
+    <a class="l" href="/#work">Projects</a><a class="l" href="https://portfolio-experiments.vercel.app/sandbox">Sandbox</a><a class="l" href="/art-gallery.html">Art Gallery</a><a class="l" href="/about.html">About</a></span>
 </div></nav>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <!-- DUOTONE, locked from the cover lab: oxblood to paper. tableValues are the R, G, B at 0 and 1 -->
@@ -347,9 +431,35 @@ if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches
     <p>Product designer and design engineer in New York. Cognitive science and HCI at Columbia.</p></div>
 
   <div class="hello">
-    <div class="die-wrap" id="die-wrap" aria-label="A die of six photographs. Drag to roll it."><div class="die" id="die"><div class="face f1"><img src="/images/about/about-me-stack/bagels.jpg" alt="" decoding="async"><i></i></div><div class="face f2"><img src="/images/about/about-me-stack/camera.jpg" alt="" decoding="async"><i></i></div><div class="face f3"><img src="/images/about/about-me-stack/dog-beach.jpg" alt="" decoding="async"><i></i></div><div class="face f4"><img src="/images/about/about-me-stack/mun.jpg" alt="" decoding="async"><i></i></div><div class="face f5"><img src="/images/about/about-me-stack/snowboarding.jpg" alt="" decoding="async"><i></i></div><div class="face f6"><img src="/images/about/about-me-stack/teaching.jpg" alt="" decoding="async"><i></i></div></div></div>
+    <div class="flip-stage" id="stage" aria-label="A flip phone. Come near and it opens on six photographs; the keys change the photo."><div class="phone" id="phone">
+            <div class="base">
+              <div class="slab"></div>
+              <div class="shell"></div>
+              <div class="hinge"></div>
+              <div class="keys">
+                <div class="nav">
+                  <div class="soft" id="prev" title="Previous"><svg viewBox="0 0 26 18"><path d="M11.5 2.6 3.4 9l8.1 6.4V2.6ZM22.6 2.6 14.5 9l8.1 6.4V2.6Z"/></svg></div>
+                  <div class="ring"><i></i><i></i><i></i><i></i><b id="play" title="Pause"></b></div>
+                  <div class="soft" id="next" title="Next"><svg viewBox="0 0 26 18"><path d="M3.4 2.6 11.5 9l-8.1 6.4V2.6ZM14.5 2.6 22.6 9l-8.1 6.4V2.6Z"/></svg></div>
+                </div>
+                <div class="pad"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>*</span><span>0</span><span>#</span></div>
+              </div>
+            </div>
+            <div class="lid" id="lid">
+              <div class="edge"></div>
+              <div class="face in shell">
+                <div class="screen" id="screen"><img id="fallback" src="/images/about/about-me-stack/camera.jpg" alt=""><div class="glare"></div></div>
+                <div class="brand">JAZLYNN</div>
+              </div>
+              <div class="face out shell">
+                <div class="ext" id="ext">--:--</div>
+                <div class="cam"></div>
+              </div>
+            </div>
+          </div>
+    </div>
     <div class="bio"><div class="label">Hello</div>
-      <p style="margin-top:12px">I used to be a proper artist. At fifteen my work was being exhibited, auctioned and sold, and most of it came from the beach. I spent my childhood going back and forth to Bali, and nature was what I drew from. Starting that young shaped how I see things: <b>the best ideas, the ones that feel new, arrive where unrelated fields meet.</b></p>
+      <p style="margin-top:12px">I used to be a proper artist. At fifteen my work was being exhibited, auctioned and sold, and most of it came from the beach. I spent my childhood going back and forth to Bali, and nature was what I drew from. Starting that young shaped how I see things: <b style="color:#9ba69c">the best ideas, the ones that feel new, arrive where unrelated fields meet.</b></p>
       <p>That is why I ended up in design engineering and product management. Both sit where people meet technology, just through different mediums, and I have never liked being confined to one. What started as paper and pencil became paintings, then products.</p>
       <p>Life is too short to be constrained to one medium. Learning new forms of knowledge with empathy, care and intent is the quality I carry into every piece of work.</p>
     </div>
@@ -359,17 +469,138 @@ if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches
     <div class="cells c3"><div class="cell "><span class="n">01</span><h3>Design engineering</h3></div><div class="cell "><span class="n">02</span><h3>Product design</h3></div><div class="cell "><span class="n">03</span><h3>Product management</h3></div><div class="cell "><span class="n">04</span><h3>HCI research</h3></div><div class="cell "><span class="n">05</span><h3>Brand and identity</h3></div><div class="cell "><span class="n">06</span><h3>Illustration and motion</h3></div></div></div>
 
   <div class="sec"><div class="label">Experience</div><h2>Where I&rsquo;ve worked</h2>
-    <div class="rows"><div class="row"><span class="y">2026</span><span class="o">Clover<small>HUD and companion app</small></span><p>Designing the HUD interface and shipping the iOS companion app.</p></div><div class="row"><span class="y">2026</span><span class="o">Manus AI<small>Community platform</small></span><p>Designing an AI community platform to drive adoption. Acquired by Meta.</p></div><div class="row"><span class="y">2026</span><span class="o">Fostr<small>Brand, site and platform</small></span><p>Building the brand, landing site and internal platform from 0 to 1.</p></div><div class="row"><span class="y">2025</span><span class="o">Halodoc<small>AI Prescription onboarding</small></span><p>Designing the onboarding journey for AI Prescription on mobile.</p></div><div class="row"><span class="y">2025</span><span class="o">Conduit Commerce<small>B2B SaaS website</small></span><p>Designing and shipping a B2B SaaS website for an AI feature launch.</p></div><div class="row"><span class="y">2025</span><span class="o">SomiaCX<small>UVP system</small></span><p>Architecting a unified UVP system for three financial subsidiaries.</p></div></div></div>
+    <div class="rows" data-cur="reach out for resume"><div class="row"><span class="y">2026</span><span class="o">Clover<small>HUD and companion app</small></span><p>Designing the HUD interface and shipping the iOS companion app.</p></div><div class="row"><span class="y">2026</span><span class="o">Manus AI<small>Community platform</small></span><p>Designing an AI community platform to drive adoption. Acquired by Meta.</p></div><div class="row"><span class="y">2026</span><span class="o">Fostr<small>Brand, site and platform</small></span><p>Building the brand, landing site and internal platform from 0 to 1.</p></div><div class="row"><span class="y">2025</span><span class="o">Halodoc<small>AI Prescription onboarding</small></span><p>Designing the onboarding journey for AI Prescription on mobile.</p></div><div class="row"><span class="y">2025</span><span class="o">Conduit Commerce<small>B2B SaaS website</small></span><p>Designing and shipping a B2B SaaS website for an AI feature launch.</p></div><div class="row"><span class="y">2025</span><span class="o">SomiaCX<small>UVP system</small></span><p>Architecting a unified UVP system for three financial subsidiaries.</p></div></div></div>
 
   <div class="sec"><div class="label">Education</div><h2>Where I&rsquo;ve studied</h2>
-    <div class="rows"><div class="row"><span class="y">Now</span><span class="o">Columbia University<small>New York</small></span><p>Cognitive Science, with a specialization in Human-Computer Interaction.</p></div></div></div>
+    <div class="rows"><div class="row"><span class="y">Now</span><span class="o">Columbia University<small>New York</small></span><p>Cognitive Science, with a specialization in Human-Computer Interaction.</p></div><div class="row"><span class="y">2023 to 2025</span><span class="o">Shoreline College<small>Washington</small></span><p>Direct Transfer Associate of Arts.</p></div></div></div>
 
   <div class="sec off"><div class="label">Off the clock</div><h2>What I keep close</h2>
-    <div class="cells c4"><div class="cell "><div class="label">Toolkit</div><div class="plate"><img src="/images/about/toolkit/toolkit.png" alt="Toolkit" loading="lazy"></div></div><div class="cell "><div class="label">Music</div><div class="plate"><img src="/images/about/music/albums.png" alt="Music" loading="lazy"></div></div><div class="cell "><div class="label">Films</div><div class="plate"><img src="/images/about/films/films.png" alt="Films" loading="lazy"></div></div><div class="cell "><div class="label">Reads</div><div class="plate"><img src="/images/about/books/books.png" alt="Reads" loading="lazy"></div></div></div></div>
+    <div class="keeps"><div class="keep purple" tabindex="0" role="button" aria-label="Toolkit: click for the next"><div class="label">Toolkit</div><div class="box"><img src="/images/trim/off/toolkit-4.png" alt="Claude Code" data-t="Claude Code" loading="lazy" class=on><img src="/images/trim/off/toolkit-3.png" alt="Cursor" data-t="Cursor" loading="lazy"><img src="/images/trim/off/toolkit-1.png" alt="Figma" data-t="Figma" loading="lazy"><img src="/images/trim/off/toolkit-2.png" alt="Framer" data-t="Framer" loading="lazy"><img src="/images/trim/off/toolkit-5.png" alt="Premiere Pro" data-t="Premiere Pro" loading="lazy"><img src="/images/trim/off/toolkit-6.png" alt="Illustrator" data-t="Illustrator" loading="lazy"></div><div class="foot"><span class="t">Claude Code</span><span class="n"><b>1</b> / 6</span></div></div><div class="keep green" tabindex="0" role="button" aria-label="Music: click for the next"><div class="label">Music</div><div class="box"><img src="/images/trim/off/music-1.png" alt="Cherry Bomb" data-t="Cherry Bomb" loading="lazy" class=on><img src="/images/trim/off/music-2.png" alt="Baduizm" data-t="Baduizm" loading="lazy"><img src="/images/trim/off/music-3.png" alt="Love Deluxe" data-t="Love Deluxe" loading="lazy"><img src="/images/trim/off/music-4.png" alt="Because the Internet" data-t="Because the Internet" loading="lazy"></div><div class="foot"><span class="t">Cherry Bomb</span><span class="n"><b>1</b> / 4</span></div></div><div class="keep purple" tabindex="0" role="button" aria-label="Films: click for the next"><div class="label">Films</div><div class="box"><img src="/images/trim/off/films-1.png" alt="Fantastic Mr. Fox" data-t="Fantastic Mr. Fox" loading="lazy" class=on><img src="/images/trim/off/films-2.png" alt="Ping Pong the Animation" data-t="Ping Pong the Animation" loading="lazy"><img src="/images/trim/off/films-3.png" alt="Casablanca" data-t="Casablanca" loading="lazy"></div><div class="foot"><span class="t">Fantastic Mr. Fox</span><span class="n"><b>1</b> / 3</span></div></div><div class="keep green" tabindex="0" role="button" aria-label="Reads: click for the next"><div class="label">Reads</div><div class="box"><img src="/images/trim/off/reads-1.png" alt="Creative Machines" data-t="Creative Machines" loading="lazy" class=on><img src="/images/trim/off/reads-2.png" alt="Martyr!" data-t="Martyr!" loading="lazy"><img src="/images/trim/off/reads-3.png" alt="Kafka on the Shore" data-t="Kafka on the Shore" loading="lazy"></div><div class="foot"><span class="t">Creative Machines</span><span class="n"><b>1</b> / 3</span></div></div></div></div>
 
   <div class="sec"><div class="label">Contact</div><h2>Let&rsquo;s work together.</h2>
     <div class="reach"><span class="now"><i class="dot"></i>Available for 2026 roles</span><a href="mailto:jazkurnz06@gmail.com">jazkurnz06@gmail.com</a><a href="https://www.linkedin.com/in/jazlynn-kurniandra-a456292a8/" target="_blank" rel="noopener">LinkedIn &#8599;</a><a href="https://x.com/jazlynnkurni" target="_blank" rel="noopener">X &#8599;</a></div></div>
-</div></main>
+</div></main><script>(function(){
+  document.querySelectorAll('.keep').forEach(k=>{
+    const ims=[...k.querySelectorAll('img')], t=k.querySelector('.foot .t'), n=k.querySelector('.foot .n b'); let i=0, busy=false;
+    function next(){ if(busy) return; busy=true; const a=ims[i]; i=(i+1)%ims.length; const b=ims[i];
+      a.classList.remove('on'); a.classList.add('out'); b.classList.add('on'); t.textContent=b.dataset.t; n.textContent=i+1;
+      setTimeout(()=>{ a.classList.remove('out'); busy=false; },320); }
+    k.addEventListener('click',next);
+    k.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '||e.key==='ArrowRight'){ e.preventDefault(); next(); } });
+  });
+})();</script>
+<script>(function(){
+/* THE SCREEN. A four-tone ordered dither on a WebGL quad, the way the reference does it:
+   each cell of the screen takes the photo's luminance at its centre, an 8x8 Bayer threshold
+   decides which of four inks it prints in, and idle "drizzle" keeps the dark areas alive.
+   The pointer opens a soft window onto the colour photo; a drag brushes a stroke of it away
+   and the stroke heals. Photos dissolve cell by cell in random order. */
+const PHOTOS=['camera','dog-beach','teaching','snowboarding','mun','bagels'].map(n=>`/images/about/about-me-stack/${n}.jpg`);
+const P={dot:1.2,tones:3,rad:.56,rain:.6,ang:14,hold:3};
+const screen=document.getElementById('screen'), fallback=document.getElementById('fallback');
+const cv=document.createElement('canvas'); cv.style.visibility='hidden'; screen.insertBefore(cv,screen.querySelector('.glare'));
+const gl=cv.getContext('webgl',{alpha:false,antialias:false,depth:false});
+let live=false;
+if(gl){
+const VS='attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
+const FS=`precision highp float;
+uniform vec2 uRes; uniform float uDot,uTones,uFade,uSeed,uTime,uRain,uReveal,uRad; uniform vec2 uMouse;
+uniform sampler2D uA,uB,uMask; uniform float uAspA,uAspB; uniform vec3 uInk,uPaper;
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float b2(vec2 a){a=floor(a);return fract(a.x*.5+a.y*a.y*.75);}
+float b8(vec2 a){return b2(.25*a)*.0625+b2(.5*a)*.25+b2(a);}
+vec2 cover(vec2 uv,float a){float f=uRes.x/uRes.y;vec2 s=(a>f)?vec2(f/a,1.):vec2(1.,a/f);return (uv-.5)*s+.5;}
+float lum(vec3 c){return dot(c,vec3(.299,.587,.114));}
+void main(){
+  vec2 frag=gl_FragCoord.xy; vec2 uv=frag/uRes; vec2 cell=floor(frag/uDot); vec2 cuv=(cell+.5)*uDot/uRes;
+  float pickB=step(hash(cell*.7311+uSeed),uFade);
+  float La=lum(texture2D(uA,cover(cuv,uAspA)).rgb), Lb=lum(texture2D(uB,cover(cuv,uAspB)).rgb);
+  float L=mix(La,Lb,pickB); L=clamp((L-.5)*1.06+.5,0.,1.); L=pow(L,.88);
+  float q=clamp(floor(L*uTones+b8(cell))/uTones,0.,1.);
+  float spd=3.+6.*hash(vec2(cell.x,91.7)); float drop=floor(uTime*spd);
+  float onRain=step(hash(vec2(cell.x,mod(cell.y+drop,1024.))),L*1.25);
+  float sparse=(1.-smoothstep(.05,.32,L))*uRain; float pickRain=step(hash(cell.yx*1.93+4.271),sparse);
+  float on=mix(q,onRain,pickRain);
+  float R=uReveal*uRad*min(uRes.x,uRes.y);
+  float circ=(uReveal<.001)?0.:(1.-smoothstep(R*.25,R,distance(frag,uMouse)));
+  float rev=clamp(circ+texture2D(uMask,uv).a,0.,1.);
+  float tear=clamp(rev*1.45-hash(cell*2.17+9.13)*.45,0.,1.);
+  vec3 photo=mix(texture2D(uA,cover(uv,uAspA)).rgb,texture2D(uB,cover(uv,uAspB)).rgb,uFade);
+  gl_FragColor=vec4(mix(mix(uInk,uPaper,on),photo,tear),1.);
+}`;
+const mk=(t,s)=>{const x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(x));return x;};
+const pg=gl.createProgram();gl.attachShader(pg,mk(gl.VERTEX_SHADER,VS));gl.attachShader(pg,mk(gl.FRAGMENT_SHADER,FS));gl.linkProgram(pg);gl.useProgram(pg);
+const q=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,q);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+const aL=gl.getAttribLocation(pg,'a');gl.enableVertexAttribArray(aL);gl.vertexAttribPointer(aL,2,gl.FLOAT,false,0,0);
+const U={};['uRes','uDot','uTones','uFade','uSeed','uTime','uRain','uReveal','uRad','uMouse','uA','uB','uMask','uAspA','uAspB','uInk','uPaper'].forEach(n=>U[n]=gl.getUniformLocation(pg,n));
+gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
+const tex=src=>{const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);['TEXTURE_MIN_FILTER','TEXTURE_MAG_FILTER'].forEach(k=>gl.texParameteri(gl.TEXTURE_2D,gl[k],gl.LINEAR));['TEXTURE_WRAP_S','TEXTURE_WRAP_T'].forEach(k=>gl.texParameteri(gl.TEXTURE_2D,gl[k],gl.CLAMP_TO_EDGE));gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,src);return t;};
+const imgs=PHOTOS.map(s=>{const im=new Image();im.src=s;return im;}); const T=[]; const asp=i=>imgs[i].naturalWidth?imgs[i].naturalWidth/imgs[i].naturalHeight:1;
+const MW=96,MH=128,mc=document.createElement('canvas');mc.width=MW;mc.height=MH;const mx=mc.getContext('2d');
+const sp=document.createElement('canvas');sp.width=sp.height=64;{const c=sp.getContext('2d');const g=c.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(.55,'rgba(255,255,255,.45)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,64,64);}
+const maskT=tex(mc); let maskE=0,maskDirty=false,heal=0;
+function stamp(x,y){const r=MW*.17;mx.drawImage(sp,x-r,y-r,r*2,r*2);maskE=1;maskDirty=true;heal=1.4;}
+function clearMask(){mx.clearRect(0,0,MW,MH);maskE=0;maskDirty=true;}
+let idx=0,nextIdx=idx,fading=false,fadeT=0,holdT=0,seed=Math.random()*61.7,hovering=false,dragging=false,reveal=0,mX=-1e4,mY=-1e4,paused=false,simT=0,W=0,H=0,dot=3,dpr=1;
+function ink(){const cs=getComputedStyle(document.documentElement);const p=h=>{h=h.trim();const m=h.match(/^#([0-9a-f]{6})$/i);if(m)return [0,2,4].map(i=>parseInt(m[1].slice(i,i+2),16)/255);const r=h.match(/rgba?\(([^)]+)\)/);return r?r[1].split(',').slice(0,3).map(v=>+v/255):[0,0,0];};
+  const a=p(cs.getPropertyValue('--ink')),b=p(cs.getPropertyValue('--paper'));const l=c=>.299*c[0]+.587*c[1]+.114*c[2];return l(a)<=l(b)?[a,b]:[b,a];}
+function resize(){const w=screen.clientWidth,h=screen.clientHeight;if(!w||!h)return;dpr=Math.min(2,devicePixelRatio||1);W=Math.round(w*dpr);H=Math.round(h*dpr);if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}dot=Math.max(2,Math.round(P.dot*dpr));}
+new ResizeObserver(resize).observe(screen);resize();
+function beginFade(to){if(fading||to===idx||!T[to])return;nextIdx=to;fading=true;fadeT=0;seed=Math.random()*61.7;}
+function endFade(){idx=nextIdx;fading=false;fadeT=0;holdT=0;clearMask();}
+function step(d){for(let s=1;s<PHOTOS.length;s++){const t=(idx+d*s+PHOTOS.length*s)%PHOTOS.length;if(T[t])return t;}return -1;}
+let prev=performance.now();
+function frame(now){const dt=Math.min(.05,(now-prev)/1000);prev=now;simT=(simT+dt)%600;
+  for(let i=0;i<PHOTOS.length;i++) if(!T[i]&&imgs[i].complete&&imgs[i].naturalWidth) T[i]=tex(imgs[i]);
+  reveal+=(((hovering||dragging)?1:0)-reveal)*(1-Math.exp(-dt*6));
+  if(fading){fadeT+=dt*1000;if(fadeT>=850)endFade();} else if(!paused&&!hovering&&!dragging){holdT+=dt*1000;if(holdT>=P.hold*1000){const to=step(1);if(to>=0)beginFade(to);else holdT=0;}}
+  if(maskE>.003&&!dragging){heal-=dt;if(heal<=0){mx.globalCompositeOperation='destination-out';mx.globalAlpha=Math.min(1,dt*.28);mx.fillStyle='#fff';mx.fillRect(0,0,MW,MH);mx.globalCompositeOperation='source-over';mx.globalAlpha=1;maskE*=1-Math.min(1,dt*.28);if(maskE<=.003)clearMask();else maskDirty=true;}}
+  if(W&&T[idx]){const tB=(fading&&T[nextIdx])?T[nextIdx]:T[idx];if(maskDirty){gl.bindTexture(gl.TEXTURE_2D,maskT);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,mc);maskDirty=false;}
+    gl.viewport(0,0,W,H);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,T[idx]);gl.uniform1i(U.uA,0);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,tB);gl.uniform1i(U.uB,1);gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,maskT);gl.uniform1i(U.uMask,2);
+    const [I,Pp]=ink();gl.uniform3fv(U.uInk,I);gl.uniform3fv(U.uPaper,Pp);
+    gl.uniform2f(U.uRes,W,H);gl.uniform1f(U.uDot,dot);gl.uniform1f(U.uTones,P.tones);gl.uniform1f(U.uFade,fading?Math.min(1,fadeT/850):0);gl.uniform1f(U.uSeed,seed);gl.uniform1f(U.uTime,simT);gl.uniform1f(U.uRain,P.rain);gl.uniform1f(U.uReveal,reveal);gl.uniform1f(U.uRad,P.rad);gl.uniform2f(U.uMouse,mX,mY);gl.uniform1f(U.uAspA,asp(idx));gl.uniform1f(U.uAspB,asp(fading?nextIdx:idx));
+    gl.drawArrays(gl.TRIANGLES,0,3); if(!live){live=true;cv.style.visibility='';fallback.style.visibility='hidden';}}
+  requestAnimationFrame(frame);}
+requestAnimationFrame(frame);
+const pt=e=>{const r=screen.getBoundingClientRect();return [(e.clientX-r.left)*dpr,(r.height-(e.clientY-r.top))*dpr,(e.clientX-r.left)/r.width*MW,(e.clientY-r.top)/r.height*MH];};
+screen.addEventListener('pointerenter',()=>hovering=true);screen.addEventListener('pointerleave',()=>{hovering=false;dragging=false;});
+screen.addEventListener('pointermove',e=>{const [x,y,ux,uy]=pt(e);mX=x;mY=y;if(dragging)stamp(ux,uy);});
+screen.addEventListener('pointerdown',e=>{dragging=true;const [x,y,ux,uy]=pt(e);mX=x;mY=y;stamp(ux,uy);});
+addEventListener('pointerup',()=>dragging=false);
+document.getElementById('prev').addEventListener('click',e=>{e.stopPropagation();const t=step(-1);if(t>=0)beginFade(t);});
+document.getElementById('next').addEventListener('click',e=>{e.stopPropagation();const t=step(1);if(t>=0)beginFade(t);});
+document.getElementById('play').addEventListener('click',e=>{e.stopPropagation();paused=!paused;e.target.title=paused?'Play':'Pause';});
+}
+/* THE HINGE. Closed, the lid lies over the keys with its outer face up; near it, it swings up
+   and back a little past flat, on an ease with a small overshoot, the way a real one clicks open. */
+const phone=document.getElementById('phone'), stage=document.getElementById('stage'), lid=document.getElementById('lid');
+/* THE SWING. The lid's angle is animated here, frame by frame, from where it is to where it is
+   going, on an ease with a small overshoot at the open end and a firm stop at the closed end.
+   The face showing is decided from the same angle: the cover until the lid passes edge-on
+   (90 degrees), the inside after. One number drives both, so they cannot disagree. */
+let open=false, ang=180, from=180, to=180, t0=0, dur=900, raf=0;
+const ease=(x,over)=>{ if(!over) return 1-Math.pow(1-x,3); const c=1.4; return 1+c*Math.pow(x-1,3)+c*Math.pow(x-1,2); };
+function place(a){ lid.style.transform=`translateZ(14px) rotateX(${a}deg)`; lid.classList.toggle('shut',a>90); }
+function tick(now){ const x=Math.min(1,(now-t0)/dur); const e=ease(x, to<90); ang=from+(to-from)*e; place(ang);
+  if(x<1) raf=requestAnimationFrame(tick); else { raf=0; ang=to; place(ang); } }
+function setOpen(on){
+  const stayEl=document.getElementById('stay'); const want=on||!!(stayEl&&stayEl.checked); if(want===open) return; open=want;
+  from=ang; to=open?-P.ang:180; dur=open?900:700; t0=performance.now(); cancelAnimationFrame(raf); raf=requestAnimationFrame(tick);
+}
+place(180);
+let leaveT=0;
+stage.addEventListener('pointerenter',()=>{clearTimeout(leaveT);setOpen(true);});stage.addEventListener('pointerleave',()=>{clearTimeout(leaveT);leaveT=setTimeout(()=>{setOpen(false);phone.style.transform='';},120);});
+/* the light and the tilt follow the pointer across the stage */
+stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+  document.documentElement.style.setProperty('--lx',`${x*100}%`);document.documentElement.style.setProperty('--ly',`${y*100}%`);
+  document.documentElement.style.setProperty('--hx',`${(x-.5)*-3}px`);document.documentElement.style.setProperty('--hy',`${(y-.5)*-3}px`);
+  phone.style.transform=`rotateY(${(x-.5)*14}deg) rotateX(${(.5-y)*8}deg)`;});
+/* the closed lid tells the time in New York */
+const ext=document.getElementById('ext');
+(function tick(){ext.textContent=new Date().toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'});setTimeout(tick,15000);})();
+
+})();</script>
+
 <footer><div class="wrap"><div class="rule"></div><div class="in">
   <span style="font-size:12.5px;color:var(--ink3)">My local time <b id="clock" style="font-weight:400;color:var(--ink2);font-variant-numeric:tabular-nums"></b></span>
   <span style="display:flex;gap:20px"><a href="mailto:jazkurnz06@gmail.com">Email</a><a href="https://www.linkedin.com/in/jazlynn-kurniandra-a456292a8/" target="_blank" rel="noopener">LinkedIn</a><a href="https://x.com/jazlynnkurni" target="_blank" rel="noopener">X</a></span>
@@ -467,7 +698,7 @@ if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches
 for(let i=0;i<d.data.length;i+=4){const v=118+(Math.random()*72-36);d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}
 g.putImageData(d,0,0);document.documentElement.style.setProperty('--noise',`url(${n.toDataURL()})`);})();
 /* the sandbox is another origin, so the colour mode travels in the URL */
-(function(){document.querySelectorAll('a[href*="localhost:3000/sandbox"]').forEach(a=>{const base=a.getAttribute('href');
+(function(){document.querySelectorAll('a[href*="/sandbox"]').forEach(a=>{const base=a.getAttribute('href');
 a.addEventListener('click',()=>{a.href=base+'?theme='+(document.documentElement.getAttribute('data-theme')||'light');});});})();
 (function(){const el=document.getElementById('clock');if(!el)return;const f=()=>el.textContent=new Date().toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit',second:'2-digit',timeZoneName:'short'});f();setInterval(f,1000);})();
 /* videos only play while on screen */

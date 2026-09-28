@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flip lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#FAF9F7;--ink:#14171B;--ink2:rgba(20,23,27,.66);--ink3:rgba(20,23,27,.42);--hair:rgba(20,23,27,.16);--jak:"Plus Jakarta Sans",sans-serif;--hel:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  --shell-a:#3a3835;--shell-b:#1d1c1a;--shell-c:#151413;--key:#2a2826;--lx:50%;--ly:30%;--hx:-1px;--hy:-1px}
+html[data-theme="dark"]{--paper:#1C1A17;--ink:#FAF9F7;--ink2:rgba(250,249,247,.66);--ink3:rgba(250,249,247,.42);--hair:rgba(250,249,247,.16)}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:300 14px/1.5 var(--hel);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:56px 30px 80px;display:grid;grid-template-columns:1fr 300px;gap:48px;align-items:start}
+.label{font:600 10.5px/1.5 var(--jak);letter-spacing:.15em;text-transform:uppercase;color:var(--ink3)}
+h1{font:500 clamp(28px,4vw,44px)/1.12 var(--jak);letter-spacing:-.012em;margin:12px 0 0;max-width:22ch}
+p.lede{font-size:17px;line-height:1.62;color:var(--ink2);margin:16px 0 0;max-width:52ch}
+/* ---------- the stage ---------- */
+.stage{margin-top:48px;height:640px;display:grid;place-items:center;perspective:1500px;perspective-origin:50% 40%;user-select:none;touch-action:none}
+.phone{position:relative;width:236px;height:236px;margin-top:120px;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.7,.2,1);cursor:pointer}
+/* the shell: matte plastic, lit from the cursor. Four custom properties carry the light. */
+.shell{background:linear-gradient(180deg,var(--shell-a) 0%,var(--shell-b) 40%,var(--shell-c) 100%);border-radius:30px;
+  box-shadow:inset var(--hx) var(--hy) 2px -.5px rgba(255,252,246,.16),inset calc(var(--hx)*-1) calc(var(--hy)*-1) 3px -1px rgba(0,0,0,.6),0 30px 60px -20px rgba(0,0,0,.45)}
+.shell::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(130% 100% at var(--lx) var(--ly),rgba(255,252,246,.09),rgba(255,252,246,.02) 45%,transparent 70%)}
+/* BASE: keypad half. Stands upright; the hinge is its top edge. */
+.base{position:absolute;left:0;top:0;width:236px;height:236px;transform-style:preserve-3d}
+.base .shell{position:absolute;inset:0;border-radius:18px 18px 30px 30px;transform:translateZ(14px)}
+.base .slab{position:absolute;inset:0;border-radius:18px 18px 30px 30px;background:var(--shell-c);transform:translateZ(0)}
+.base .keys,.base .hinge{transform:translateZ(14px)}
+.keys{position:absolute;left:22px;right:22px;top:26px;bottom:22px;display:grid;grid-template-rows:auto 1fr;gap:12px}
+.nav{display:grid;grid-template-columns:44px 1fr 44px;gap:8px;align-items:center;justify-items:center}
+.nav .ring{width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#3b3936,#1b1a19 70%);box-shadow:inset 0 1px 1px rgba(255,255,255,.12),inset 0 -2px 3px rgba(0,0,0,.6),0 2px 3px rgba(0,0,0,.5);display:grid;place-items:center;position:relative}
+.nav .ring i{position:absolute;width:5px;height:5px;border-radius:50%;background:rgba(255,252,246,.28)}
+.nav .ring i:nth-child(1){top:8px}.nav .ring i:nth-child(2){bottom:8px}.nav .ring i:nth-child(3){left:8px}.nav .ring i:nth-child(4){right:8px}
+.nav .ring b{width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#4a4744,#262421);box-shadow:0 1px 2px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.14);cursor:pointer}
+.nav .ring b:active{transform:translateY(1px)}
+.soft{width:44px;height:26px;border-radius:9px;background:var(--key);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 2px 2px rgba(0,0,0,.5);display:grid;place-items:center;color:rgba(255,252,246,.55);cursor:pointer}
+.soft:active{transform:translateY(1px)}
+.soft svg{width:16px;height:12px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px}
+.pad span{height:100%;min-height:22px;border-radius:7px;background:var(--key);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 2px rgba(0,0,0,.5);display:grid;place-items:center;font:500 12px var(--jak);color:rgba(255,252,246,.55)}
+.hinge{position:absolute;left:14px;right:14px;top:-7px;height:14px;border-radius:7px;background:linear-gradient(180deg,#2c2a27,#151413);box-shadow:0 1px 2px rgba(0,0,0,.6)}
+/* LID: screen half. Hangs from the hinge; closed it lies over the base, open it stands above it. */
+.lid{position:absolute;left:0;bottom:236px;width:236px;height:236px;transform-origin:50% 100%;transform-style:preserve-3d;
+  transform:translateZ(14px) rotateX(180deg);will-change:transform}
+.lid .edge{position:absolute;left:14px;right:14px;top:0;height:12px;transform-origin:50% 0;transform:rotateX(-90deg);background:linear-gradient(90deg,var(--shell-c),var(--shell-b) 30%,var(--shell-b) 70%,var(--shell-c));border-radius:0 0 4px 4px}
+.lid .face{position:absolute;inset:0}
+.lid.shut .in{visibility:hidden}
+.lid:not(.shut) .out{visibility:hidden}
+.lid .in.shell{border-radius:30px 30px 18px 18px;transform:translateZ(0)}
+.lid .out.shell{border-radius:18px 18px 30px 30px;transform:rotateX(180deg) translateZ(12px)}
+.screen{position:absolute;left:18px;right:18px;top:18px;bottom:22px;border-radius:16px;overflow:hidden;background:#0d0c0b;box-shadow:0 1px 0 rgba(255,252,246,.06),0 -1px 0 rgba(0,0,0,.5)}
+.screen canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.1)}
+.glare{position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.1),transparent 38%)}
+.ext{position:absolute;left:50%;top:34px;width:120px;height:44px;transform:translateX(-50%);border-radius:10px;background:#0d0c0b;box-shadow:inset 0 0 0 1px rgba(255,252,246,.06);
+  display:grid;place-items:center;font:600 13px var(--jak);letter-spacing:.06em;color:rgba(200,214,178,.85);text-shadow:0 0 8px rgba(200,214,178,.35)}
+.cam{position:absolute;left:50%;top:104px;width:12px;height:12px;border-radius:50%;transform:translateX(-50%);background:radial-gradient(circle at 40% 35%,#3c4448,#0b0d0e 65%);box-shadow:0 0 0 3px #1b1a19,0 0 0 4px rgba(255,255,255,.06)}
+.brand{position:absolute;left:0;right:0;bottom:24px;text-align:center;font:600 9px var(--jak);letter-spacing:.3em;color:rgba(255,252,246,.28)}
+.hint{margin-top:-8px;text-align:center;font:500 12px var(--jak);letter-spacing:.02em;color:var(--ink3)}
+/* ---------- the panel ---------- */
+.panel{position:sticky;top:56px;border:1px solid var(--hair);padding:20px;display:grid;gap:14px}
+.row{display:grid;grid-template-columns:1fr 60px;gap:10px;align-items:center;font:500 12.5px var(--jak)}
+.row span{color:var(--ink3);text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--ink);margin:6px 0 0}
+label.chk{display:flex;gap:10px;align-items:center;font:500 12.5px var(--jak)}
+.sw{display:flex;gap:8px}.sw button{width:26px;height:26px;border-radius:50%;border:1px solid var(--hair);cursor:pointer}
+.sw button[aria-pressed=true]{box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--ink)}
+button.txt{font:500 12.5px var(--jak);color:var(--ink);background:transparent;border:1px solid var(--hair);border-radius:999px;padding:8px 14px;cursor:pointer}
+pre{font:11.5px/1.5 ui-monospace,Menlo,monospace;color:var(--ink2);background:color-mix(in srgb,var(--ink) 4%,transparent);padding:12px;border-radius:8px;margin:0;white-space:pre-wrap}
+</style></head><body>
+<div class="wrap">
+  <div>
+    <div class="label">About · the object</div>
+    <h1>A flip phone that opens when you come near.</h1>
+    <p class="lede">Closed, it shows the time in New York. Hover and the lid swings up on its hinge; the screen inside runs the six photographs through a four-tone ink dither. Move over the screen and a soft window follows you and shows the colour underneath; drag to brush the dither away. The keys change the photo.</p>
+    <div class="stage" id="stage">
+      <div class="phone" id="phone">
+        <div class="base">
+          <div class="slab"></div>
+          <div class="shell"></div>
+          <div class="hinge"></div>
+          <div class="keys">
+            <div class="nav">
+              <div class="soft" id="prev" title="Previous"><svg viewBox="0 0 26 18"><path d="M11.5 2.6 3.4 9l8.1 6.4V2.6ZM22.6 2.6 14.5 9l8.1 6.4V2.6Z"/></svg></div>
+              <div class="ring"><i></i><i></i><i></i><i></i><b id="play" title="Pause"></b></div>
+              <div class="soft" id="next" title="Next"><svg viewBox="0 0 26 18"><path d="M3.4 2.6 11.5 9l-8.1 6.4V2.6ZM14.5 2.6 22.6 9l-8.1 6.4V2.6Z"/></svg></div>
+            </div>
+            <div class="pad"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>*</span><span>0</span><span>#</span></div>
+          </div>
+        </div>
+        <div class="lid" id="lid">
+          <div class="edge"></div>
+          <div class="face in shell">
+            <div class="screen" id="screen"><img id="fallback" src="/images/about/about-me-stack/camera.jpg" alt=""><div class="glare"></div></div>
+            <div class="brand">JAZLYNN</div>
+          </div>
+          <div class="face out shell">
+            <div class="ext" id="ext">--:--</div>
+            <div class="cam"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hint">hover to open · keys change the photo · drag on the screen</div>
+  </div>
+  <aside class="panel">
+    <div class="label">Tune</div>
+    <div class="row"><label>Dot size <input id="dot" type="range" min=".8" max="3" step=".05" value="1.2"></label><span></span></div>
+    <div class="row"><label>Tones <input id="tones" type="range" min="1" max="6" step="1" value="3"></label><span></span></div>
+    <div class="row"><label>Reveal radius <input id="rad" type="range" min=".2" max="1" step=".02" value=".56"></label><span></span></div>
+    <div class="row"><label>Drizzle <input id="rain" type="range" min="0" max="1" step=".02" value=".6"></label><span></span></div>
+    <div class="row"><label>Open angle <input id="ang" type="range" min="0" max="40" step="1" value="14"></label><span></span></div>
+    <div class="row"><label>Dwell (s) <input id="hold" type="range" min="2" max="12" step=".5" value="3"></label><span></span></div>
+    <div class="label" style="margin-top:4px">Shell</div>
+    <div class="sw" id="sw"><button data-s="charcoal" style="background:#26241f"></button><button data-s="oxblood" style="background:#340414" aria-pressed="true"></button><button data-s="green" style="background:#9ba69c"></button><button data-s="paper" style="background:#e9e4d8"></button></div>
+    <label class="chk"><input id="stay" type="checkbox"> stay open</label>
+    <label class="chk"><input id="dark" type="checkbox"> dark mode</label>
+    <button class="txt" id="copy">copy settings</button>
+    <pre id="out"></pre>
+  </aside>
+</div>
+<script>
+/* THE SCREEN. A four-tone ordered dither on a WebGL quad, the way the reference does it:
+   each cell of the screen takes the photo's luminance at its centre, an 8x8 Bayer threshold
+   decides which of four inks it prints in, and idle "drizzle" keeps the dark areas alive.
+   The pointer opens a soft window onto the colour photo; a drag brushes a stroke of it away
+   and the stroke heals. Photos dissolve cell by cell in random order. */
+const PHOTOS=['camera','dog-beach','teaching','snowboarding','mun','bagels'].map(n=>`/images/about/about-me-stack/${n}.jpg`);
+const P={dot:1.2,tones:3,rad:.56,rain:.6,ang:14,hold:3,shell:'oxblood'};
+const SHELLS={charcoal:['#3a3835','#1d1c1a','#151413','#2a2826'],oxblood:['#5a1d2c','#340414','#22030d','#3f0c1b'],green:['#b7c0b6','#9ba69c','#7d8a7e','#8a968b'],paper:['#f3efe6','#e2dccf','#cfc7b8','#d9d2c4']};
+const screen=document.getElementById('screen'), fallback=document.getElementById('fallback');
+const cv=document.createElement('canvas'); cv.style.visibility='hidden'; screen.insertBefore(cv,screen.querySelector('.glare'));
+const gl=cv.getContext('webgl',{alpha:false,antialias:false,depth:false});
+let live=false;
+if(gl){
+const VS='attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
+const FS=`precision highp float;
+uniform vec2 uRes; uniform float uDot,uTones,uFade,uSeed,uTime,uRain,uReveal,uRad; uniform vec2 uMouse;
+uniform sampler2D uA,uB,uMask; uniform float uAspA,uAspB; uniform vec3 uInk,uPaper;
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float b2(vec2 a){a=floor(a);return fract(a.x*.5+a.y*a.y*.75);}
+float b8(vec2 a){return b2(.25*a)*.0625+b2(.5*a)*.25+b2(a);}
+vec2 cover(vec2 uv,float a){float f=uRes.x/uRes.y;vec2 s=(a>f)?vec2(f/a,1.):vec2(1.,a/f);return (uv-.5)*s+.5;}
+float lum(vec3 c){return dot(c,vec3(.299,.587,.114));}
+void main(){
+  vec2 frag=gl_FragCoord.xy; vec2 uv=frag/uRes; vec2 cell=floor(frag/uDot); vec2 cuv=(cell+.5)*uDot/uRes;
+  float pickB=step(hash(cell*.7311+uSeed),uFade);
+  float La=lum(texture2D(uA,cover(cuv,uAspA)).rgb), Lb=lum(texture2D(uB,cover(cuv,uAspB)).rgb);
+  float L=mix(La,Lb,pickB); L=clamp((L-.5)*1.06+.5,0.,1.); L=pow(L,.88);
+  float q=clamp(floor(L*uTones+b8(cell))/uTones,0.,1.);
+  float spd=3.+6.*hash(vec2(cell.x,91.7)); float drop=floor(uTime*spd);
+  float onRain=step(hash(vec2(cell.x,mod(cell.y+drop,1024.))),L*1.25);
+  float sparse=(1.-smoothstep(.05,.32,L))*uRain; float pickRain=step(hash(cell.yx*1.93+4.271),sparse);
+  float on=mix(q,onRain,pickRain);
+  float R=uReveal*uRad*min(uRes.x,uRes.y);
+  float circ=(uReveal<.001)?0.:(1.-smoothstep(R*.25,R,distance(frag,uMouse)));
+  float rev=clamp(circ+texture2D(uMask,uv).a,0.,1.);
+  float tear=clamp(rev*1.45-hash(cell*2.17+9.13)*.45,0.,1.);
+  vec3 photo=mix(texture2D(uA,cover(uv,uAspA)).rgb,texture2D(uB,cover(uv,uAspB)).rgb,uFade);
+  gl_FragColor=vec4(mix(mix(uInk,uPaper,on),photo,tear),1.);
+}`;
+const mk=(t,s)=>{const x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(x));return x;};
+const pg=gl.createProgram();gl.attachShader(pg,mk(gl.VERTEX_SHADER,VS));gl.attachShader(pg,mk(gl.FRAGMENT_SHADER,FS));gl.linkProgram(pg);gl.useProgram(pg);
+const q=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,q);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+const aL=gl.getAttribLocation(pg,'a');gl.enableVertexAttribArray(aL);gl.vertexAttribPointer(aL,2,gl.FLOAT,false,0,0);
+const U={};['uRes','uDot','uTones','uFade','uSeed','uTime','uRain','uReveal','uRad','uMouse','uA','uB','uMask','uAspA','uAspB','uInk','uPaper'].forEach(n=>U[n]=gl.getUniformLocation(pg,n));
+gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
+const tex=src=>{const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);['TEXTURE_MIN_FILTER','TEXTURE_MAG_FILTER'].forEach(k=>gl.texParameteri(gl.TEXTURE_2D,gl[k],gl.LINEAR));['TEXTURE_WRAP_S','TEXTURE_WRAP_T'].forEach(k=>gl.texParameteri(gl.TEXTURE_2D,gl[k],gl.CLAMP_TO_EDGE));gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,src);return t;};
+const imgs=PHOTOS.map(s=>{const im=new Image();im.src=s;return im;}); const T=[]; const asp=i=>imgs[i].naturalWidth?imgs[i].naturalWidth/imgs[i].naturalHeight:1;
+const MW=96,MH=128,mc=document.createElement('canvas');mc.width=MW;mc.height=MH;const mx=mc.getContext('2d');
+const sp=document.createElement('canvas');sp.width=sp.height=64;{const c=sp.getContext('2d');const g=c.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(.55,'rgba(255,255,255,.45)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,64,64);}
+const maskT=tex(mc); let maskE=0,maskDirty=false,heal=0;
+function stamp(x,y){const r=MW*.17;mx.drawImage(sp,x-r,y-r,r*2,r*2);maskE=1;maskDirty=true;heal=1.4;}
+function clearMask(){mx.clearRect(0,0,MW,MH);maskE=0;maskDirty=true;}
+let idx=0,nextIdx=idx,fading=false,fadeT=0,holdT=0,seed=Math.random()*61.7,hovering=false,dragging=false,reveal=0,mX=-1e4,mY=-1e4,paused=false,simT=0,W=0,H=0,dot=3,dpr=1;
+function ink(){const cs=getComputedStyle(document.documentElement);const p=h=>{h=h.trim();const m=h.match(/^#([0-9a-f]{6})$/i);if(m)return [0,2,4].map(i=>parseInt(m[1].slice(i,i+2),16)/255);const r=h.match(/rgba?\(([^)]+)\)/);return r?r[1].split(',').slice(0,3).map(v=>+v/255):[0,0,0];};
+  const a=p(cs.getPropertyValue('--ink')),b=p(cs.getPropertyValue('--paper'));const l=c=>.299*c[0]+.587*c[1]+.114*c[2];return l(a)<=l(b)?[a,b]:[b,a];}
+function resize(){const w=screen.clientWidth,h=screen.clientHeight;if(!w||!h)return;dpr=Math.min(2,devicePixelRatio||1);W=Math.round(w*dpr);H=Math.round(h*dpr);if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}dot=Math.max(2,Math.round(P.dot*dpr));}
+new ResizeObserver(resize).observe(screen);resize();
+function beginFade(to){if(fading||to===idx||!T[to])return;nextIdx=to;fading=true;fadeT=0;seed=Math.random()*61.7;}
+function endFade(){idx=nextIdx;fading=false;fadeT=0;holdT=0;clearMask();}
+function step(d){for(let s=1;s<PHOTOS.length;s++){const t=(idx+d*s+PHOTOS.length*s)%PHOTOS.length;if(T[t])return t;}return -1;}
+let prev=performance.now();
+function frame(now){const dt=Math.min(.05,(now-prev)/1000);prev=now;simT=(simT+dt)%600;
+  for(let i=0;i<PHOTOS.length;i++) if(!T[i]&&imgs[i].complete&&imgs[i].naturalWidth) T[i]=tex(imgs[i]);
+  reveal+=(((hovering||dragging)?1:0)-reveal)*(1-Math.exp(-dt*6));
+  if(fading){fadeT+=dt*1000;if(fadeT>=850)endFade();} else if(!paused&&!hovering&&!dragging){holdT+=dt*1000;if(holdT>=P.hold*1000){const to=step(1);if(to>=0)beginFade(to);else holdT=0;}}
+  if(maskE>.003&&!dragging){heal-=dt;if(heal<=0){mx.globalCompositeOperation='destination-out';mx.globalAlpha=Math.min(1,dt*.28);mx.fillStyle='#fff';mx.fillRect(0,0,MW,MH);mx.globalCompositeOperation='source-over';mx.globalAlpha=1;maskE*=1-Math.min(1,dt*.28);if(maskE<=.003)clearMask();else maskDirty=true;}}
+  if(W&&T[idx]){const tB=(fading&&T[nextIdx])?T[nextIdx]:T[idx];if(maskDirty){gl.bindTexture(gl.TEXTURE_2D,maskT);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,mc);maskDirty=false;}
+    gl.viewport(0,0,W,H);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,T[idx]);gl.uniform1i(U.uA,0);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,tB);gl.uniform1i(U.uB,1);gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,maskT);gl.uniform1i(U.uMask,2);
+    const [I,Pp]=ink();gl.uniform3fv(U.uInk,I);gl.uniform3fv(U.uPaper,Pp);
+    gl.uniform2f(U.uRes,W,H);gl.uniform1f(U.uDot,dot);gl.uniform1f(U.uTones,P.tones);gl.uniform1f(U.uFade,fading?Math.min(1,fadeT/850):0);gl.uniform1f(U.uSeed,seed);gl.uniform1f(U.uTime,simT);gl.uniform1f(U.uRain,P.rain);gl.uniform1f(U.uReveal,reveal);gl.uniform1f(U.uRad,P.rad);gl.uniform2f(U.uMouse,mX,mY);gl.uniform1f(U.uAspA,asp(idx));gl.uniform1f(U.uAspB,asp(fading?nextIdx:idx));
+    gl.drawArrays(gl.TRIANGLES,0,3); if(!live){live=true;cv.style.visibility='';fallback.style.visibility='hidden';}}
+  requestAnimationFrame(frame);}
+requestAnimationFrame(frame);
+const pt=e=>{const r=screen.getBoundingClientRect();return [(e.clientX-r.left)*dpr,(r.height-(e.clientY-r.top))*dpr,(e.clientX-r.left)/r.width*MW,(e.clientY-r.top)/r.height*MH];};
+screen.addEventListener('pointerenter',()=>hovering=true);screen.addEventListener('pointerleave',()=>{hovering=false;dragging=false;});
+screen.addEventListener('pointermove',e=>{const [x,y,ux,uy]=pt(e);mX=x;mY=y;if(dragging)stamp(ux,uy);});
+screen.addEventListener('pointerdown',e=>{dragging=true;const [x,y,ux,uy]=pt(e);mX=x;mY=y;stamp(ux,uy);});
+addEventListener('pointerup',()=>dragging=false);
+document.getElementById('prev').addEventListener('click',e=>{e.stopPropagation();const t=step(-1);if(t>=0)beginFade(t);});
+document.getElementById('next').addEventListener('click',e=>{e.stopPropagation();const t=step(1);if(t>=0)beginFade(t);});
+document.getElementById('play').addEventListener('click',e=>{e.stopPropagation();paused=!paused;e.target.title=paused?'Play':'Pause';});
+}
+/* THE HINGE. Closed, the lid lies over the keys with its outer face up; near it, it swings up
+   and back a little past flat, on an ease with a small overshoot, the way a real one clicks open. */
+const phone=document.getElementById('phone'), stage=document.getElementById('stage'), lid=document.getElementById('lid');
+/* THE SWING. The lid's angle is animated here, frame by frame, from where it is to where it is
+   going, on an ease with a small overshoot at the open end and a firm stop at the closed end.
+   The face showing is decided from the same angle: the cover until the lid passes edge-on
+   (90 degrees), the inside after. One number drives both, so they cannot disagree. */
+let open=false, ang=180, from=180, to=180, t0=0, dur=900, raf=0;
+const ease=(x,over)=>{ if(!over) return 1-Math.pow(1-x,3); const c=1.4; return 1+c*Math.pow(x-1,3)+c*Math.pow(x-1,2); };
+function place(a){ lid.style.transform=`translateZ(14px) rotateX(${a}deg)`; lid.classList.toggle('shut',a>90); }
+function tick(now){ const x=Math.min(1,(now-t0)/dur); const e=ease(x, to<90); ang=from+(to-from)*e; place(ang);
+  if(x<1) raf=requestAnimationFrame(tick); else { raf=0; ang=to; place(ang); } }
+function setOpen(on){
+  const stayEl=document.getElementById('stay'); const want=on||!!(stayEl&&stayEl.checked); if(want===open) return; open=want;
+  from=ang; to=open?-P.ang:180; dur=open?900:700; t0=performance.now(); cancelAnimationFrame(raf); raf=requestAnimationFrame(tick);
+}
+place(180);
+let leaveT=0;
+stage.addEventListener('pointerenter',()=>{clearTimeout(leaveT);setOpen(true);});stage.addEventListener('pointerleave',()=>{clearTimeout(leaveT);leaveT=setTimeout(()=>{setOpen(false);phone.style.transform='';},120);});
+/* the light and the tilt follow the pointer across the stage */
+stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+  document.documentElement.style.setProperty('--lx',`${x*100}%`);document.documentElement.style.setProperty('--ly',`${y*100}%`);
+  document.documentElement.style.setProperty('--hx',`${(x-.5)*-3}px`);document.documentElement.style.setProperty('--hy',`${(y-.5)*-3}px`);
+  phone.style.transform=`rotateY(${(x-.5)*14}deg) rotateX(${(.5-y)*8}deg)`;});
+/* the closed lid tells the time in New York */
+const ext=document.getElementById('ext');
+(function tick(){ext.textContent=new Date().toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'});setTimeout(tick,15000);})();
+/* panel */
+const out=document.getElementById('out'); const show=()=>out.textContent=JSON.stringify(P);
+for(const k of ['dot','tones','rad','rain','ang','hold']){const el=document.getElementById(k);const span=el.closest('.row').querySelector('span');const upd=()=>{P[k]=+el.value;span.textContent=el.value;if(k==='ang'&&open){to=-P.ang;from=ang;t0=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);}if(k==='dot'&&gl){const w=screen.clientWidth;dot=Math.max(2,Math.round(P.dot*Math.min(2,devicePixelRatio||1)));}show();};el.addEventListener('input',upd);upd();}
+function shell(n){P.shell=n;const [a,b,c,k]=SHELLS[n];const r=document.documentElement.style;r.setProperty('--shell-a',a);r.setProperty('--shell-b',b);r.setProperty('--shell-c',c);r.setProperty('--key',k);document.querySelectorAll('#sw button').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.s===n)));show();}
+document.getElementById('sw').addEventListener('click',e=>{const b=e.target.closest('button');if(b)shell(b.dataset.s);});
+document.getElementById('stay').addEventListener('change',e=>{ if(e.target.checked) setOpen(true); else if(!stage.matches(':hover')) setOpen(false); });
+document.getElementById('dark').addEventListener('change',e=>document.documentElement.setAttribute('data-theme',e.target.checked?'dark':'light'));
+document.getElementById('copy').addEventListener('click',()=>navigator.clipboard.writeText(out.textContent));
+shell('oxblood'); setOpen(false); show();
+</script>
+</body></html>
