@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lantern lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#FAF9F7;--ink:#14171B;--ink2:rgba(20,23,27,.66);--ink3:rgba(20,23,27,.42);--hair:rgba(20,23,27,.16);--jak:"Plus Jakarta Sans",sans-serif;--hel:"Helvetica Neue",Helvetica,Arial,sans-serif}
+html[data-theme="dark"]{--paper:#1C1A17;--ink:#FAF9F7;--ink2:rgba(250,249,247,.66);--ink3:rgba(250,249,247,.42);--hair:rgba(250,249,247,.16)}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:300 14px/1.5 var(--hel);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:56px 30px 80px;display:grid;grid-template-columns:1fr 300px;gap:48px;align-items:start}
+.label{font:600 10.5px/1.5 var(--jak);letter-spacing:.15em;text-transform:uppercase;color:var(--ink3)}
+h1{font:500 clamp(28px,4vw,44px)/1.12 var(--jak);letter-spacing:-.012em;margin:12px 0 0;max-width:22ch}
+p.lede{font-size:17px;line-height:1.62;color:var(--ink2);margin:16px 0 0;max-width:52ch}
+.stage{margin-top:40px;aspect-ratio:1/1.1;max-width:640px;position:relative;cursor:grab;user-select:none;touch-action:none}
+.stage:active{cursor:grabbing}
+canvas{width:100%;height:100%;display:block}
+.hint{position:absolute;left:0;right:0;bottom:-6px;text-align:center;font:500 12px var(--jak);letter-spacing:.02em;color:var(--ink3);pointer-events:none}
+.panel{position:sticky;top:56px;border:1px solid var(--hair);padding:20px;display:grid;gap:14px}
+.panel .label{margin-bottom:2px}
+.row{display:grid;grid-template-columns:1fr 60px;gap:10px;align-items:center;font:500 12.5px var(--jak)}
+.row span{color:var(--ink3);font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--ink);margin:6px 0 0}
+label.chk{display:flex;gap:10px;align-items:center;font:500 12.5px var(--jak)}
+button{font:500 12.5px var(--jak);color:var(--ink);background:transparent;border:1px solid var(--hair);border-radius:999px;padding:8px 14px;cursor:pointer}
+button:hover{border-color:var(--ink3)}
+pre{font:11.5px/1.5 ui-monospace,Menlo,monospace;color:var(--ink2);background:color-mix(in srgb,var(--ink) 4%,transparent);padding:12px;border-radius:8px;margin:0;white-space:pre-wrap}
+</style></head><body>
+<div class="wrap">
+  <div>
+    <div class="label">About · the object</div>
+    <h1>A paper lantern with six photographs on its skin.</h1>
+    <p class="lede">Washi over a bamboo frame, a bulb inside. The pictures are printed on the paper, so they glow, and the ones on the far side show through faintly in reverse. Drag to spin it; let go and it carries, then settles into a slow turn.</p>
+    <div class="stage" id="stage"><canvas id="c"></canvas><div class="hint">drag to spin</div></div>
+  </div>
+  <aside class="panel">
+    <div class="label">Tune</div>
+    <div class="row"><label>Glow <input id="glow" type="range" min="0" max="1.6" step=".02" value=".9"></label><span></span></div>
+    <div class="row"><label>Paper warmth <input id="warm" type="range" min="0" max="1" step=".02" value=".55"></label><span></span></div>
+    <div class="row"><label>Print strength <input id="ink" type="range" min="0" max="1" step=".02" value=".78"></label><span></span></div>
+    <div class="row"><label>Show-through <input id="thru" type="range" min="0" max="1" step=".02" value=".35"></label><span></span></div>
+    <div class="row"><label>Fibre <input id="fibre" type="range" min="0" max="1" step=".02" value=".5"></label><span></span></div>
+    <div class="row"><label>Idle turn <input id="spin" type="range" min="0" max=".6" step=".01" value=".16"></label><span></span></div>
+    <div class="row"><label>Sway <input id="sway" type="range" min="0" max="1" step=".02" value=".4"></label><span></span></div>
+    <label class="chk"><input id="ribs" type="checkbox" checked> bamboo ribs</label>
+    <label class="chk"><input id="dark" type="checkbox"> dark mode</label>
+    <button id="copy">copy settings</button>
+    <pre id="out"></pre>
+  </aside>
+</div>
+<script>
+/* THE LANTERN. One WebGL2 cylinder, the six photographs laid side by side in a strip and wrapped
+   round it. The paper is lit from inside: brighter where the surface faces you (the bulb is behind
+   the paper you are looking at), thicker and darker at the turning edges, and the picture on the
+   far side shows through as a soft reversed shadow. Two lacquered hoops hold the paper; a cord
+   hangs it from above. Drag spins it with inertia; it never fully stops. */
+const PHOTOS=['camera','dog-beach','teaching','snowboarding','mun','bagels'].map(n=>`/images/about/about-me-stack/${n}.jpg`);
+const cv=document.getElementById('c'), gl=cv.getContext('webgl2',{antialias:true,alpha:true,premultipliedAlpha:false});
+const P={glow:.9,warm:.55,ink:.78,thru:.35,fibre:.5,spin:.16,sway:.4,ribs:1};
+const VS=`#version 300 es
+in vec3 aP; in vec3 aN; in vec2 aUV; uniform mat4 uMVP; uniform mat4 uM; out vec3 vN; out vec3 vP; out vec2 vUV;
+void main(){ vN=mat3(uM)*aN; vP=(uM*vec4(aP,1.)).xyz; vUV=aUV; gl_Position=uMVP*vec4(aP,1.); }`;
+const FS=`#version 300 es
+precision highp float; in vec3 vN; in vec3 vP; in vec2 vUV; out vec4 o;
+uniform sampler2D uTex; uniform float uGlow,uWarm,uInk,uThru,uFibre,uRibs,uDark,uTime; uniform int uKind;
+float h(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+float n2(vec2 p){ vec2 i=floor(p),f=fract(p); f=f*f*(3.-2.*f);
+  return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y); }
+void main(){
+  vec3 N=normalize(vN); vec3 V=normalize(vec3(0,0,6.)-vP);
+  if(uKind==1){ /* the hoops: dark lacquer with a soft highlight */
+    float l=.35+.65*max(0.,dot(N,normalize(vec3(.4,.9,.6))));
+    vec3 c=mix(vec3(.13,.09,.07),vec3(.32,.22,.16),l); o=vec4(c,1.); return; }
+  if(uKind==2){ o=vec4(vec3(.2,.16,.13),1.); return; }   /* the cord */
+  /* PAPER. Long fibres along the sheet, short ones across it, both faint. */
+  float fib=n2(vec2(vUV.x*380.,vUV.y*24.))*.6+n2(vec2(vUV.x*90.,vUV.y*160.))*.4;
+  fib=(fib-.5)*uFibre*.22;
+  vec3 paper=mix(vec3(.98,.97,.95),vec3(.96,.90,.78),uWarm)+fib;
+  /* THE PRINT. The strip wraps once round; photos sit in the middle band with paper above and below. */
+  float band=smoothstep(.16,.19,vUV.y)*smoothstep(.84,.81,vUV.y);
+  vec3 ph=texture(uTex,vec2(vUV.x,(vUV.y-.175)/.65)).rgb;
+  float g=dot(ph,vec3(.3,.59,.11)); ph=mix(vec3(g),ph,.72);      /* a little less colour, like ink on paper */
+  vec3 face=mix(paper,paper*mix(vec3(1.),ph,uInk),band);
+  /* SHOW-THROUGH. The picture on the far side of the cylinder, reversed, blurred, as a shadow. */
+  vec2 far=vec2(1.-fract(vUV.x+.5),(vUV.y-.175)/.65); vec3 sh=vec3(0.);
+  for(int i=-2;i<=2;i++) for(int j=-2;j<=2;j++) sh+=texture(uTex,far+vec2(float(i),float(j))*.006).rgb;
+  sh/=25.; float shl=dot(sh,vec3(.3,.59,.11));
+  face*=mix(1.,mix(1.,shl*.55+.45,band),uThru);
+  /* RIBS. Twelve bamboo staves under the paper, seen as a soft darkening. */
+  float rib=1.-uRibs*.16*smoothstep(.02,0.,abs(fract(vUV.x*12.)-.5)-.48+.02)*0.+uRibs*0.;
+  float stave=smoothstep(.012,.0,abs(fract(vUV.x*12.+.5)-.5)-.0)*0.;
+  float ribShade=1.-uRibs*.14*(1.-smoothstep(0.,.018,abs(fract(vUV.x*12.)-.5)));
+  face*=ribShade;
+  /* THE LIGHT. Inside, so the paper facing you is lit from behind; the edges see the paper at a slant and go darker and warmer. */
+  float facing=max(0.,dot(N,V));
+  float lit=pow(facing,.9);
+  float mid=1.-smoothstep(.0,.9,abs(vUV.y-.5)*1.6);
+  float glow=uGlow*(0.55+0.45*mid)*lit;
+  vec3 warmLight=vec3(1.,.93,.80);
+  vec3 c=face*(0.30+0.70*lit)+face*warmLight*glow*.55;
+  c=mix(c,c*vec3(.86,.78,.66),(1.-facing)*.5);            /* thick edge */
+  c=pow(c,vec3(1./1.02));
+  o=vec4(c,1.);
+}`;
+function sh(t,s){const x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(x));return x;}
+const pg=gl.createProgram();gl.attachShader(pg,sh(gl.VERTEX_SHADER,VS));gl.attachShader(pg,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(pg);
+if(!gl.getProgramParameter(pg,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(pg));
+gl.useProgram(pg);
+const U=n=>gl.getUniformLocation(pg,n);
+/* geometry: an open cylinder, two hoops, a cord */
+function cylinder(r,y0,y1,seg,uvY0,uvY1){const P=[],N=[],T=[],I=[];
+  for(let i=0;i<=seg;i++){const a=i/seg*Math.PI*2, x=Math.cos(a), z=Math.sin(a);
+    P.push(x*r,y0,z*r, x*r,y1,z*r); N.push(x,0,z, x,0,z); T.push(1-i/seg,uvY0, 1-i/seg,uvY1);
+    if(i<seg){const b=i*2; I.push(b,b+1,b+2, b+1,b+3,b+2);} }
+  return {P,N,T,I};}
+function torus(R,r,segs,rings,y){const P=[],N=[],T=[],I=[];
+  for(let i=0;i<=segs;i++){const a=i/segs*Math.PI*2,ca=Math.cos(a),sa=Math.sin(a);
+    for(let j=0;j<=rings;j++){const b=j/rings*Math.PI*2,cb=Math.cos(b),sb=Math.sin(b);
+      P.push((R+r*cb)*ca,y+r*sb,(R+r*cb)*sa); N.push(cb*ca,sb,cb*sa); T.push(i/segs,j/rings);
+      if(i<segs&&j<rings){const k=i*(rings+1)+j; I.push(k,k+1,k+rings+1, k+1,k+rings+2,k+rings+1);} } }
+  return {P,N,T,I};}
+function mesh(m){const vao=gl.createVertexArray();gl.bindVertexArray(vao);
+  const buf=(d,loc,n)=>{const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(d),gl.STATIC_DRAW);gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,n,gl.FLOAT,false,0,0);};
+  buf(m.P,0,3);buf(m.N,1,3);buf(m.T,2,2);
+  const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(m.I),gl.STATIC_DRAW);
+  return {vao,n:m.I.length};}
+gl.bindAttribLocation(pg,0,'aP');gl.bindAttribLocation(pg,1,'aN');gl.bindAttribLocation(pg,2,'aUV');gl.linkProgram(pg);gl.useProgram(pg);
+const H=1.55, R=1.0;
+const body=mesh(cylinder(R,-H/2,H/2,160,0,1));
+const hoopT=mesh(torus(R+.012,.05,96,14,H/2)), hoopB=mesh(torus(R+.012,.05,96,14,-H/2));
+const cord=mesh(cylinder(.012,H/2+.03,H/2+1.6,10,0,1));
+/* the strip: six squares side by side */
+const tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);
+gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,1,1,0,gl.RGB,gl.UNSIGNED_BYTE,new Uint8Array([240,235,225]));
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+Promise.all(PHOTOS.map(src=>new Promise(res=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>res(null);im.src=src;}))).then(ims=>{
+  const S=512, c=document.createElement('canvas'); c.width=S*6; c.height=S; const x=c.getContext('2d');
+  x.fillStyle='#efe9dc'; x.fillRect(0,0,c.width,c.height);
+  ims.forEach((im,i)=>{ if(!im) return; const s=Math.min(im.width,im.height); x.drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,i*S+14,14,S-28,S-28); });
+  gl.bindTexture(gl.TEXTURE_2D,tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,c); gl.generateMipmap(gl.TEXTURE_2D);
+});
+/* matrices */
+function persp(f,a,n,fa){const t=1/Math.tan(f/2);return [t/a,0,0,0, 0,t,0,0, 0,0,(fa+n)/(n-fa),-1, 0,0,2*fa*n/(n-fa),0];}
+function mul(a,b){const o=new Array(16).fill(0);for(let i=0;i<4;i++)for(let j=0;j<4;j++)for(let k=0;k<4;k++)o[j*4+i]+=a[k*4+i]*b[j*4+k];return o;}
+function rotY(a){const c=Math.cos(a),s=Math.sin(a);return [c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1];}
+function rotZ(a){const c=Math.cos(a),s=Math.sin(a);return [c,s,0,0, -s,c,0,0, 0,0,1,0, 0,0,0,1];}
+function rotX(a){const c=Math.cos(a),s=Math.sin(a);return [1,0,0,0, 0,c,s,0, 0,-s,c,0, 0,0,0,1];}
+function trans(x,y,z){return [1,0,0,0, 0,1,0,0, 0,0,1,0, x,y,z,1];}
+/* the spin: dragged, then carried, never quite still */
+let ang=0.6, vel=0, dragging=false, lastX=0, lastT=0, t0=performance.now();
+const stage=document.getElementById('stage');
+stage.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastT=performance.now();vel=0;stage.setPointerCapture(e.pointerId);});
+stage.addEventListener('pointermove',e=>{if(!dragging)return;const now=performance.now();const dx=e.clientX-lastX;const w=stage.clientWidth;ang+=dx/w*Math.PI*1.6;vel=(dx/w*Math.PI*1.6)/Math.max(1,(now-lastT))*1000;lastX=e.clientX;lastT=now;});
+const drop=()=>{dragging=false;};
+stage.addEventListener('pointerup',drop);stage.addEventListener('pointercancel',drop);
+function size(){const r=Math.min(2,devicePixelRatio||1);const w=stage.clientWidth,h=stage.clientHeight;if(cv.width!==w*r||cv.height!==h*r){cv.width=w*r;cv.height=h*r;}gl.viewport(0,0,cv.width,cv.height);}
+gl.enable(gl.DEPTH_TEST);
+let prev=performance.now();
+function frame(now){
+  const dt=Math.min(.05,(now-prev)/1000); prev=now; const t=(now-t0)/1000;
+  if(!dragging){ vel*=Math.pow(.15,dt); const idle=P.spin*Math.sign(vel||1); if(Math.abs(vel)<Math.abs(idle)) vel+=(idle-vel)*Math.min(1,dt*1.2); ang+=vel*dt; }
+  size(); gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  const asp=cv.width/cv.height; const pr=persp(.62,asp,.1,50);
+  const swing=Math.sin(t*.9)*.05*P.sway + (dragging?0:vel*.02);
+  const view=mul(trans(0,.25,-6.4),mul(rotX(-.08),rotZ(swing)));
+  const M=mul(view,rotY(ang));
+  const draw=(m,kind,mm)=>{gl.bindVertexArray(m.vao);gl.uniformMatrix4fv(U('uM'),false,mm);gl.uniformMatrix4fv(U('uMVP'),false,mul(pr,mm));gl.uniform1i(U('uKind'),kind);gl.drawElements(gl.TRIANGLES,m.n,gl.UNSIGNED_SHORT,0);};
+  gl.uniform1f(U('uGlow'),P.glow);gl.uniform1f(U('uWarm'),P.warm);gl.uniform1f(U('uInk'),P.ink);gl.uniform1f(U('uThru'),P.thru);gl.uniform1f(U('uFibre'),P.fibre);gl.uniform1f(U('uRibs'),P.ribs);gl.uniform1f(U('uTime'),t);
+  gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,tex);gl.uniform1i(U('uTex'),0);
+  gl.enable(gl.CULL_FACE); gl.cullFace(gl.BACK);
+  draw(body,0,M); draw(hoopT,1,M); draw(hoopB,1,M); draw(cord,2,mul(view,rotY(0)));
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+/* panel */
+const out=document.getElementById('out');
+function show(){out.textContent=JSON.stringify(P);}
+for(const k of ['glow','warm','ink','thru','fibre','spin','sway']){const el=document.getElementById(k);const span=el.closest('.row').querySelector('span');const upd=()=>{P[k]=+el.value;span.textContent=(+el.value).toFixed(2);show();};el.addEventListener('input',upd);upd();}
+document.getElementById('ribs').addEventListener('change',e=>{P.ribs=e.target.checked?1:0;show();});
+document.getElementById('dark').addEventListener('change',e=>{document.documentElement.setAttribute('data-theme',e.target.checked?'dark':'light');});
+document.getElementById('copy').addEventListener('click',()=>navigator.clipboard.writeText(out.textContent));
+</script>
+</body></html>

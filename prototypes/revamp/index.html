@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-cache">
-<title>Jazlynn Kurniandra — revamp</title>
+<title>Jazlynn Kurniandra</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="/site-mark.js?v=sig8"></script>
+<script src="/site-mark.js?v=sig11"></script>
 <style>
 :root{
   --jak:"Plus Jakarta Sans",sans-serif; --hel:"Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -105,7 +105,15 @@ p{text-wrap:pretty}
    and the links float top-right in a lifted pill with the mode icon at its head. The
    pill is a shadow, not a border: the outline is the 10% image rule, not a frame. */
 nav{position:fixed;top:0;left:0;right:0;z-index:60;pointer-events:none}
-nav .in{display:flex;justify-content:space-between;align-items:center;padding-top:24px}
+nav .in{display:flex;justify-content:space-between;align-items:center;padding-top:24px;position:relative}
+/* THE NAV HAS A GROUND. It is fixed, and headlines scroll up under it, so the mark and the pill sit
+   on a band of paper that fades out below them; the content dims into it instead of crashing. */
+nav::before{content:"";position:absolute;left:0;right:0;top:0;height:104px;pointer-events:none;
+  background:linear-gradient(var(--paper) 46%,color-mix(in srgb,var(--paper) 70%,transparent) 72%,transparent);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-mask:linear-gradient(#000 50%,transparent);mask:linear-gradient(#000 50%,transparent);
+  opacity:0;transition:opacity .3s ease}
+nav.grounded::before{opacity:1}
+
 nav .mark{pointer-events:auto;font-family:var(--jak);font-weight:600;font-size:13px;letter-spacing:-.01em;padding:10px 0}
 
 /* measured off his pill: 46px tall, the icon 24px in from the left edge, ~44px between
@@ -378,7 +386,7 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
    which is the glow. No highlight, no sphere: it is a dot, not a bead. Over anything pressable it grows, softly, on his spring;
    pressing shrinks it a little. Fine pointers only; the system cursor stays for text. */
 @media(pointer:fine){
-  html,body,a,button,[role=button]{cursor:none}
+  html,body,*,*::before,*::after{cursor:none!important}
   #cur{position:fixed;left:0;top:0;width:12px;height:12px;pointer-events:none;z-index:1000;
     transform:translate(-100px,-100px);will-change:transform;opacity:0;transition:opacity .2s ease}
   #cur i{position:absolute;inset:0;border-radius:50%;
@@ -387,6 +395,15 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
     transform:scale(1);transition:transform .46s cubic-bezier(.33,1.18,.37,1),opacity .32s ease,box-shadow .32s ease}
   [data-theme="dark"] #cur i{background:var(--ink);box-shadow:0 3px 14px rgba(250,249,247,.26)}
   #cur.on{opacity:1}
+  #cur{transition:height .32s cubic-bezier(.33,1.18,.37,1),width .5s cubic-bezier(.33,1.18,.37,1) .05s}
+  #cur:not(.pill){transition:width .34s cubic-bezier(.2,.7,.2,1),height .3s cubic-bezier(.2,.7,.2,1) .1s}
+  #cur b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;font:500 12.5px var(--jak);letter-spacing:.01em;
+    color:var(--paper);opacity:0;transition:opacity .16s ease}
+  #cur.pill{width:var(--pw,180px);height:34px}
+  #cur.pill i{border-radius:999px;transform:none;opacity:1;background:var(--ink);box-shadow:0 8px 26px rgba(28,26,23,.22)}
+  #cur i{transition:transform .32s cubic-bezier(.33,1.18,.37,1),opacity .2s ease,border-radius .3s ease,background .2s ease}
+  #cur.pill b{opacity:1;transition:opacity .22s ease .22s}
+  [data-theme="dark"] #cur b{color:var(--paper)}
   #cur.hot i{transform:scale(2.6);opacity:.62;box-shadow:0 6px 22px rgba(28,26,23,.22)}
   [data-theme="dark"] #cur.hot i{box-shadow:0 6px 22px rgba(250,249,247,.2)}
   #cur.down i{transform:scale(2.1);opacity:.75}
@@ -462,7 +479,7 @@ html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
       <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
     </button>
-    <a href="#work">Projects</a><a href="http://localhost:3000/sandbox">Sandbox</a><a href="/art-gallery.html">Art Gallery</a><a href="/about.html">About</a></span>
+    <a href="#work">Projects</a><a href="https://portfolio-experiments.vercel.app/sandbox">Sandbox</a><a href="/art-gallery.html">Art Gallery</a><a href="/about.html">About</a></span>
 </div></nav>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -523,7 +540,7 @@ html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
 
 <script>
 /* the sandbox is another origin, so the colour mode travels in the URL */
-(function(){document.querySelectorAll('a[href*="localhost:3000/sandbox"]').forEach(a=>{const base=a.getAttribute('href');
+(function(){document.querySelectorAll('a[href*="/sandbox"]').forEach(a=>{const base=a.getAttribute('href');
 a.addEventListener('click',()=>{a.href=base+'?theme='+(document.documentElement.getAttribute('data-theme')||'light');});});})();
 /* ---------- THE PAGE MAKES ROOM ----------
    When the line drops out from under the name, everything below the nav moves down just
@@ -546,7 +563,7 @@ a.addEventListener('click',()=>{a.href=base+'?theme='+(document.documentElement.
 /* ---------- the cursor ---------- */
 (function(){
   if(!matchMedia('(hover: hover) and (pointer:fine)').matches) return;
-  const c=document.createElement('div'); c.id='cur'; c.appendChild(document.createElement('i')); document.body.appendChild(c);
+  const c=document.createElement('div'); c.id='cur'; c.appendChild(document.createElement('i')); const lb=document.createElement('b'); c.appendChild(lb); document.body.appendChild(c);
   let tx=-100,ty=-100,x=-100,y=-100,raf=0,shown=false;
   const HOT='a,button,[role=button],label,summary,.rows li,.tags button';
   function loop(){
@@ -562,7 +579,11 @@ a.addEventListener('click',()=>{a.href=base+'?theme='+(document.documentElement.
        bead has to say so itself */
     const t=(e.target.dataset && e.target.dataset.grab === '1') ? e.target
           : (e.target.closest ? e.target.closest(HOT) : null);
-    c.classList.toggle('hot',!!t);
+    /* THE PILL. Over anything with a data-cur line the dot opens into a pill that says it. */
+    const say=e.target.closest ? e.target.closest('[data-cur]') : null;
+    if(say){ if(lb.textContent!==say.dataset.cur) lb.textContent=say.dataset.cur; c.style.setProperty('--pw',(lb.scrollWidth+34)+'px'); }
+    c.classList.toggle('pill',!!say);
+    c.classList.toggle('hot',!!t&&!say);
     c.classList.toggle('text',!t && getComputedStyle(e.target).cursor==='text');
     if(!raf) raf=requestAnimationFrame(loop);
   },{passive:true});
@@ -853,19 +874,19 @@ document.querySelectorAll('canvas[data-lazy]').forEach(cv=>mount(cv,cv.dataset.l
 
 /* ---------- projects: rows, tags, hover preview ---------- */
 const PROJECTS=[
-  {n:'01',t:'Clover',          y:'2026',tags:['0 → 1','AI','Mobile'], role:'Founding design engineer', st:'0 to 1, in development',   s:'Designing the HUD interface and shipping the iOS companion app',        href:'/404.html?p=Clover',           v:'/videos/trim/work-clover.mp4',  img:'/videos/trim/work-clover.jpg'},
-  {n:'02',t:'Fostr',           y:'2026',tags:['0 → 1','Web'], role:'Founding design engineer', st:'Live',   s:'Building the brand, landing site and internal platform from 0 to 1',    href:'https://fostr.page/', ext:true, v:'/videos/work-fostr.mp4',   img:'/videos/work-fostr.jpg'},
-  {n:'03',t:'Halodoc',         y:'2026',tags:['AI','Mobile'], role:'Product designer', st:'Shipped to 20M+ users',                 s:'Designing the onboarding journey for AI Prescription on mobile',         href:'/404.html?p=Halodoc',          v:'/videos/trim/work-halodoc.mp4', img:'/videos/trim/work-halodoc.jpg'},
-  {n:'04',t:'Conduit Commerce',y:'2026',tags:['AI','Web'], role:'Product design lead', st:'Shipped',                 s:'Designing and shipping a B2B SaaS website for an AI-feature launch',     href:'/work/conduit-commerce.html',  v:'/videos/trim/work-conduit.mp4', img:'/videos/trim/work-conduit.jpg'},
-  {n:'05',t:'Second Self',     y:'2026',tags:['Personal projects','AI'], role:'Design engineer', st:'YHacks \u201926, 1st place',                            s:'Building an AI agent that lives on your own Mac',                        href:'https://devpost.com/software/second-self-giwmxh', ext:true, v:'/videos/second-self.mp4', img:'/videos/second-self.jpg'},
-  {n:'06',t:'Manus AI',        y:'2025',tags:['AI','Web'], role:'Product designer', st:'Approved, in development',       s:'Designing an AI community platform to drive adoption',                   href:'/work/manus-ai.html',          v:'/videos/work-manus.mp4',   img:'/videos/work-manus.jpg'},
-  {n:'07',t:'Olive',           y:'2025',tags:['Personal projects','AI','Mobile'], role:'Product designer', st:'NYU UX Design-a-thon \u201925, 2nd place',                            s:'Designing an AI-powered carbon tracking app',                            href:'https://drive.google.com/file/d/15-mX_sIkPU_Ww4R1UueWG10Wv9CQbhEy/view', ext:true, v:'/videos/trim/work-olive.mp4', img:'/videos/trim/work-olive.jpg'},
-  {n:'08',t:'SomiaCX',         y:'2024',tags:['0 → 1','Mobile'], role:'Product designer', st:'0 to 1',                  s:'Architecting a unified UVP system for three financial subsidiaries',     href:'/work/somia-cx.html',          img:'/images/trim/work-somiacx.png'},
+  {n:'01',t:'Clover',          y:'2026',cur:'smartglasses and dictation rings, super fun stuff',tags:['0 → 1','AI','Mobile'], role:'Founding design engineer', st:'0 to 1, in development',   s:'Designing the HUD interface and shipping the iOS companion app',        href:'/404.html?p=Clover',           v:'/videos/trim/work-clover.mp4',  img:'/videos/trim/work-clover.jpg'},
+  {n:'02',t:'Fostr',           y:'2026',cur:'internal platform and branding',tags:['0 → 1','Web'], role:'Founding design engineer', st:'Live',   s:'Building the brand, landing site and internal platform from 0 to 1',    href:'https://fostr.page/', ext:true, v:'/videos/work-fostr.mp4',   img:'/videos/work-fostr.jpg'},
+  {n:'03',t:'Halodoc',         y:'2026',cur:'product-centric internship and agentic prompting',tags:['AI','Mobile'], role:'Product designer', st:'Shipped to 20M+ users',                 s:'Designing the onboarding journey for AI Prescription on mobile',         href:'/404.html?p=Halodoc',          v:'/videos/trim/work-halodoc.mp4', img:'/videos/trim/work-halodoc.jpg'},
+  {n:'04',t:'Conduit Commerce',y:'2026',cur:'project lead for B2B SaaS redesign',tags:['AI','Web'], role:'Product design lead', st:'Shipped',                 s:'Designing and shipping a B2B SaaS website for an AI-feature launch',     href:'/work/conduit-commerce.html',  v:'/videos/trim/work-conduit.mp4', img:'/videos/trim/work-conduit.jpg'},
+  {n:'05',t:'Second Self',     y:'2026',cur:'YHacks #1 winner for Personal AI Agent',tags:['Personal projects','AI'], role:'Design engineer', st:'YHacks \u201926, 1st place',                            s:'Building an AI agent that lives on your own Mac',                        href:'https://devpost.com/software/second-self-giwmxh', ext:true, v:'/videos/second-self.mp4', img:'/videos/second-self.jpg'},
+  {n:'06',t:'Manus AI',        y:'2025',cur:'we got acquired by meta during the process lol',tags:['AI','Web'], role:'Product designer', st:'Approved, in development',       s:'Designing an AI community platform to drive adoption',                   href:'/work/manus-ai.html',          v:'/videos/work-manus.mp4',   img:'/videos/work-manus.jpg'},
+  {n:'07',t:'Olive',           y:'2025',cur:'NYU Designathon winner',tags:['Personal projects','AI','Mobile'], role:'Product designer', st:'NYU UX Design-a-thon \u201925, 2nd place',                            s:'Designing an AI-powered carbon tracking app',                            href:'https://drive.google.com/file/d/15-mX_sIkPU_Ww4R1UueWG10Wv9CQbhEy/view', ext:true, v:'/videos/trim/work-olive.mp4', img:'/videos/trim/work-olive.jpg'},
+  {n:'08',t:'SomiaCX',         y:'2024',cur:'my first product design internship!!!',tags:['0 → 1','Mobile'], role:'Product designer', st:'0 to 1',                  s:'Architecting a unified UVP system for three financial subsidiaries',     href:'/work/somia-cx.html',          img:'/images/trim/work-somiacx.png'},
 ];
 const rows=document.getElementById('rows'), tags=document.getElementById('tags');
 const pvT=document.getElementById('pv-t'), pvS=document.getElementById('pv-s'), pvR=document.getElementById('pv-r');
 rows.innerHTML=PROJECTS.map((p,i)=>`<li data-i="${i}" data-tags="${p.tags.join('|')}">
-  <a href="${p.href}"${p.ext?' target="_blank" rel="noopener"':''}>${p.t}${p.ext?' <span class="ext">&#8599;</span>':''}</a></li>`).join('');
+  <a href="${p.href}"${p.ext?' target="_blank" rel="noopener"':''}${p.cur?` data-cur="${p.cur}"`:''}>${p.t}${p.ext?' <span class="ext">&#8599;</span>':''}</a></li>`).join('');
 /* one axis a recruiter actually filters on: the role, the surface, the proof */
 const ALL=['0 → 1','Personal projects','AI','Mobile','Web'];
 tags.innerHTML=['All',...ALL].map((t,i)=>`<button aria-pressed="${i===0}">${t}</button>`).join('');
@@ -971,7 +992,12 @@ show(0);
       b.setAttribute('aria-pressed',String(on)); b.title=b.ariaLabel=on?'Collapse':'Expand'; } });
   addEventListener('keydown',e=>{ if(e.key==='Escape') hide(true); });
   addEventListener('popstate',()=>{ const p=new URLSearchParams(location.search).get('p'); if(p) show(p,false); else hide(false); });
-  function toWork(){ const w=document.getElementById('work'); if(w){ document.documentElement.style.scrollBehavior='auto'; scrollTo(0,w.offsetTop-40); document.documentElement.style.scrollBehavior=''; window.__heroApply&&window.__heroApply(); } }
+  function toWork(smooth){ const w=document.getElementById('work'); if(!w) return;
+    const go=()=>{ document.documentElement.style.scrollBehavior=smooth?'smooth':'auto'; scrollTo(0,w.offsetTop-40); document.documentElement.style.scrollBehavior=''; window.__heroApply&&window.__heroApply(); };
+    go(); if(!smooth){ requestAnimationFrame(go); setTimeout(go,350); } else setTimeout(()=>{ if(Math.abs(scrollY-(w.offsetTop-40))>4) go(); },900); }
+  window.toWork=toWork;
+  document.querySelectorAll('a[href="#work"],a[href="/#work"]').forEach(a=>a.addEventListener('click',e=>{ e.preventDefault(); history.replaceState(null,'','#work'); toWork(true); }));
+  if(location.hash==='#work'){ toWork(false); addEventListener('load',()=>toWork(false),{once:true}); }
   /* arriving on a case study link: the list is what waits behind the sheet, and what remains when it closes */
   const p0=new URLSearchParams(location.search).get('p'); if(p0){ toWork(); addEventListener('load',toWork,{once:true}); show(p0,false); }
 })();
@@ -993,6 +1019,7 @@ show(0);
     const p=Math.max(0,Math.min(1,(scrollY-h*.55)/(h*.45)));
     const e=p*p*(3-2*p);
     const ph=Math.max(0,Math.min(1,scrollY/(h*.66)));   /* the hint keeps its own, earlier clock */
+    document.querySelector('nav').classList.toggle('grounded',scrollY>h*.35);
     sheets.style.opacity=(1-e).toFixed(3);
     stack.style.opacity=(1-e).toFixed(3);
     stack.style.transform=`translateY(${(-e*48).toFixed(1)}px)`;

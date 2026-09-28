@@ -26,7 +26,15 @@ a{color:inherit}
 .label{font-family:var(--jak);font-weight:600;font-size:10.5px;line-height:1.5;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3)}
 /* nav: the pill from index.html, verbatim */
 nav{position:fixed;top:0;left:0;right:0;z-index:60;pointer-events:none}
-nav .in{display:flex;justify-content:space-between;align-items:center;padding-top:24px}
+nav .in{display:flex;justify-content:space-between;align-items:center;padding-top:24px;position:relative}
+/* THE NAV HAS A GROUND. It is fixed, and headlines scroll up under it, so the mark and the pill sit
+   on a band of paper that fades out below them; the content dims into it instead of crashing. */
+nav::before{content:"";position:absolute;left:0;right:0;top:0;height:104px;pointer-events:none;
+  background:linear-gradient(var(--paper) 46%,color-mix(in srgb,var(--paper) 70%,transparent) 72%,transparent);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-mask:linear-gradient(#000 50%,transparent);mask:linear-gradient(#000 50%,transparent);
+  opacity:0;transition:opacity .3s ease}
+nav.grounded::before{opacity:1}
+
 nav .mark{pointer-events:auto;font-family:var(--jak);font-weight:600;font-size:13px;letter-spacing:-.01em;padding:10px 0;text-decoration:none;color:var(--ink)}
 
 nav .links{pointer-events:auto;display:flex;align-items:center;gap:8px;background:var(--pill);border-radius:999px;
@@ -55,7 +63,7 @@ footer a:hover{color:var(--touch)}
    which is the glow. No highlight, no sphere: it is a dot, not a bead. Over anything pressable it grows, softly, on his spring;
    pressing shrinks it a little. Fine pointers only; the system cursor stays for text. */
 @media(pointer:fine){
-  html,body,a,button,[role=button]{cursor:none}
+  html,body,*,*::before,*::after{cursor:none!important}
   #cur{position:fixed;left:0;top:0;width:12px;height:12px;pointer-events:none;z-index:1000;
     transform:translate(-100px,-100px);will-change:transform;opacity:0;transition:opacity .2s ease}
   #cur i{position:absolute;inset:0;border-radius:50%;
@@ -143,6 +151,8 @@ section.cs:last-of-type{padding-bottom:32px}
 .head .lede p+p{margin-top:16px}
 @media(max-width:900px){.head{grid-template-columns:1fr;gap:24px}}
 .row{display:grid;grid-template-columns:6fr 6fr;gap:48px;align-items:center;margin-top:48px}
+/* two text blocks side by side start on the same line; centring only fits a picture beside text */
+.row.text{align-items:start}
 .row.r7{grid-template-columns:5fr 7fr}
 .row.r75{grid-template-columns:7fr 5fr}
 @media(max-width:900px){.row,.row.r7,.row.r75{grid-template-columns:1fr;gap:24px}}
@@ -166,6 +176,7 @@ section.cs:last-of-type{padding-bottom:32px}
 .plate.pad{padding:24px}
 /* a bare plate is no plate: the picture draws its own edges, so a box around it was a box in a box */
 .plate.bare{background:transparent;outline:0;border-radius:0}
+[data-theme="dark"] .plate.bare.paper{background:#FAF9F7;border-radius:20px;padding:24px}
 .plate.pad img,.plate.pad video{border-radius:8px}
 figure{margin:0}
 figure.mt{margin-top:48px}
@@ -185,14 +196,14 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 /* the pile takes the FIRST card's own proportions (set on load), so the cards in a group,
    which come from the same flow, are shown whole and all at one size */
 .deck .card .plate img,.deck .card .plate video{height:100%;object-fit:contain}
-.deck .card figcaption{position:absolute;left:0;right:0;top:calc(100% + 12px);opacity:0;transition:opacity .25s ease}
+.deck .card figcaption{position:absolute;left:0;right:0;top:calc(100% + 32px);opacity:0;transition:opacity .25s ease}
 .deck .card.top figcaption{opacity:1;transition-delay:.18s}
 .deck .card.top{z-index:3}
 .deck .card.next{z-index:2;transform:translateY(10px) scale(.965)}
 .deck .card.after{z-index:1;transform:translateY(20px) scale(.93)}
 .deck .card.gone{z-index:0;opacity:0;transform:translateY(20px) scale(.93)}
 .deck .card.leaving{z-index:4;transform:translateY(56px) scale(1.02);opacity:0}
-.deck .deck-foot{display:flex;justify-content:space-between;align-items:baseline;margin-top:44px;font-family:var(--jak);font-weight:500;font-size:12.5px;color:var(--ink3)}
+.deck .deck-foot{display:flex;justify-content:space-between;align-items:baseline;margin-top:64px;font-family:var(--jak);font-weight:500;font-size:12.5px;color:var(--ink3)}
 .deck .deck-foot b{font-weight:600;color:var(--ink)}
 .deck:focus-visible .pile{outline:2px solid var(--ink);outline-offset:6px;border-radius:20px}
 .deck .card figcaption{margin-top:0}
@@ -201,8 +212,8 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 .cells{display:grid;grid-template-columns:repeat(3,1fr);margin-top:48px}
 .cells.c2{grid-template-columns:repeat(2,1fr)}
 .cells.c4{grid-template-columns:repeat(4,1fr)}
-.cell{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);border-left:1px solid var(--hair);padding:24px;min-width:0}
-.cell:last-child{border-right:1px solid var(--hair)}
+.cells{padding:1px 0 0 1px}
+.cell{border:1px solid var(--hair);margin:-1px 0 0 -1px;padding:24px;min-width:0}
 .cell h3{font-size:15.5px;line-height:1.3}
 .cell h4{font-size:15.5px}
 .cell p{font-size:14.5px;line-height:1.55;color:var(--ink2);margin-top:10px}
@@ -231,17 +242,21 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 /* flow: the solution preview as a strip of cells with the arrow as a stem */
 .flow{display:grid;grid-template-columns:repeat(4,1fr);margin-top:48px}
 .flow .cell{display:flex;flex-direction:column;gap:14px}
-.flow .cell p{margin:0;font-size:14px;color:var(--ink)}
+.flow .cell p{margin:0;font-size:14px;line-height:1.5;color:var(--ink);min-height:3em}
 /* four equal plates: the recordings fill theirs, the icons sit centred in the same frame,
    so a step that is a drawing and a step that is a recording are the same object */
 .flow .cell .m{border-radius:12px;overflow:hidden;outline:1px solid var(--outline);outline-offset:-1px;background:var(--plate);
   aspect-ratio:1920/1042;display:grid;place-items:center}
 .flow .cell .m video,.flow .cell .m img{display:block;width:100%;height:100%;object-fit:cover}
-.flow .cell .m.icon .ic{width:auto;height:44%;color:var(--ink2)}
+.flow .cell .m.icon .ic{width:36%;height:44%;color:var(--ink2)}
 @media(max-width:900px){.flow{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.flow{grid-template-columns:1fr}}
 /* takeaways */
 .take{margin-top:48px;display:grid;grid-template-columns:6fr 6fr;gap:48px;align-items:start}
+/* one photo beside the takeaways: it fills its column and no more, rounded like every plate */
+.take .take-one{margin:0}
+.take .take-one .plate.bare{border-radius:20px;overflow:hidden}
+.take .take-one img{display:block;width:100%;height:auto;border-radius:20px}
 .take ol{list-style:none;margin:16px 0 0;padding:0;counter-reset:t}
 .take li{counter-increment:t;display:grid;grid-template-columns:40px 1fr;gap:16px;padding:16px 0;border-top:1px solid var(--hair);font-size:15.5px;line-height:1.6;color:var(--ink2)}
 .take li:before{content:counter(t,decimal-leading-zero);font:300 20px/1.4 var(--hel);color:var(--ink3)}
@@ -250,6 +265,9 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 /* thanks + more */
 .thanks{margin-top:96px;display:flex;gap:24px;align-items:center;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:24px 0}
 .thanks img.sig{width:118px;height:auto;flex:0 0 auto}
+.thanks .sm-paper{display:none}
+[data-theme="dark"] .thanks .sm-ink{display:none}
+[data-theme="dark"] .thanks .sm-paper{display:block}
 .thanks h3{font-size:17px}
 .thanks p{font-size:15px;color:var(--ink2);margin-top:6px;line-height:1.55}
 .thanks a{color:var(--touch)}
@@ -268,14 +286,14 @@ html.sheet nav,html.sheet footer,html.sheet site-mark{display:none}
 html.sheet .cs-hero{padding-top:56px}
 html.sheet body{background:transparent}
 """
-NAV = """<nav><div class="wrap in">
+NAV = """<nav class="grounded"><div class="wrap in">
   <site-mark href="/"></site-mark>
   <span class="links">
     <button id="theme" aria-label="Switch colour mode" title="Colour mode">
       <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
     </button>
-    <a class="l" href="/#work">Projects</a><a class="l" href="http://localhost:3000/sandbox">Sandbox</a><a class="l" href="/art-gallery.html">Art Gallery</a><a class="l" href="/about.html">About</a></span>
+    <a class="l" href="/#work">Projects</a><a class="l" href="https://portfolio-experiments.vercel.app/sandbox">Sandbox</a><a class="l" href="/art-gallery.html">Art Gallery</a><a class="l" href="/about.html">About</a></span>
 </div></nav>"""
 THEME_HEAD = """<script>(function(){if(new URLSearchParams(location.search).get('sheet')=='1')document.documentElement.classList.add('sheet');const q=new URLSearchParams(location.search).get('theme');let t=q||localStorage.getItem('theme');
 if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>"""
@@ -371,7 +389,7 @@ SITE_JS = """<script>
 for(let i=0;i<d.data.length;i+=4){const v=118+(Math.random()*72-36);d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}
 g.putImageData(d,0,0);document.documentElement.style.setProperty('--noise',`url(${n.toDataURL()})`);})();
 /* the sandbox is another origin, so the colour mode travels in the URL */
-(function(){document.querySelectorAll('a[href*="localhost:3000/sandbox"]').forEach(a=>{const base=a.getAttribute('href');
+(function(){document.querySelectorAll('a[href*="/sandbox"]').forEach(a=>{const base=a.getAttribute('href');
 a.addEventListener('click',()=>{a.href=base+'?theme='+(document.documentElement.getAttribute('data-theme')||'light');});});})();
 (function(){const el=document.getElementById('clock');if(!el)return;const f=()=>el.textContent=new Date().toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit',second:'2-digit',timeZoneName:'short'});f();setInterval(f,1000);})();
 /* videos only play while on screen */
@@ -387,10 +405,10 @@ FOOTER = """<footer><div class="wrap"><div class="rule"></div><div class="in">
 def page(title, body, extra_css=""):
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-cache">
-<title>{html.escape(title)} — Jazlynn Kurniandra</title>
+<title>{html.escape(title)} · Jazlynn Kurniandra</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="/site-mark.js?v=sig8"></script>
+<script src="/site-mark.js?v=sig11"></script>
 <style>{TOKENS}{BASE}{extra_css}</style>{THEME_HEAD}</head><body>
 {NAV}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -431,9 +449,11 @@ def P(*ps): return ''.join(f'<p>{rich(p)}</p>' for p in ps)
 def H3(t): return f'<h3>{rich(t)} <span class="a">&rarr;</span></h3>'
 def UL(items): return '<ul>'+''.join(f'<li>{rich(i)}</li>' for i in items)+'</ul>'
 def TX(*inner): return '<div class="tx">'+''.join(inner)+'</div>'
+# see-through pictures whose ink is dark: on charcoal they stand on a paper card
+PAPER = ['your-path-second.png', 'your-path-third-v1.png', 'your-path-third-v2.png', 'hackathon-card-before.png', 'hackathon-card-after-1.png', 'hackathon-card-after.png', 'design-system-exploration.png', 'hero.png']
 def media(src, alt="", pad=False, bare=False, cur=None):
     cls = 'plate pad' if pad else 'plate'
-    if bare: cls += ' bare'
+    if bare: cls += ' bare' + (' paper' if os.path.basename(src) in PAPER else '')
     attrs = f'class="{cls}"' + (f' data-cur="{E(cur)}"' if cur else '')
     if src.endswith('.mp4'):
         # a recording with an alpha twin on disk (<name>-alpha.webm / .mov) plays with its ground
@@ -469,6 +489,7 @@ def PERSONA(av, name, kv, bullets):
     return CELL(f'{head}<h4>{E(name)}</h4><p class="kv">{E(kv)}</p>'+UL(bullets))
 def HMW(a, b):
     return CELLS([CELL(f'<h3>{E(a)}</h3>','ink'), CELL(f'<h3>{E(b)}</h3>','gold')], 2)
+ICON_BOX = {"laptop": "11.25 25.67 131.50 104.25", "people": "0.01 0.00 94.61 94.63", "phone": "24.59 9.84 68.83 98.33"}  # measured drawn bounds plus half the stroke
 def ICON(src):
     """A flow icon is inlined so its lines take the page's ink and its knock-outs take the plate,
     in either colour mode; as an <img> its baked colours went black on charcoal."""
@@ -483,7 +504,9 @@ def ICON(src):
         return 'style="fill:currentColor"' if (0.3*r + 0.59*g + 0.11*b) < 128 else 'style="fill:var(--plate)"'
     svg = re.sub(r'fill="#([0-9A-Fa-f]{3,6})"', fill, svg)
     svg = svg.replace('style="stroke:currentColor" style="fill:var(--plate)"','style="stroke:currentColor;fill:var(--plate)"').replace('style="fill:var(--plate)" style="stroke:currentColor"','style="stroke:currentColor;fill:var(--plate)"')
-    svg = re.sub(r'<svg ', '<svg class="ic" aria-hidden="true" ', svg, count=1)
+    key = os.path.basename(src).replace('.svg','')
+    if key in ICON_BOX: svg = re.sub(r'viewBox="[^"]*"', f'viewBox="{ICON_BOX[key]}"', svg, count=1)
+    svg = re.sub(r'<svg ', '<svg class="ic" aria-hidden="true" preserveAspectRatio="xMidYMid meet" ', svg, count=1)
     return svg
 def FLOW(steps):
     out=''
@@ -504,13 +527,13 @@ def TAKE(photos, points, cur=None):
     if len(photos) >= 2:
         ph = THREE([(t[0], '', t[1]) for t in photos], bare=True).replace('class="deck"', f'class="deck" style="margin-top:0;max-width:420px"' + (f' data-cur="{E(cur)}"' if cur else ''))
     else:
-        ph = ''.join(f'<figure style="margin-top:0;max-width:420px">{media(t[0], t[1], False, True, t[2] if len(t)>2 else None)}</figure>' for t in photos)
+        ph = ''.join(f'<figure class="take-one">{media(t[0], t[1], False, True, (t[2] if len(t)>2 else None) or cur)}</figure>' for t in photos)
     ol = '<ol>'+''.join(f'<li>{rich(p)}</li>' for p in points)+'</ol>'
     return f'<div class="take"><div>{ph}</div><div><div class="label">Final thoughts</div><h3 style="font-size:22px;margin-top:12px">Key takeaways and next steps.</h3>{ol}</div></div>'
 def NEXT(items):
     return CELLS([CELL(f'<div class="label">Next step {i+1:02d}</div><p style="color:var(--ink);margin-top:12px">{rich(t)}</p>') for i,t in enumerate(items)], 3)
 def THANKS():
-    return ('<div class="thanks"><img class="sig" src="/jaz-signature.svg?v=green1" alt="Jazlynn"><div><h3>Thanks for visiting!</h3>'
+    return ('<div class="thanks"><img class="sig sm-ink" src="/jaz-signature.svg?v=ox1" alt="Jazlynn"><img class="sig sm-paper" src="/jaz-signature-paper.svg?v=ox1" alt=""><div><h3>Thanks for visiting!</h3>'
             '<p>I design better than I summarize. Let\'s fix that over a call or interview. Reach out <a href="mailto:jazkurnz06@gmail.com">here</a>.</p></div></div>')
 
 PROJECTS = [
@@ -547,9 +570,15 @@ DECK_JS = """<script>(function(){
   document.querySelectorAll('.deck').forEach(deck=>{
     const cards=[...deck.querySelectorAll('.card')], n=cards.length, num=deck.querySelector('.deck-n b');
     let top=0, busy=false;
-    const pile=deck.querySelector('.pile'), first=cards[0].querySelector('img,video');
-    const ratio=()=>{ const w=first.naturalWidth||first.videoWidth, h=first.naturalHeight||first.videoHeight; if(w&&h){ pile.style.aspectRatio=(w/h).toFixed(4); if(!deck.style.maxWidth) deck.style.maxWidth=w+'px'; } };
-    if(first){ ratio(); first.addEventListener('load',ratio); first.addEventListener('loadedmetadata',ratio); }
+    const pile=deck.querySelector('.pile');
+    /* the pile is the shape of the card on top, so every card is framed exactly; never wider than its file */
+    /* ONE SIZE. The pile takes the first card's shape once and keeps it; every card is fitted to
+       that frame (cover), so clicking through never changes the deck's size */
+    const ratio=()=>{ const m=cards[0].querySelector('img,video'); const w=m.naturalWidth||m.videoWidth, h=m.naturalHeight||m.videoHeight;
+      if(w&&h){ const maxw=Math.min(...cards.map(c=>{const e=c.querySelector('img,video'); return (e.naturalWidth||e.videoWidth)||Infinity;}));
+        if(isFinite(maxw)) deck.style.maxWidth=maxw+'px'; pile.style.height=(pile.clientWidth*h/w).toFixed(1)+'px'; } };
+    cards.forEach(c=>{ const m=c.querySelector('img,video'); m.addEventListener('load',ratio); m.addEventListener('loadedmetadata',ratio); });
+    addEventListener('resize',ratio);
     /* the caption sits under the pile, so the pile's bottom margin has to clear it */
     function place(){ cards.forEach((c,k)=>{ const d=(k-top+n)%n;
       c.className='card '+(d===0?'top':d===1?'next':d===2?'after':'gone'); }); num.textContent=top+1; }
@@ -573,7 +602,7 @@ TOC5=[('overview','Overview'),('problem','Problem'),('research','Research'),('de
 manus = case('Manus AI','06',[
  HERO('06','Manus AI','/images/manus/hero/logo.svg','Designing an AI community platform to drive adoption.','/videos/trim/manus-hero.mp4',
    'Leading user research, architecting the design system, user flows and interaction mechanisms, and ideating the UI features.','3 months, winter break',
-   ['1 product designer (me!)','1 co-founder CMO','2 engineers','2 PMs','1 business strategist'],['Retention ~30% → 65–70%','Shipped & handed off'],TOC5, bare=True),
+   ['1 product designer (me!)','1 co-founder CMO','2 engineers','2 PMs','1 business strategist'],['Retention ~30% → 65–70%','Shipped & handed off'],TOC5, bare=True, width=809),
  SECTION('overview','At a glance','Manus was growing faster than its users could keep up with.',
    ['Over winter break, I interned at Manus AI, a general AI agent that was growing faster than its users could keep up with. As the agent became more intelligent, it became harder for everyday users to understand, adopt, and actually leverage it. With the newly launched Manus 1.5 Max, feature depth was outpacing user comprehension, and the existing community was a static archive no one was navigating.',
     'I led the end-to-end redesign of the Manus Community: not a visual refresh, but a re-architecture from passive content IA to an AI-guided learning system that scales alongside both the product and its users.']),
@@ -592,7 +621,7 @@ manus = case('Manus AI','06',[
            ("I opened the community page and just scrolled. There was a lot, but I didn't know where to start or what was for me.",'Manus community member'),
            ("I want to contribute and share what I've built, but I have no idea if anyone will see it or if it even matters. There's no feedback, no signal that my work is visible.",'Manus community member')]),
    ROW(TX(H3('User interviews (13) and secondary research'), UL(['**Cognitive overload** averaged across non-technical users who couldn\'t identify what Manus could do for them specifically.','**Community structure felt like a static archive**, leading users to disengage within minutes of arriving.','**Users wanted to contribute** but had no clear pathway to do so, leaving them passive instead of active.'])),
-       TX(H3('Understanding our users'), P('Thirteen participants in two groups: **Community Newcomers (5)** and **Power Users (8)**.'))),
+       TX(H3('Understanding our users'), P('Thirteen participants in two groups: **Community Newcomers (5)** and **Power Users (8)**.')),'text'),
    CELLS([PERSONA('person:#9ba69c','Community Newcomer','Age 22–35',['**Doesn\'t know where to start** or what Manus is capable of doing for them.','**Wants to learn fast**, find relevant opportunities, and get value quickly.']),
           PERSONA('person:#827a85','Power User','Age 25–40+',['Has **no structured way** to surface or share their work meaningfully.','**Wants visibility and credibility** for their contributions within the community.'])],2),
    '<div class="label" style="margin-top:96px">Finding the gaps in the market</div><h2 style="font-size:clamp(22px,2.6vw,30px);line-height:1.2;margin-top:12px;max-width:28ch">What existed already left gaps where users needed structure, signal, and momentum.</h2>',
@@ -612,7 +641,7 @@ manus = case('Manus AI','06',[
  SECTION('testing','Testing','Testing our personalized journey feature.',[],
    '<div class="pair trio">'+FIG('/images/manus/testing/your-path-second.png','Second prototype. A simpler "choose your path" role grid.',mt=False,bare=True)+FIG('/images/manus/testing/your-path-third-v1.png','Third prototype v1. A Your Path card with role, focus area and mode.',mt=False,bare=True)+FIG('/images/manus/testing/your-path-third-v2.png','Third prototype v2. Recommended next steps expand from the card.',mt=False,bare=True)+'</div>',
    ROW(TX(H3('Adjustment to personalized path #1'), P('Based on 8 usability tests, I found that the **"Start My AI-Guided Path"** CTA had the highest click-through of any version tested. I pulled inspiration from RPG-style gamification: instead of assigning users a generic role, the system treats each user as a character with their own stats, focus areas, and progression mode, making the community feel like a world they\'re actively moving through, not a page they\'re passively browsing.','The "Powered by Manus" tag was a detail the founder specifically liked, because it demonstrated the product\'s own intelligence working natively inside the community experience.')),
-       TX(H3('Adjustment to personalized path #2'), P('After presenting to my PM, **she mentioned they were planning to add more community roles.** The original design used a fixed 3-card layout, one card per featured opportunity. It worked for the current three roles, but it would break the moment the community team launched a new one.','Every new role, Campus Leader, Ambassador, Regional Hub, would require a manual design update. I redesigned the recommendations layer to be role-agnostic and AI-driven, so the "Powered by Manus" inference layer surfaces what\'s relevant to each user, whether that\'s a hackathon, an ambassador program, or a role that doesn\'t exist yet.'))),
+       TX(H3('Adjustment to personalized path #2'), P('After presenting to my PM, **she mentioned they were planning to add more community roles.** The original design used a fixed 3-card layout, one card per featured opportunity. It worked for the current three roles, but it would break the moment the community team launched a new one.','Every new role, Campus Leader, Ambassador, Regional Hub, would require a manual design update. I redesigned the recommendations layer to be role-agnostic and AI-driven, so the "Powered by Manus" inference layer surfaces what\'s relevant to each user, whether that\'s a hackathon, an ambassador program, or a role that doesn\'t exist yet.')),'text'),
    '<div class="pair trio">'+FIG('/images/manus/testing/hackathon-card-before.png','Second prototype. Three post-it style recommendation cards.',mt=False,bare=True)+FIG('/images/manus/testing/hackathon-card-after-1.png','Third prototype, before. A single hackathon card with effort and duration.',mt=False,bare=True)+FIG('/images/manus/testing/hackathon-card-after.png','Third prototype, after. The same card with a "Why this matters" reveal.',mt=False,bare=True)+'</div>',
    ROW(FIG('/images/manus/adjustment/journey-flow.png','Mapping a comprehensive user journey and shared APIs with the PM and engineers.',mt=False), TX(H3('Mapping the journey with PM and SWEs'), P('A shared flow across the engineering team, community team, PM and design, so every opportunity surfaced by the inference layer had an owner and an API behind it.')),'r75'),
  ),
@@ -623,7 +652,7 @@ manus = case('Manus AI','06',[
    '<div class="label" style="margin-top:96px">The results</div>',
    CELLS([STAT('65–70%','Retention, up from ~30% following rollout of the AI-guided architecture.'),STAT('2.1×','Time-on-site, indicating deeper engagement with paths, events, and recommendations.'),STAT('80%','of users reported improved clarity around where to start and how to contribute meaningfully.')]),
    TX(P('Following the rollout, users specifically cited personalized paths, contextual recommendations, and "why this matters" explanations as the primary reasons they felt motivated to stay. **75%** described the experience as more personally relevant compared to the static version.')),
-   TAKE([('/images/manus/final-thoughts/photo-group.jpg','Manus AI team'),('/images/manus/final-thoughts/photo-skyline.jpg','MBS skyline from the Manus office'),('/images/manus/final-thoughts/photo-laptop.jpg','Manus workspace')],
+   TAKE([('/images/trim/manus/photo-group.png','Manus AI team','best team eva')],
         ['Designing for community at scale is less about driving engagement and more about building trust through guidance and simplicity.','Pivoting early concepts through research was critical to finding the right way to solve problems.','The most important design decision is asking "so what?" before your users have to ask it themselves.'], cur='best team eva'),
    NEXT(['Increase transparency in AI decisions by adding lightweight user feedback.','Track time-to-first-meaningful-action for actual contribution.','Finish up development and launch!']),
  ),
@@ -652,7 +681,7 @@ conduit = case('Conduit Commerce','04',[
            ("I went straight to Copilot but I still don't know how it connects to Ops or Wholesale. Is this one platform or separate tools?",'Potential user'),
            ("I get that it's AI for suppliers and retailers, but what does it actually do? 'Proactive outreach' doesn't tell me anything.",'Conduit user')]),
    ROW(TX(H3('User interviews (11) and secondary research'), UL(['**4 out of 7 current users** reported the site failed to load entirely on slower connections, before they even saw the product.','Many potential users who weren\'t used to Conduit **didn\'t understand the products** they were selling.','**8 out of 11 users** described the first design as a lifestyle brand, not a B2B operations tool.'])),
-       TX(H3('Understanding our users'), P('Eleven participants in two groups: **Core Users (7)** and **Potential Users (4)**.'))),
+       TX(H3('Understanding our users'), P('Eleven participants in two groups: **Core Users (7)** and **Potential Users (4)**.')),'text'),
    CELLS([PERSONA('person:#827a85','Core user','Age 35–40+',['**Can\'t load the site reliably** on slower connections, leaving before seeing the product at all.','**Wants to know how to optimize** their Conduit subscription. Most didn\'t even know of the Copilot launch.']),
           PERSONA('person:#9ba69c','Potential user','Age 25–35',['**Doesn\'t understand how Conduit\'s products connect**, whether Ops, Dropship, and Wholesale are one system or separate tools.','**Wants a clearer picture** of how everything fits together before committing to a demo.'])],2),
    '<div class="label" style="margin-top:96px">Finding the gaps in the market</div>',
@@ -660,7 +689,7 @@ conduit = case('Conduit Commerce','04',[
           CELL('<h3>Competitor #2</h3>'+UL(['Outcome-led copy','Strong trust signals','No AI positioning','Not operations-focused'])),
           CELL('<h3>Competitor #3</h3>'+UL(['Feature-rich and functional','Clear product hierarchy','Not aesthetics heavy','Built for technical buyers only']))]),
    ROW(TX(H3('The pattern across all competitors'), UL(['None of them were competing on aesthetics. They were competing on clarity and function.','The best performing B2B sites led with outcomes, not features. Plain language over industry jargon.'])),
-       TX(H3('The direction this revealed'), P('Conduit didn\'t need to out-design its competitors. It needed to out-communicate them. Clarity and functional UX copy were the gaps nobody in this market was filling.','Conduit is one of the first to implement AI into wholesale operations at this level. Users had no reference point for what that even meant. In situations like these, the words and the simplicity of the UI do more work than any visual treatment ever could.'))),
+       TX(H3('The direction this revealed'), P('Conduit didn\'t need to out-design its competitors. It needed to out-communicate them. Clarity and functional UX copy were the gaps nobody in this market was filling.','Conduit is one of the first to implement AI into wholesale operations at this level. Users had no reference point for what that even meant. In situations like these, the words and the simplicity of the UI do more work than any visual treatment ever could.')),'text'),
    '<div class="label" style="margin-top:48px">Our direction</div>',
    HMW('How might we write UX copy that sells the product?','How might we create animations that demonstrate?'),
  ),
@@ -703,12 +732,12 @@ somia = case('SomiaCX','08',[
    FLOW([('User discovers the app','icon','/images/somiacx/hero/phone.svg'),('UVP system shows their financial path','img','/images/trim/somia/lofi-uvp-4.png'),('Explores personalized financial features','img','/images/trim/somia/midfi-uvp-5.png'),('Users grow financial confidence with MUFG','icon','/images/manus/flow-icons/people.svg')]),
  ),
  SECTION('research','Research','Users were failing to see themselves in the product, given their diverse needs.',[],
-   ROW(THREE([('/images/somiacx/research/research-card-1-comics.png','Three customer comics: different priorities, constraints, expectations.',''),('/images/somiacx/research/research-card-2-ideas.png','The ideation board.',''),('/images/somiacx/research/research-card-3-ranked.png','Ranked priorities and findings.','')]).replace('class="three"','class="three" style="margin-top:0;grid-template-columns:1fr;gap:12px"'),
-       TX(H3('Desk research'), P('I conducted further analysis from company-shared private datasets (marketing, financial, and customer intelligence), and extensive desk research to really understand the problem.')),'r7'),
-   ROW(FIG('/images/somiacx/research/news-article-affinity-map.png','A Jakarta vehicle news article beside the UVP affinity map.',mt=False,bare=True), TX(H3('The insight that unlocked everything'), P('At the end of 2023, Indonesia had approximately **132.43 million motorcycles and 17.17 million passenger cars.** Beyond pure numbers, vehicles in Indonesia carry deep cultural weight: social signals, shared family assets, and often the single largest financial commitment a household makes. Vehicle financing installments touch every one of MUFG\'s three subsidiaries, and every one of their user segments.','It was the cultural anchor the unified experience needed.')),'r7'),
-   ROW(FIG('/images/somiacx/research/field-research.png','Testing photos, branch office visits, sticky-note workshops.',mt=False,bare=True), TX(H3('Field research'), P('I created sacrificial lo-fi concepts and took them directly into the field and to branch offices.')),'r7'),
+   '<div class="pair trio">'+FIG('/images/trim/somia/research-card-1-comics.png','Three customer comics: different priorities, constraints, expectations.',mt=False,bare=True)+FIG('/images/trim/somia/research-card-2-ideas.png','The ideation board.',mt=False,bare=True)+FIG('/images/trim/somia/research-card-3-ranked.png','Ranked priorities and findings.',mt=False,bare=True)+'</div>',
+   '<div class="solo">'+TX(H3('Desk research'), P('I conducted further analysis from company-shared private datasets (marketing, financial, and customer intelligence), and extensive desk research to really understand the problem.'))+'</div>',
+   ROW(FIG('/images/trim/somia/news-article-affinity-map.png','A Jakarta vehicle news article beside the UVP affinity map.',mt=False,bare=True), TX(H3('The insight that unlocked everything'), P('At the end of 2023, Indonesia had approximately **132.43 million motorcycles and 17.17 million passenger cars.** Beyond pure numbers, vehicles in Indonesia carry deep cultural weight: social signals, shared family assets, and often the single largest financial commitment a household makes. Vehicle financing installments touch every one of MUFG\'s three subsidiaries, and every one of their user segments.','It was the cultural anchor the unified experience needed.')),'r7'),
+   ROW(FIG('/images/trim/somia/field-research.png','Testing photos, branch office visits, sticky-note workshops.',mt=False,bare=True), TX(H3('Field research'), P('I created sacrificial lo-fi concepts and took them directly into the field and to branch offices.')),'r7'),
    '<div class="label" style="margin-top:96px">Finding the gaps in the market</div>',
-   ROW(FIG('/images/somiacx/understanding-users/bca-bri-mobile-phone.png','BCA and BRI mobile home screens, each surfacing a separate set of fragmented features.',mt=False),
+   ROW(FIG('/images/somiacx/understanding-users/bca-bri-mobile-phone.png','BCA and BRI mobile home screens, each surfacing a separate set of fragmented features.',mt=False,bare=True),
        CELLS([CELL('<h3>One feature per subsidiary</h3><p>Internal conflict with no visible unity. Not user-friendly, especially for users who are financially and digitally illiterate.</p><p class="st">Instead</p><p>Relevant financial services that unify all three subsidiaries into one coherent experience.</p>'),
               CELL('<h3>Lacks intuition</h3><p>Users couldn\'t figure out what to do for next steps.</p><p class="st">Instead</p><p>A path that shows the next step before it is asked for.</p>'),
               CELL('<h3>Findings lack "so what?"</h3><p>Data without meaning.</p><p class="st">Instead</p><p>Tie incentives to a culturally relevant commonality.</p>'),
@@ -717,7 +746,7 @@ somia = case('SomiaCX','08',[
    HMW('How might we utilize collectivism as a design principle?','How might we implement familiarity in innovation?'),
  ),
  SECTION('testing','Testing','Understanding our users.',[],
-   THREE([('/images/trim/somia/quote-car-owner.png','A car owner: wants to save for family but has no idea where to start.',''),('/images/trim/somia/quote-motorcycle-customer.png','A motorcycle customer: the language felt made for people richer than them.',''),('/images/trim/somia/quote-motorcycle-owner-2.png','A motorcycle owner: pays installments, doesn\'t know what else the app offers.','')], bare=True),
+   '<div class="pair trio">'+FIG('/images/trim/somia/quote-car-owner.png','A car owner: wants to save for family but has no idea where to start.',mt=False,bare=True)+FIG('/images/trim/somia/quote-motorcycle-customer.png','A motorcycle customer: the language felt made for people richer than them.',mt=False,bare=True)+FIG('/images/trim/somia/quote-motorcycle-owner-2.png',"A motorcycle owner: pays installments, doesn't know what else the app offers.",mt=False,bare=True)+'</div>',
    ROW(TX(H3('User interviews (12) and secondary research'), UL(['Users across income segments **couldn\'t connect their installment payments** to broader financial services available within the same ecosystem.','Lower-income users felt the product tone and language **created distance.** It didn\'t feel made for someone like them.','Internal teams had **no unified customer view.** Each subsidiary managed users independently, making holistic service slow.'])), '<div></div>'),
    CELLS([PERSONA('person:#827a85','Motorcycle owners','Income ~$193–$1,290/month',['Pays installments regularly but doesn\'t know what other financial services they qualify for within the same app.','Wants to understand the total cost of vehicle ownership without going to a branch every time.']),
           PERSONA('person:#9ba69c','Car owners','Income ~$320–$1,290+/month',['Manages banking and financing separately; no single view of their full financial picture.','Wants one place to track installments, insurance, and savings without switching between apps or branches.']),
@@ -728,12 +757,12 @@ somia = case('SomiaCX','08',[
      'UVP 1, Support (safety net). "Make the unpredictable, predictable."','UVP 2, Advisor (future planning). "Optimize your future with your own advisor."','UVP 3, Mentor (vehicle understanding). "Knowledgeable companionship with your own vehicle mentor."','UVP 4, Assistant (routine management). "Manage life chores easier with your personalized assistant."','UVP 5, Buddy (family and social savings). "Better together with a Buddy."','UVP 6, Connector (local inclusion). "Grow together with your local community."'],1)],
  ),
  SECTION('solution','Solution','A shared UVP architecture that unifies subsidiaries without disregarding their users.',[],
-   ROW(CELLS([CELL(f'<h3>{E(a)}</h3><p>{E(b)}</p><p class="st">{E(c)}</p>', '' if c=='kept' else 'dim') for a,b,c in UVPS],2).replace('margin-top:48px',''),
+   ROW(CELLS([CELL(f'<h3>{E(a)}</h3><p>{E(b)}</p><p class="st">{E(c)}</p>', '' if c=='kept' else 'dim') for a,b,c in UVPS],2).replace('class="cells c2"','class="cells c2" style="margin-top:0"'),
        TX(H3('Post stakeholder meeting'), P('After presenting all six pillars, stakeholder feedback forced hard prioritization.'), UL(['UVP 3 (Mentor) was merged with UVP 4 (Assistant); their overlap was too significant to justify maintaining separately.','UVP 5 (Shared Wallet) was flagged as low ROI.','UVP 6 (Local Investment) was misaligned with KPIs at the subsidiary level.']), P('**Four pillars moved forward. Two were cut.**')),'r75').replace('class="row r75"','class="row r75" style="align-items:start"'),
    '<div class="label" style="margin-top:96px">The results</div><p class="label" style="margin-top:6px;text-transform:none;letter-spacing:0;font-weight:500">Backed by the subsidiaries\' final assessment report.</p>',
    CELLS([STAT('−18%','user friction and support tickets in first-round UVP testing.'),STAT('~72%','retention across onboarding flows, with culturally grounded choices resonating across income and literacy levels.'),STAT('~25%','projected reduction in branch-visit dependency as users felt confident navigating financial decisions independently.')]),
    TX(P('I also learned that sometimes it\'s okay to say no to stakeholders. Clarity under stakeholder pressure is a design skill. When everyone is asking for more, the ability to say "this specific thing, done well, serves the goal better than adding another feature" requires both research grounding and confidence in the process. This is the type of skill I couldn\'t have learned from the books.')),
-   TAKE([('/images/somiacx/final-thoughts/team-selfie.png','SomiaCX team selfie'),('/images/somiacx/final-thoughts/meeting.png','A working meeting'),('/images/somiacx/final-thoughts/working.png','At the office')],
+   TAKE([('/images/trim/somia/team-selfie.png','SomiaCX team selfie','team gave me gifts')],
         ['Designing for financial inclusion across a diverse population taught me that systems-level thinking and cultural humility come to the forefront, before any other product decisions.','In-depth research is the way to go. The more participants, the more inclusive the design you\'re able to craft.','Clarity, good communication, and general business knowledge under stakeholder pressure are important skills to have.']),
    NEXT(['Hand off to the design and dev team.','Longitudinal testing of the personalization layer to validate the UVPs.','Realign with stakeholder needs.']),
  ),
@@ -830,6 +859,72 @@ ABOUT_CSS = """
 .ab .row p{color:var(--ink2)}
 @media(max-width:700px){.ab .row{grid-template-columns:90px 1fr}.ab .row p{grid-column:2}}
 .ab .off .cell .plate{margin-top:12px}
+/* ---- the flip phone, from flip-lab: closed until the reader comes near ---- */
+:root{--shell-a:#5a1d2c;--shell-b:#340414;--shell-c:#22030d;--key:#3f0c1b;--lx:50%;--ly:30%;--hx:-1px;--hy:-1px}
+/* ---------- the stage ---------- */
+.ab .flip-stage{aspect-ratio:1/1.18;display:grid;place-items:center;perspective:1500px;perspective-origin:50% 40%;user-select:none;touch-action:none}
+.ab .phone{position:relative;width:236px;height:236px;margin-top:180px;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+/* the shell: matte plastic, lit from the cursor. Four custom properties carry the light. */
+.ab .shell{background:linear-gradient(180deg,var(--shell-a) 0%,var(--shell-b) 40%,var(--shell-c) 100%);border-radius:30px;
+  box-shadow:inset var(--hx) var(--hy) 2px -.5px rgba(255,252,246,.16),inset calc(var(--hx)*-1) calc(var(--hy)*-1) 3px -1px rgba(0,0,0,.6),0 30px 60px -20px rgba(0,0,0,.45)}
+.ab .shell::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(130% 100% at var(--lx) var(--ly),rgba(255,252,246,.09),rgba(255,252,246,.02) 45%,transparent 70%)}
+/* BASE: keypad half. Stands upright; the hinge is its top edge. */
+.ab .base{position:absolute;left:0;top:0;width:236px;height:236px;transform-style:preserve-3d}
+.ab .base .shell{position:absolute;inset:0;border-radius:18px 18px 30px 30px;transform:translateZ(14px)}
+.ab .base .slab{position:absolute;inset:0;border-radius:18px 18px 30px 30px;background:var(--shell-c);transform:translateZ(0)}
+.ab .base .keys,.base .hinge{transform:translateZ(14px)}
+.ab .keys{position:absolute;left:22px;right:22px;top:26px;bottom:22px;display:grid;grid-template-rows:auto 1fr;gap:12px}
+.ab .nav{display:grid;grid-template-columns:44px 1fr 44px;gap:8px;align-items:center;justify-items:center}
+.ab .nav .ring{width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#3b3936,#1b1a19 70%);box-shadow:inset 0 1px 1px rgba(255,255,255,.12),inset 0 -2px 3px rgba(0,0,0,.6),0 2px 3px rgba(0,0,0,.5);display:grid;place-items:center;position:relative}
+.ab .nav .ring i{position:absolute;width:5px;height:5px;border-radius:50%;background:rgba(255,252,246,.28)}
+.ab .nav .ring i:nth-child(1){top:8px}.nav .ring i:nth-child(2){bottom:8px}.nav .ring i:nth-child(3){left:8px}.nav .ring i:nth-child(4){right:8px}
+.ab .nav .ring b{width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#4a4744,#262421);box-shadow:0 1px 2px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.14);cursor:pointer}
+.ab .nav .ring b:active{transform:translateY(1px)}
+.ab .soft{width:44px;height:26px;border-radius:9px;background:var(--key);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 2px 2px rgba(0,0,0,.5);display:grid;place-items:center;color:rgba(255,252,246,.55);cursor:pointer}
+.ab .soft:active{transform:translateY(1px)}
+.ab .soft svg{width:16px;height:12px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+.ab .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px}
+.ab .pad span{height:100%;min-height:22px;border-radius:7px;background:var(--key);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 2px rgba(0,0,0,.5);display:grid;place-items:center;font:500 12px var(--jak);color:rgba(255,252,246,.55)}
+.ab .hinge{position:absolute;left:14px;right:14px;top:-7px;height:14px;border-radius:7px;background:linear-gradient(180deg,#2c2a27,#151413);box-shadow:0 1px 2px rgba(0,0,0,.6)}
+/* LID: screen half. Hangs from the hinge; closed it lies over the base, open it stands above it. */
+.ab .lid{position:absolute;left:0;bottom:236px;width:236px;height:236px;transform-origin:50% 100%;transform-style:preserve-3d;
+  transform:translateZ(14px) rotateX(180deg);will-change:transform}
+.ab .lid .edge{position:absolute;left:14px;right:14px;top:0;height:12px;transform-origin:50% 0;transform:rotateX(-90deg);background:linear-gradient(90deg,var(--shell-c),var(--shell-b) 30%,var(--shell-b) 70%,var(--shell-c));border-radius:0 0 4px 4px}
+.ab .lid .face{position:absolute;inset:0}
+.ab .lid.shut .in{visibility:hidden}
+.ab .lid:not(.shut) .out{visibility:hidden}
+.ab .lid .in.shell{border-radius:30px 30px 18px 18px;transform:translateZ(0)}
+.ab .lid .out.shell{border-radius:18px 18px 30px 30px;transform:rotateX(180deg) translateZ(12px)}
+.ab .screen{position:absolute;left:18px;right:18px;top:18px;bottom:22px;border-radius:16px;overflow:hidden;background:#0d0c0b;box-shadow:0 1px 0 rgba(255,252,246,.06),0 -1px 0 rgba(0,0,0,.5)}
+.ab .screen canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ab .screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.1)}
+.ab .glare{position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.1),transparent 38%)}
+.ab .ext{position:absolute;left:50%;top:34px;width:120px;height:44px;transform:translateX(-50%);border-radius:10px;background:#0d0c0b;box-shadow:inset 0 0 0 1px rgba(255,252,246,.06);
+  display:grid;place-items:center;font:600 13px var(--jak);letter-spacing:.06em;color:rgba(200,214,178,.85);text-shadow:0 0 8px rgba(200,214,178,.35)}
+.ab .cam{position:absolute;left:50%;top:104px;width:12px;height:12px;border-radius:50%;transform:translateX(-50%);background:radial-gradient(circle at 40% 35%,#3c4448,#0b0d0e 65%);box-shadow:0 0 0 3px #1b1a19,0 0 0 4px rgba(255,255,255,.06)}
+.ab .brand{position:absolute;left:0;right:0;bottom:24px;text-align:center;font:600 9px var(--jak);letter-spacing:.3em;color:rgba(255,252,246,.28)}
+
+
+/* ---- what I keep close: four identical boxes, one item each ---- */
+.ab .keeps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
+.ab .keep{cursor:pointer;outline:0;user-select:none}
+.ab .keep .box{position:relative;margin-top:12px;aspect-ratio:1/1.15;border-radius:16px;background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px;
+  padding:28px;display:grid;place-items:center;transition:background .28s ease,outline-color .28s ease}
+.ab .keep .box img{grid-area:1/1;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;opacity:0;
+  transform:translateY(6px) scale(.98);transition:opacity .32s ease,transform .5s cubic-bezier(.33,1.18,.37,1);filter:drop-shadow(0 8px 18px rgba(0,0,0,.12));pointer-events:none}
+.ab .keep .box img.on{opacity:1;transform:none}
+.ab .keep .box img.out{opacity:0;transform:translateY(-14px) scale(1.02);transition:opacity .22s ease,transform .3s ease}
+/* hover: the item floats, the box takes the signature colour */
+.ab .keep:hover .box,.ab .keep:focus-visible .box{outline-color:transparent}
+.ab .keep.green:hover .box,.ab .keep.green:focus-visible .box{background:#9ba69c}
+.ab .keep.purple:hover .box,.ab .keep.purple:focus-visible .box{background:#827a85}
+.ab .keep:hover .box img.on,.ab .keep:focus-visible .box img.on{transform:translateY(-10px);filter:drop-shadow(0 22px 30px rgba(0,0,0,.24))}
+.ab .keep .foot{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:12px;font:500 12.5px var(--jak);color:var(--ink2)}
+.ab .keep .foot .n{color:var(--ink3);white-space:nowrap}.ab .keep .foot .n b{font-weight:600;color:var(--ink)}
+.ab .keep .foot .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:900px){.ab .keeps{grid-template-columns:repeat(2,1fr)}}
+
 .ab .reach{margin-top:24px;display:flex;gap:24px;flex-wrap:wrap;font-size:15px}
 .ab .reach a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--hair);padding-bottom:2px;transition:color .18s ease,border-color .18s ease}
 .ab .reach a:hover{color:var(--touch);border-color:var(--touch)}
@@ -865,16 +960,168 @@ WORKED = [  # years and the one line are the projects list's own; roles are hers
   ('2025','Conduit Commerce','B2B SaaS website','Designing and shipping a B2B SaaS website for an AI feature launch.'),
   ('2025','SomiaCX','UVP system','Architecting a unified UVP system for three financial subsidiaries.'),
 ]
-OFF = [('Toolkit','/images/about/toolkit/toolkit.png'),('Music','/images/about/music/albums.png'),('Films','/images/about/films/films.png'),('Reads','/images/about/books/books.png')]
+# each thing she keeps close, one item at a time; the strips are split into items in images/trim/off
+OFF = [
+  ('Toolkit', 'purple', [('/images/trim/off/toolkit-4.png','Claude Code'),('/images/trim/off/toolkit-3.png','Cursor'),('/images/trim/off/toolkit-1.png','Figma'),('/images/trim/off/toolkit-2.png','Framer'),('/images/trim/off/toolkit-5.png','Premiere Pro'),('/images/trim/off/toolkit-6.png','Illustrator')]),
+  ('Music',   'green',  [('/images/trim/off/music-1.png','Cherry Bomb'),('/images/trim/off/music-2.png','Baduizm'),('/images/trim/off/music-3.png','Love Deluxe'),('/images/trim/off/music-4.png','Because the Internet')]),
+  ('Films',   'purple', [('/images/trim/off/films-1.png','Fantastic Mr. Fox'),('/images/trim/off/films-2.png','Ping Pong the Animation'),('/images/trim/off/films-3.png','Casablanca')]),
+  ('Reads',   'green',  [('/images/trim/off/reads-1.png','Creative Machines'),('/images/trim/off/reads-2.png','Martyr!'),('/images/trim/off/reads-3.png','Kafka on the Shore')]),
+]
+def KEEP(name, tone, items):
+    """THE SHELF. One item shows at a time in a box every cell shares the size of. Hover lifts it
+    and the box takes the signature colour; a click brings the next one up."""
+    ims=''.join(f'<img src="{src}" alt="{E(t)}" data-t="{E(t)}" loading="lazy"{" class=on" if i==0 else ""}>' for i,(src,t) in enumerate(items))
+    return (f'<div class="keep {tone}" tabindex="0" role="button" aria-label="{E(name)}: click for the next">'
+            f'<div class="label">{E(name)}</div><div class="box">{ims}</div>'
+            f'<div class="foot"><span class="t">{E(items[0][1])}</span><span class="n"><b>1</b> / {len(items)}</span></div></div>')
+
+FLIP_JS = r'''<script>(function(){
+/* THE SCREEN. A four-tone ordered dither on a WebGL quad, the way the reference does it:
+   each cell of the screen takes the photo's luminance at its centre, an 8x8 Bayer threshold
+   decides which of four inks it prints in, and idle "drizzle" keeps the dark areas alive.
+   The pointer opens a soft window onto the colour photo; a drag brushes a stroke of it away
+   and the stroke heals. Photos dissolve cell by cell in random order. */
+const PHOTOS=['camera','dog-beach','teaching','snowboarding','mun','bagels'].map(n=>`/images/about/about-me-stack/${n}.jpg`);
+const P={dot:1.2,tones:3,rad:.56,rain:.6,ang:14,hold:3};
+const screen=document.getElementById('screen'), fallback=document.getElementById('fallback');
+const cv=document.createElement('canvas'); cv.style.visibility='hidden'; screen.insertBefore(cv,screen.querySelector('.glare'));
+const gl=cv.getContext('webgl',{alpha:false,antialias:false,depth:false});
+let live=false;
+if(gl){
+const VS='attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
+const FS=`precision highp float;
+uniform vec2 uRes; uniform float uDot,uTones,uFade,uSeed,uTime,uRain,uReveal,uRad; uniform vec2 uMouse;
+uniform sampler2D uA,uB,uMask; uniform float uAspA,uAspB; uniform vec3 uInk,uPaper;
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float b2(vec2 a){a=floor(a);return fract(a.x*.5+a.y*a.y*.75);}
+float b8(vec2 a){return b2(.25*a)*.0625+b2(.5*a)*.25+b2(a);}
+vec2 cover(vec2 uv,float a){float f=uRes.x/uRes.y;vec2 s=(a>f)?vec2(f/a,1.):vec2(1.,a/f);return (uv-.5)*s+.5;}
+float lum(vec3 c){return dot(c,vec3(.299,.587,.114));}
+void main(){
+  vec2 frag=gl_FragCoord.xy; vec2 uv=frag/uRes; vec2 cell=floor(frag/uDot); vec2 cuv=(cell+.5)*uDot/uRes;
+  float pickB=step(hash(cell*.7311+uSeed),uFade);
+  float La=lum(texture2D(uA,cover(cuv,uAspA)).rgb), Lb=lum(texture2D(uB,cover(cuv,uAspB)).rgb);
+  float L=mix(La,Lb,pickB); L=clamp((L-.5)*1.06+.5,0.,1.); L=pow(L,.88);
+  float q=clamp(floor(L*uTones+b8(cell))/uTones,0.,1.);
+  float spd=3.+6.*hash(vec2(cell.x,91.7)); float drop=floor(uTime*spd);
+  float onRain=step(hash(vec2(cell.x,mod(cell.y+drop,1024.))),L*1.25);
+  float sparse=(1.-smoothstep(.05,.32,L))*uRain; float pickRain=step(hash(cell.yx*1.93+4.271),sparse);
+  float on=mix(q,onRain,pickRain);
+  float R=uReveal*uRad*min(uRes.x,uRes.y);
+  float circ=(uReveal<.001)?0.:(1.-smoothstep(R*.25,R,distance(frag,uMouse)));
+  float rev=clamp(circ+texture2D(uMask,uv).a,0.,1.);
+  float tear=clamp(rev*1.45-hash(cell*2.17+9.13)*.45,0.,1.);
+  vec3 photo=mix(texture2D(uA,cover(uv,uAspA)).rgb,texture2D(uB,cover(uv,uAspB)).rgb,uFade);
+  gl_FragColor=vec4(mix(mix(uInk,uPaper,on),photo,tear),1.);
+}`;
+const mk=(t,s)=>{const x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(x));return x;};
+const pg=gl.createProgram();gl.attachShader(pg,mk(gl.VERTEX_SHADER,VS));gl.attachShader(pg,mk(gl.FRAGMENT_SHADER,FS));gl.linkProgram(pg);gl.useProgram(pg);
+const q=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,q);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+const aL=gl.getAttribLocation(pg,'a');gl.enableVertexAttribArray(aL);gl.vertexAttribPointer(aL,2,gl.FLOAT,false,0,0);
+const U={};['uRes','uDot','uTones','uFade','uSeed','uTime','uRain','uReveal','uRad','uMouse','uA','uB','uMask','uAspA','uAspB','uInk','uPaper'].forEach(n=>U[n]=gl.getUniformLocation(pg,n));
+gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
+const tex=src=>{const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);['TEXTURE_MIN_FILTER','TEXTURE_MAG_FILTER'].forEach(k=>gl.texParameteri(gl.TEXTURE_2D,gl[k],gl.LINEAR));['TEXTURE_WRAP_S','TEXTURE_WRAP_T'].forEach(k=>gl.texParameteri(gl.TEXTURE_2D,gl[k],gl.CLAMP_TO_EDGE));gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,src);return t;};
+const imgs=PHOTOS.map(s=>{const im=new Image();im.src=s;return im;}); const T=[]; const asp=i=>imgs[i].naturalWidth?imgs[i].naturalWidth/imgs[i].naturalHeight:1;
+const MW=96,MH=128,mc=document.createElement('canvas');mc.width=MW;mc.height=MH;const mx=mc.getContext('2d');
+const sp=document.createElement('canvas');sp.width=sp.height=64;{const c=sp.getContext('2d');const g=c.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(.55,'rgba(255,255,255,.45)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,64,64);}
+const maskT=tex(mc); let maskE=0,maskDirty=false,heal=0;
+function stamp(x,y){const r=MW*.17;mx.drawImage(sp,x-r,y-r,r*2,r*2);maskE=1;maskDirty=true;heal=1.4;}
+function clearMask(){mx.clearRect(0,0,MW,MH);maskE=0;maskDirty=true;}
+let idx=0,nextIdx=idx,fading=false,fadeT=0,holdT=0,seed=Math.random()*61.7,hovering=false,dragging=false,reveal=0,mX=-1e4,mY=-1e4,paused=false,simT=0,W=0,H=0,dot=3,dpr=1;
+function ink(){const cs=getComputedStyle(document.documentElement);const p=h=>{h=h.trim();const m=h.match(/^#([0-9a-f]{6})$/i);if(m)return [0,2,4].map(i=>parseInt(m[1].slice(i,i+2),16)/255);const r=h.match(/rgba?\(([^)]+)\)/);return r?r[1].split(',').slice(0,3).map(v=>+v/255):[0,0,0];};
+  const a=p(cs.getPropertyValue('--ink')),b=p(cs.getPropertyValue('--paper'));const l=c=>.299*c[0]+.587*c[1]+.114*c[2];return l(a)<=l(b)?[a,b]:[b,a];}
+function resize(){const w=screen.clientWidth,h=screen.clientHeight;if(!w||!h)return;dpr=Math.min(2,devicePixelRatio||1);W=Math.round(w*dpr);H=Math.round(h*dpr);if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}dot=Math.max(2,Math.round(P.dot*dpr));}
+new ResizeObserver(resize).observe(screen);resize();
+function beginFade(to){if(fading||to===idx||!T[to])return;nextIdx=to;fading=true;fadeT=0;seed=Math.random()*61.7;}
+function endFade(){idx=nextIdx;fading=false;fadeT=0;holdT=0;clearMask();}
+function step(d){for(let s=1;s<PHOTOS.length;s++){const t=(idx+d*s+PHOTOS.length*s)%PHOTOS.length;if(T[t])return t;}return -1;}
+let prev=performance.now();
+function frame(now){const dt=Math.min(.05,(now-prev)/1000);prev=now;simT=(simT+dt)%600;
+  for(let i=0;i<PHOTOS.length;i++) if(!T[i]&&imgs[i].complete&&imgs[i].naturalWidth) T[i]=tex(imgs[i]);
+  reveal+=(((hovering||dragging)?1:0)-reveal)*(1-Math.exp(-dt*6));
+  if(fading){fadeT+=dt*1000;if(fadeT>=850)endFade();} else if(!paused&&!hovering&&!dragging){holdT+=dt*1000;if(holdT>=P.hold*1000){const to=step(1);if(to>=0)beginFade(to);else holdT=0;}}
+  if(maskE>.003&&!dragging){heal-=dt;if(heal<=0){mx.globalCompositeOperation='destination-out';mx.globalAlpha=Math.min(1,dt*.28);mx.fillStyle='#fff';mx.fillRect(0,0,MW,MH);mx.globalCompositeOperation='source-over';mx.globalAlpha=1;maskE*=1-Math.min(1,dt*.28);if(maskE<=.003)clearMask();else maskDirty=true;}}
+  if(W&&T[idx]){const tB=(fading&&T[nextIdx])?T[nextIdx]:T[idx];if(maskDirty){gl.bindTexture(gl.TEXTURE_2D,maskT);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,mc);maskDirty=false;}
+    gl.viewport(0,0,W,H);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,T[idx]);gl.uniform1i(U.uA,0);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,tB);gl.uniform1i(U.uB,1);gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,maskT);gl.uniform1i(U.uMask,2);
+    const [I,Pp]=ink();gl.uniform3fv(U.uInk,I);gl.uniform3fv(U.uPaper,Pp);
+    gl.uniform2f(U.uRes,W,H);gl.uniform1f(U.uDot,dot);gl.uniform1f(U.uTones,P.tones);gl.uniform1f(U.uFade,fading?Math.min(1,fadeT/850):0);gl.uniform1f(U.uSeed,seed);gl.uniform1f(U.uTime,simT);gl.uniform1f(U.uRain,P.rain);gl.uniform1f(U.uReveal,reveal);gl.uniform1f(U.uRad,P.rad);gl.uniform2f(U.uMouse,mX,mY);gl.uniform1f(U.uAspA,asp(idx));gl.uniform1f(U.uAspB,asp(fading?nextIdx:idx));
+    gl.drawArrays(gl.TRIANGLES,0,3); if(!live){live=true;cv.style.visibility='';fallback.style.visibility='hidden';}}
+  requestAnimationFrame(frame);}
+requestAnimationFrame(frame);
+const pt=e=>{const r=screen.getBoundingClientRect();return [(e.clientX-r.left)*dpr,(r.height-(e.clientY-r.top))*dpr,(e.clientX-r.left)/r.width*MW,(e.clientY-r.top)/r.height*MH];};
+screen.addEventListener('pointerenter',()=>hovering=true);screen.addEventListener('pointerleave',()=>{hovering=false;dragging=false;});
+screen.addEventListener('pointermove',e=>{const [x,y,ux,uy]=pt(e);mX=x;mY=y;if(dragging)stamp(ux,uy);});
+screen.addEventListener('pointerdown',e=>{dragging=true;const [x,y,ux,uy]=pt(e);mX=x;mY=y;stamp(ux,uy);});
+addEventListener('pointerup',()=>dragging=false);
+document.getElementById('prev').addEventListener('click',e=>{e.stopPropagation();const t=step(-1);if(t>=0)beginFade(t);});
+document.getElementById('next').addEventListener('click',e=>{e.stopPropagation();const t=step(1);if(t>=0)beginFade(t);});
+document.getElementById('play').addEventListener('click',e=>{e.stopPropagation();paused=!paused;e.target.title=paused?'Play':'Pause';});
+}
+/* THE HINGE. Closed, the lid lies over the keys with its outer face up; near it, it swings up
+   and back a little past flat, on an ease with a small overshoot, the way a real one clicks open. */
+const phone=document.getElementById('phone'), stage=document.getElementById('stage'), lid=document.getElementById('lid');
+/* THE SWING. The lid's angle is animated here, frame by frame, from where it is to where it is
+   going, on an ease with a small overshoot at the open end and a firm stop at the closed end.
+   The face showing is decided from the same angle: the cover until the lid passes edge-on
+   (90 degrees), the inside after. One number drives both, so they cannot disagree. */
+let open=false, ang=180, from=180, to=180, t0=0, dur=900, raf=0;
+const ease=(x,over)=>{ if(!over) return 1-Math.pow(1-x,3); const c=1.4; return 1+c*Math.pow(x-1,3)+c*Math.pow(x-1,2); };
+function place(a){ lid.style.transform=`translateZ(14px) rotateX(${a}deg)`; lid.classList.toggle('shut',a>90); }
+function tick(now){ const x=Math.min(1,(now-t0)/dur); const e=ease(x, to<90); ang=from+(to-from)*e; place(ang);
+  if(x<1) raf=requestAnimationFrame(tick); else { raf=0; ang=to; place(ang); } }
+function setOpen(on){
+  const stayEl=document.getElementById('stay'); const want=on||!!(stayEl&&stayEl.checked); if(want===open) return; open=want;
+  from=ang; to=open?-P.ang:180; dur=open?900:700; t0=performance.now(); cancelAnimationFrame(raf); raf=requestAnimationFrame(tick);
+}
+place(180);
+let leaveT=0;
+stage.addEventListener('pointerenter',()=>{clearTimeout(leaveT);setOpen(true);});stage.addEventListener('pointerleave',()=>{clearTimeout(leaveT);leaveT=setTimeout(()=>{setOpen(false);phone.style.transform='';},120);});
+/* the light and the tilt follow the pointer across the stage */
+stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+  document.documentElement.style.setProperty('--lx',`${x*100}%`);document.documentElement.style.setProperty('--ly',`${y*100}%`);
+  document.documentElement.style.setProperty('--hx',`${(x-.5)*-3}px`);document.documentElement.style.setProperty('--hy',`${(y-.5)*-3}px`);
+  phone.style.transform=`rotateY(${(x-.5)*14}deg) rotateX(${(.5-y)*8}deg)`;});
+/* the closed lid tells the time in New York */
+const ext=document.getElementById('ext');
+(function tick(){ext.textContent=new Date().toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'});setTimeout(tick,15000);})();
+
+})();</script>'''
+
 about = page('About', f"""<main class="ab"><div class="wrap">
   <div class="thesis"><div class="label">About</div>
     <h1>I make things people can feel, from paper to product.</h1>
     <p>Product designer and design engineer in New York. Cognitive science and HCI at Columbia.</p></div>
 
   <div class="hello">
-    <div class="die-wrap" id="die-wrap" aria-label="A die of six photographs. Drag to roll it."><div class="die" id="die">{''.join(f'<div class="face f{i+1}"><img src="/images/about/about-me-stack/{f}.jpg" alt="" decoding="async"><i></i></div>' for i,f in enumerate(FACES))}</div></div>
+    <div class="flip-stage" id="stage" aria-label="A flip phone. Come near and it opens on six photographs; the keys change the photo."><div class="phone" id="phone">
+            <div class="base">
+              <div class="slab"></div>
+              <div class="shell"></div>
+              <div class="hinge"></div>
+              <div class="keys">
+                <div class="nav">
+                  <div class="soft" id="prev" title="Previous"><svg viewBox="0 0 26 18"><path d="M11.5 2.6 3.4 9l8.1 6.4V2.6ZM22.6 2.6 14.5 9l8.1 6.4V2.6Z"/></svg></div>
+                  <div class="ring"><i></i><i></i><i></i><i></i><b id="play" title="Pause"></b></div>
+                  <div class="soft" id="next" title="Next"><svg viewBox="0 0 26 18"><path d="M3.4 2.6 11.5 9l-8.1 6.4V2.6ZM14.5 2.6 22.6 9l-8.1 6.4V2.6Z"/></svg></div>
+                </div>
+                <div class="pad"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>*</span><span>0</span><span>#</span></div>
+              </div>
+            </div>
+            <div class="lid" id="lid">
+              <div class="edge"></div>
+              <div class="face in shell">
+                <div class="screen" id="screen"><img id="fallback" src="/images/about/about-me-stack/camera.jpg" alt=""><div class="glare"></div></div>
+                <div class="brand">JAZLYNN</div>
+              </div>
+              <div class="face out shell">
+                <div class="ext" id="ext">--:--</div>
+                <div class="cam"></div>
+              </div>
+            </div>
+          </div>
+    </div>
     <div class="bio"><div class="label">Hello</div>
-      <p style="margin-top:12px">I used to be a proper artist. At fifteen my work was being exhibited, auctioned and sold, and most of it came from the beach. I spent my childhood going back and forth to Bali, and nature was what I drew from. Starting that young shaped how I see things: <b>the best ideas, the ones that feel new, arrive where unrelated fields meet.</b></p>
+      <p style="margin-top:12px">I used to be a proper artist. At fifteen my work was being exhibited, auctioned and sold, and most of it came from the beach. I spent my childhood going back and forth to Bali, and nature was what I drew from. Starting that young shaped how I see things: <b style="color:#9ba69c">the best ideas, the ones that feel new, arrive where unrelated fields meet.</b></p>
       <p>That is why I ended up in design engineering and product management. Both sit where people meet technology, just through different mediums, and I have never liked being confined to one. What started as paper and pencil became paintings, then products.</p>
       <p>Life is too short to be constrained to one medium. Learning new forms of knowledge with empathy, care and intent is the quality I carry into every piece of work.</p>
     </div>
@@ -884,17 +1131,28 @@ about = page('About', f"""<main class="ab"><div class="wrap">
     {CELLS([CELL(f'<span class="n">{i+1:02d}</span><h3>{E(x)}</h3>') for i,x in enumerate(FOCUS)], 3)}</div>
 
   <div class="sec"><div class="label">Experience</div><h2>Where I&rsquo;ve worked</h2>
-    <div class="rows">{''.join(f'<div class="row"><span class="y">{y}</span><span class="o">{E(o)}<small>{E(r)}</small></span><p>{E(l)}</p></div>' for y,o,r,l in WORKED)}</div></div>
+    <div class="rows" data-cur="reach out for resume">{''.join(f'<div class="row"><span class="y">{y}</span><span class="o">{E(o)}<small>{E(r)}</small></span><p>{E(l)}</p></div>' for y,o,r,l in WORKED)}</div></div>
 
   <div class="sec"><div class="label">Education</div><h2>Where I&rsquo;ve studied</h2>
-    <div class="rows"><div class="row"><span class="y">Now</span><span class="o">Columbia University<small>New York</small></span><p>Cognitive Science, with a specialization in Human-Computer Interaction.</p></div></div></div>
+    <div class="rows"><div class="row"><span class="y">Now</span><span class="o">Columbia University<small>New York</small></span><p>Cognitive Science, with a specialization in Human-Computer Interaction.</p></div><div class="row"><span class="y">2023 to 2025</span><span class="o">Shoreline College<small>Washington</small></span><p>Direct Transfer Associate of Arts.</p></div></div></div>
 
   <div class="sec off"><div class="label">Off the clock</div><h2>What I keep close</h2>
-    {CELLS([CELL(f'<div class="label">{E(n)}</div><div class="plate"><img src="{src}" alt="{E(n)}" loading="lazy"></div>') for n,src in OFF], 4)}</div>
+    <div class="keeps">{''.join(KEEP(n,t,items) for n,t,items in OFF)}</div></div>
 
   <div class="sec"><div class="label">Contact</div><h2>Let&rsquo;s work together.</h2>
     <div class="reach"><span class="now"><i class="dot"></i>Available for 2026 roles</span><a href="mailto:jazkurnz06@gmail.com">jazkurnz06@gmail.com</a><a href="https://www.linkedin.com/in/jazlynn-kurniandra-a456292a8/" target="_blank" rel="noopener">LinkedIn &#8599;</a><a href="https://x.com/jazlynnkurni" target="_blank" rel="noopener">X &#8599;</a></div></div>
-</div></main>""", CASE_CSS+ABOUT_CSS).replace('</body></html>', DIE_JS+'</body></html>')
+</div></main><script>(function(){{
+  document.querySelectorAll('.keep').forEach(k=>{{
+    const ims=[...k.querySelectorAll('img')], t=k.querySelector('.foot .t'), n=k.querySelector('.foot .n b'); let i=0, busy=false;
+    function next(){{ if(busy) return; busy=true; const a=ims[i]; i=(i+1)%ims.length; const b=ims[i];
+      a.classList.remove('on'); a.classList.add('out'); b.classList.add('on'); t.textContent=b.dataset.t; n.textContent=i+1;
+      setTimeout(()=>{{ a.classList.remove('out'); busy=false; }},320); }}
+    k.addEventListener('click',next);
+    k.addEventListener('keydown',e=>{{ if(e.key==='Enter'||e.key===' '||e.key==='ArrowRight'){{ e.preventDefault(); next(); }} }});
+  }});
+}})();</script>
+{FLIP_JS}
+""", CASE_CSS+ABOUT_CSS).replace('</body></html>', DIE_JS+'</body></html>')
 
 # ------------------------------------------------------------------ ART GALLERY
 # The guestbook wall from jazlynnwashere.com/art-gallery, rebuilt in this system. What

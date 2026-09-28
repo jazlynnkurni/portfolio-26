@@ -17,7 +17,7 @@
   var script = document.currentScript;
   var base = script && script.src ? new URL('.', script.src).href : new URL('.', document.baseURI).href;
   function img(id, file) {
-    return '<img class="sm-' + id + '" src="' + base + file + '?v=green1" alt="" aria-hidden="true" draggable="false">';
+    return '<img class="sm-' + id + '" src="' + base + file + '?v=ox1" alt="" aria-hidden="true" draggable="false">';
   }
   if (!document.getElementById('site-mark-styles')) {
     var st = document.createElement('style');
@@ -39,6 +39,7 @@
         'opacity:0;transform:translateY(-8px);clip-path:inset(0 0 100% 0);' +
         'transition:opacity .3s ease,transform .5s cubic-bezier(.22,1,.36,1),clip-path .5s cubic-bezier(.22,1,.36,1)}' +
       'site-mark:hover .sm-blurb{opacity:1;transform:none;clip-path:inset(0 0 -20% 0);transition-delay:.06s}' +
+      'site-mark .sm-blurb b span{display:inline;margin:0}' +
       'site-mark .sm-blurb b,site-mark .sm-blurb span{display:block}' +
       'site-mark .sm-blurb span{margin-top:3px}' +
       'site-mark .sm-blurb b{font-weight:400;color:var(--ink,#14171B);margin-bottom:6px}' +
@@ -52,7 +53,7 @@
     var href = el.getAttribute('href');
     var inner = img('ink', 'jaz-signature.svg') + img('paper', 'jaz-signature-paper.svg');
     /* four facts, four rows: what she does, where she is, where she was, where she studies */
-    var blurb = '<p class="sm-blurb"><b>Design engineer who creates charming products.</b>' +
+    var blurb = '<p class="sm-blurb"><b><span style="color:#A99939">Design engineer</span> who creates <span style="color:#A99939">charming products</span>.</b>' +
       '<span>Prev @ Manus AI.</span>' +
       '<span>HCI @ Columbia University \u201927.</span></p>';
     return href
