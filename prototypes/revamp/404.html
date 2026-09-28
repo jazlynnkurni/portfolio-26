@@ -3,7 +3,7 @@
 <title>404 — Jazlynn Kurniandra</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="/site-mark.js?v=sig6"></script>
+<script src="/site-mark.js?v=sig8"></script>
 <style>
 :root{--jak:"Plus Jakarta Sans",sans-serif;--hel:"Helvetica Neue",Helvetica,Arial,sans-serif;
   --gold:#A99939;--oxblood:#340414;--charcoal:#1C1A17}
@@ -21,7 +21,7 @@ h1,h2,h3,h4{font-family:var(--jak);font-weight:500;letter-spacing:-.012em;text-w
 p{text-wrap:pretty;margin:0}
 a{color:inherit}
 .wrap{max-width:1180px;margin:0 auto;padding:0 30px}
-.label{font-family:var(--jak);font-weight:600;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3)}
+.label{font-family:var(--jak);font-weight:600;font-size:10.5px;line-height:1.5;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3)}
 /* nav: the pill from index.html, verbatim */
 nav{position:fixed;top:0;left:0;right:0;z-index:60;pointer-events:none}
 nav .in{display:flex;justify-content:space-between;align-items:center;padding-top:24px}
@@ -62,6 +62,15 @@ footer a:hover{color:var(--touch)}
     transform:scale(1);transition:transform .46s cubic-bezier(.33,1.18,.37,1),opacity .32s ease,box-shadow .32s ease}
   [data-theme="dark"] #cur i{background:var(--ink);box-shadow:0 3px 14px rgba(250,249,247,.26)}
   #cur.on{opacity:1}
+  #cur{transition:height .32s cubic-bezier(.33,1.18,.37,1),width .5s cubic-bezier(.33,1.18,.37,1) .05s}
+  #cur:not(.pill){transition:width .34s cubic-bezier(.2,.7,.2,1),height .3s cubic-bezier(.2,.7,.2,1) .1s}
+  #cur b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;font:500 12.5px var(--jak);letter-spacing:.01em;
+    color:var(--paper);opacity:0;transition:opacity .16s ease}
+  #cur.pill{width:var(--pw,180px);height:34px}
+  #cur.pill i{border-radius:999px;transform:none;opacity:1;background:var(--ink);box-shadow:0 8px 26px rgba(28,26,23,.22)}
+  #cur i{transition:transform .32s cubic-bezier(.33,1.18,.37,1),opacity .2s ease,border-radius .3s ease,background .2s ease}
+  #cur.pill b{opacity:1;transition:opacity .22s ease .22s}
+  [data-theme="dark"] #cur b{color:var(--paper)}
   #cur.hot i{transform:scale(2.6);opacity:.62;box-shadow:0 6px 22px rgba(28,26,23,.22)}
   [data-theme="dark"] #cur.hot i{box-shadow:0 6px 22px rgba(250,249,247,.2)}
   #cur.down i{transform:scale(2.1);opacity:.75}
@@ -99,7 +108,7 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
 .cs-hero .eyebrow{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
 .cs-hero .eyebrow .logo{height:22px;width:auto;opacity:.9}
 [data-theme="dark"] .cs-hero .eyebrow .logo{filter:invert(1) hue-rotate(180deg)}
-.cs-hero h1{font-size:clamp(28px,4vw,44px);line-height:1.12;max-width:22ch;margin-top:24px}
+.cs-hero h1{font-size:clamp(28px,4vw,44px);line-height:1.12;max-width:22ch;margin-top:12px}
 .cs-hero .facts{display:grid;grid-template-columns:repeat(12,1fr);gap:24px;margin-top:48px;border-top:1px solid var(--hair);padding-top:24px}
 .cs-hero .facts>div{grid-column:span 3}
 .cs-hero .facts p{font-size:14px;line-height:1.55;color:var(--ink2);margin-top:8px}
@@ -107,17 +116,7 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
 .cs-hero .facts ul{list-style:none;margin:8px 0 0;padding:0;font-size:14px;line-height:1.55;color:var(--ink2)}
 @media(max-width:900px){.cs-hero .facts>div{grid-column:span 6}}
 @media(max-width:560px){.cs-hero .facts>div{grid-column:span 12}}
-.cs-hero .plate{margin-top:48px}
-/* ============ THE PRINT ==========================================================
- * Every cover goes through the same press: reduced to tone, the tone mapped onto her three
- * (oxblood in the shadows, gold through the middle, paper in the lights), and a screen laid
- * over the top. The riso disc's logic on a photograph. An SVG filter rather than a canvas,
- * so it costs nothing and it works on the videos. The colourway lives in the tableValues. */
-.cs-hero .plate img,.cs-hero .plate video{filter:url(#print-light) contrast(1.06);mix-blend-mode:normal}
-[data-theme="dark"] .cs-hero .plate img,[data-theme="dark"] .cs-hero .plate video{filter:url(#print-dark) contrast(1.04)}
-.cs-hero .plate::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
-  background:radial-gradient(circle,rgba(20,23,27,.9) 0 27%,transparent 33%) 0 0/4px 4px;mix-blend-mode:multiply;opacity:.16}
-[data-theme="dark"] .cs-hero .plate::after{background:radial-gradient(circle,rgba(250,249,247,.8) 0 27%,transparent 33%) 0 0/4px 4px;mix-blend-mode:screen;opacity:.10}
+.cs-hero .plate{width:min(100%,920px);margin:48px auto 0}
 /* the table of contents is a row of the hero's cells */
 .toc{display:flex;flex-wrap:wrap;margin-top:24px}
 .toc a{display:flex;align-items:center;height:40px;padding:0 18px;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
@@ -144,7 +143,13 @@ section.cs:last-of-type{padding-bottom:32px}
 .row.r7{grid-template-columns:5fr 7fr}
 .row.r75{grid-template-columns:7fr 5fr}
 @media(max-width:900px){.row,.row.r7,.row.r75{grid-template-columns:1fr;gap:24px}}
+.solo{margin-top:48px;max-width:64ch}
+/* two small sketches side by side, shown under their file size so they stay crisp */
+.pair{display:grid;grid-template-columns:repeat(2,minmax(0,170px));gap:16px}
+.pair.trio{grid-template-columns:repeat(3,1fr);margin-top:48px}
+.pair figure{margin:0}
 .tx h3{font-size:17px;line-height:1.3}
+.tx ul+h3,.tx p+h3,.tx ol+h3{margin-top:28px}
 .tx h3 .a{color:var(--ink3);font-weight:400}
 .tx p{font-size:15.5px;line-height:1.62;color:var(--ink2);margin-top:12px}
 .tx p b,.tx li b{font-weight:400;color:var(--ink)}
@@ -156,12 +161,38 @@ section.cs:last-of-type{padding-bottom:32px}
 .plate{position:relative;border-radius:20px;overflow:hidden;background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px}
 .plate img,.plate video{display:block;width:100%;height:auto}
 .plate.pad{padding:24px}
+/* a bare plate is no plate: the picture draws its own edges, so a box around it was a box in a box */
+.plate.bare{background:transparent;outline:0;border-radius:0}
 .plate.pad img,.plate.pad video{border-radius:8px}
 figure{margin:0}
 figure.mt{margin-top:48px}
 figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;max-width:60ch}
-.three{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
-.three figcaption{margin-top:10px}
+/* THE DECK. Three plates in a row gave each image a third of the width, which is
+   too small to read. Now one card holds the width and the others wait under it: the pile
+   shows two edges below the top card so the reader knows there is more, and a click sends
+   the top card to the bottom. Same size for every card, so nothing jumps. */
+.deck{margin-top:48px;cursor:pointer;outline:0}
+.deck .pile{position:relative;aspect-ratio:16/10;margin-bottom:20px}
+.deck .card{position:absolute;inset:0;margin:0;transform-origin:50% 100%;
+  transition:transform .48s cubic-bezier(.2,.7,.2,1),opacity .3s ease}
+.deck .card .plate{height:100%;margin:0}
+.deck .card .plate{background:var(--plate)}
+.deck .card .plate.bare{background:transparent}
+.deck .card .plate.bare img{border-radius:12px}
+/* the pile takes the FIRST card's own proportions (set on load), so the cards in a group,
+   which come from the same flow, are shown whole and all at one size */
+.deck .card .plate img,.deck .card .plate video{height:100%;object-fit:contain}
+.deck .card figcaption{position:absolute;left:0;right:0;top:calc(100% + 12px);opacity:0;transition:opacity .25s ease}
+.deck .card.top figcaption{opacity:1;transition-delay:.18s}
+.deck .card.top{z-index:3}
+.deck .card.next{z-index:2;transform:translateY(10px) scale(.965)}
+.deck .card.after{z-index:1;transform:translateY(20px) scale(.93)}
+.deck .card.gone{z-index:0;opacity:0;transform:translateY(20px) scale(.93)}
+.deck .card.leaving{z-index:4;transform:translateY(56px) scale(1.02);opacity:0}
+.deck .deck-foot{display:flex;justify-content:space-between;align-items:baseline;margin-top:44px;font-family:var(--jak);font-weight:500;font-size:12.5px;color:var(--ink3)}
+.deck .deck-foot b{font-weight:600;color:var(--ink)}
+.deck:focus-visible .pile{outline:2px solid var(--ink);outline-offset:6px;border-radius:20px}
+.deck .card figcaption{margin-top:0}
 @media(max-width:700px){.three{grid-template-columns:1fr}}
 /* cells: the hero grid's object, holding text */
 .cells{display:grid;grid-template-columns:repeat(3,1fr);margin-top:48px}
@@ -177,6 +208,7 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 .cell .big{font:300 40px/1 var(--hel);letter-spacing:-.02em;color:var(--ink);margin:0}
 .cell .big+p{margin-top:12px}
 .cell img.av{width:56px;height:56px;border-radius:50%;object-fit:cover;outline:1px solid var(--outline);outline-offset:-1px;display:block;margin-bottom:14px}
+.cell svg.av{width:56px;height:56px;display:block;margin-bottom:14px}
 .cell .kv{font-size:12.5px;color:var(--ink3);margin-top:4px}
 .cell.ink{background:var(--flick-b);color:var(--paper);border-color:transparent}
 .cell.ink p,.cell.ink h3{color:inherit}
@@ -197,10 +229,12 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 .flow{display:grid;grid-template-columns:repeat(4,1fr);margin-top:48px}
 .flow .cell{display:flex;flex-direction:column;gap:14px}
 .flow .cell p{margin:0;font-size:14px;color:var(--ink)}
-.flow .cell .m{border-radius:12px;overflow:hidden;outline:1px solid var(--outline);outline-offset:-1px;background:var(--plate)}
-.flow .cell .m video,.flow .cell .m img{display:block;width:100%;height:auto}
-.flow .cell .ic{height:48px;width:auto;opacity:.85}
-[data-theme="dark"] .flow .cell .ic{filter:invert(1)}
+/* four equal plates: the recordings fill theirs, the icons sit centred in the same frame,
+   so a step that is a drawing and a step that is a recording are the same object */
+.flow .cell .m{border-radius:12px;overflow:hidden;outline:1px solid var(--outline);outline-offset:-1px;background:var(--plate);
+  aspect-ratio:1920/1042;display:grid;place-items:center}
+.flow .cell .m video,.flow .cell .m img{display:block;width:100%;height:100%;object-fit:cover}
+.flow .cell .m.icon .ic{width:auto;height:44%;color:var(--ink2)}
 @media(max-width:900px){.flow{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.flow{grid-template-columns:1fr}}
 /* takeaways */
@@ -212,17 +246,24 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 @media(max-width:900px){.take{grid-template-columns:1fr}}
 /* thanks + more */
 .thanks{margin-top:96px;display:flex;gap:24px;align-items:center;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:24px 0}
-.thanks img{width:96px;height:96px;object-fit:contain}
+.thanks img.sig{width:118px;height:auto;flex:0 0 auto}
 .thanks h3{font-size:17px}
 .thanks p{font-size:15px;color:var(--ink2);margin-top:6px;line-height:1.55}
 .thanks a{color:var(--touch)}
-.more{margin-top:96px}
+.more{margin:96px 0}
 .more .cells{margin-top:16px}
 .more a.cell{display:block;text-decoration:none;color:inherit;transition:background .16s ease}
 .more a.cell:hover{background:color-mix(in srgb,var(--ink) 4%,transparent)}
 .more a.cell .t{font:300 28px/1.15 var(--hel);letter-spacing:-.015em;color:var(--ink);display:block}
 .more a.cell p{margin-top:8px}
 .more a.cell .n{font:500 11px var(--jak);letter-spacing:.12em;color:var(--ink3);display:block;margin-bottom:12px}
+
+
+/* IN THE SHEET. Opened from the home page, the case study is the sheet's whole content:
+   no nav, no footer, the sheet's own chrome carries the tabs and the close. */
+html.sheet nav,html.sheet footer,html.sheet site-mark{display:none}
+html.sheet .cs-hero{padding-top:56px}
+html.sheet body{background:transparent}
 
 .four{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 0 96px}
 /* the numerals are three of the hero's cells, at display size. Same rules, same stems,
@@ -238,7 +279,7 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 .four .back{display:inline-flex;align-items:center;gap:8px;margin-top:32px;font:400 14.5px var(--hel);color:var(--ink);text-decoration:none;
   border:1px solid var(--hair);padding:12px 18px;transition:background .16s ease,color .16s ease}
 .four .back:hover{background:var(--flick-b);color:var(--paper);border-color:transparent}
-</style><script>(function(){const q=new URLSearchParams(location.search).get('theme');let t=q||localStorage.getItem('theme');
+</style><script>(function(){if(new URLSearchParams(location.search).get('sheet')=='1')document.documentElement.classList.add('sheet');const q=new URLSearchParams(location.search).get('theme');let t=q||localStorage.getItem('theme');
 if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script></head><body>
 <nav><div class="wrap in">
   <site-mark href="/"></site-mark>
@@ -254,6 +295,16 @@ if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches
   <filter id="print-light" color-interpolation-filters="sRGB">
     <feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"/>
     <feComponentTransfer><feFuncR type="table" tableValues="0.204 0.980"/><feFuncG type="table" tableValues="0.016 0.976"/><feFuncB type="table" tableValues="0.078 0.969"/></feComponentTransfer>
+  </filter>
+  <!-- DITHER, purple: the photograph goes to grey, takes a fine grain, is cut to seven steps so the
+       grain reads as a dot screen, then the steps are mapped from the signature purple to paper -->
+  <filter id="dither-purple" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+    <feColorMatrix in="SourceGraphic" type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0" result="g"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="1" seed="7" stitchTiles="stitch" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  1 0 0 0 0" result="nl"/>
+    <feComposite in="g" in2="nl" operator="arithmetic" k1="0" k2="1" k3="0.55" k4="-0.27" result="gn"/>
+    <feComponentTransfer in="gn" result="q"><feFuncR type="discrete" tableValues="0 .17 .33 .5 .67 .83 1"/><feFuncG type="discrete" tableValues="0 .17 .33 .5 .67 .83 1"/><feFuncB type="discrete" tableValues="0 .17 .33 .5 .67 .83 1"/></feComponentTransfer>
+    <feComponentTransfer in="q"><feFuncR type="table" tableValues="0.510 0.980"/><feFuncG type="table" tableValues="0.478 0.976"/><feFuncB type="table" tableValues="0.522 0.969"/></feComponentTransfer>
   </filter>
   <!-- on charcoal the shadows are the ground itself -->
   <filter id="print-dark" color-interpolation-filters="sRGB">
@@ -289,10 +340,18 @@ if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches
 </script>
 <footer><div class="wrap"><div class="rule"></div><div class="in">
   <span style="font-size:12.5px;color:var(--ink3)">My local time <b id="clock" style="font-weight:400;color:var(--ink2);font-variant-numeric:tabular-nums"></b></span>
-  <span style="display:flex;gap:20px"><a href="mailto:jazkurnz06@gmail.com">Email</a><a href="#">LinkedIn</a><a href="#">X</a></span>
+  <span style="display:flex;gap:20px"><a href="mailto:jazkurnz06@gmail.com">Email</a><a href="https://www.linkedin.com/in/jazlynn-kurniandra-a456292a8/" target="_blank" rel="noopener">LinkedIn</a><a href="https://x.com/jazlynnkurni" target="_blank" rel="noopener">X</a></span>
   <span style="font-size:12.5px;color:var(--ink3)">© 2026 Jazlynn Kurniandra</span>
 </div></div></footer>
 <script>
+/* ---------- alpha recordings: Safari takes the HEVC, everyone else the WebM ---------- */
+(function(){
+  const safari=/^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent);
+  document.querySelectorAll('video[data-alpha]').forEach(v=>{
+    v.src=v.dataset.alpha+(safari?'.mov':'.webm');
+    v.addEventListener('error',()=>{ if(v.src.indexOf('-alpha')>-1){ v.src=v.dataset.flat; v.load(); } },{once:true});
+  });
+})();
 /* ---------- THE PAGE MAKES ROOM ----------
    When the line drops out from under the name, everything below the nav moves down just
    far enough to clear its foot, on the site's ease, and comes back to its place when the
@@ -314,7 +373,7 @@ if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches
 /* ---------- the cursor ---------- */
 (function(){
   if(!matchMedia('(hover: hover) and (pointer:fine)').matches) return;
-  const c=document.createElement('div'); c.id='cur'; c.appendChild(document.createElement('i')); document.body.appendChild(c);
+  const c=document.createElement('div'); c.id='cur'; c.appendChild(document.createElement('i')); const lb=document.createElement('b'); c.appendChild(lb); document.body.appendChild(c);
   let tx=-100,ty=-100,x=-100,y=-100,raf=0,shown=false;
   const HOT='a,button,[role=button],label,summary,.rows li,.tags button';
   function loop(){
@@ -327,7 +386,13 @@ if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches
     tx=e.clientX; ty=e.clientY;
     if(!shown){ x=tx; y=ty; shown=true; c.classList.add('on'); }
     const t=e.target.closest ? e.target.closest(HOT) : null;
-    c.classList.toggle('hot',!!t);
+    /* THE PILL. Over anything with a data-cur line the dot opens into a pill that says it,
+       the way the live site's cursor becomes the email over the intro. The width is measured
+       off the label so the morph runs between two real numbers. */
+    const say=e.target.closest ? e.target.closest('[data-cur]') : null;
+    if(say){ if(lb.textContent!==say.dataset.cur) lb.textContent=say.dataset.cur; c.style.setProperty('--pw',(lb.scrollWidth+34)+'px'); }
+    c.classList.toggle('pill',!!say);
+    c.classList.toggle('hot',!!t&&!say);
     c.classList.toggle('text',!t && getComputedStyle(e.target).cursor==='text');
     if(!raf) raf=requestAnimationFrame(loop);
   },{passive:true});

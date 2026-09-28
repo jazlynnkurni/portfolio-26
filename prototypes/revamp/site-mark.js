@@ -17,7 +17,7 @@
   var script = document.currentScript;
   var base = script && script.src ? new URL('.', script.src).href : new URL('.', document.baseURI).href;
   function img(id, file) {
-    return '<img class="sm-' + id + '" src="' + base + file + '?v=sig1" alt="" aria-hidden="true" draggable="false">';
+    return '<img class="sm-' + id + '" src="' + base + file + '?v=green1" alt="" aria-hidden="true" draggable="false">';
   }
   if (!document.getElementById('site-mark-styles')) {
     var st = document.createElement('style');
@@ -53,7 +53,6 @@
     var inner = img('ink', 'jaz-signature.svg') + img('paper', 'jaz-signature-paper.svg');
     /* four facts, four rows: what she does, where she is, where she was, where she studies */
     var blurb = '<p class="sm-blurb"><b>Design engineer who creates charming products.</b>' +
-      '<span>Founding DesignEng @ Eden.</span>' +
       '<span>Prev @ Manus AI.</span>' +
       '<span>HCI @ Columbia University \u201927.</span></p>';
     return href

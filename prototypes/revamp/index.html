@@ -3,7 +3,7 @@
 <title>Jazlynn Kurniandra — revamp</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="/site-mark.js?v=sig6"></script>
+<script src="/site-mark.js?v=sig8"></script>
 <style>
 :root{
   --jak:"Plus Jakarta Sans",sans-serif; --hel:"Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -20,7 +20,7 @@
  * the lock ("the background is always paper") can survive this as a rule about the
  * DEFAULT rather than about every state. */
 :root, [data-theme="light"]{
-  --paper:#FAF9F7; --ink:#14171B;
+  --paper:#FAF9F7; --ink:#14171B; --sig:#9ba69c;
   --ink2:rgba(20,23,27,.66); --ink3:rgba(20,23,27,.42); --hair:rgba(20,23,27,.16);
   --touch:#340414;
   --flick-a:#A99939; --flick-b:#340414;
@@ -32,7 +32,7 @@
   color-scheme:light;
 }
 [data-theme="dark"]{
-  --paper:#1C1A17; --ink:#FAF9F7;
+  --paper:#1C1A17; --ink:#FAF9F7; --sig:#9ba69c;
   --ink2:rgba(250,249,247,.66); --ink3:rgba(250,249,247,.42); --hair:rgba(250,249,247,.16);
   --touch:#A99939;
   /* oxblood is invisible here, so the second tile colour is the ink itself: a paper
@@ -53,7 +53,7 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--hel);fo
 h1,h2,h3,.jak{font-family:var(--jak);font-weight:500;letter-spacing:-.012em;text-wrap:balance}
 p{text-wrap:pretty}
 .wrap{max-width:1180px;margin:0 auto;padding:0 30px}
-.label{font-family:var(--jak);font-weight:600;font-size:10.5px;letter-spacing:.15em;
+.label{font-family:var(--jak);font-weight:600;font-size:10.5px;line-height:1.5;letter-spacing:.15em;
        text-transform:uppercase;color:var(--ink3)}
 .grain{position:absolute;inset:0;pointer-events:none;background-image:var(--noise);
        background-size:170px 170px;mix-blend-mode:overlay;opacity:.55}
@@ -161,7 +161,7 @@ nav a:active{transform:scale(.96)}
  * wall and the sheets are engulfed rather than cut. As they go under, the two are
  * faded out by scroll position and the wall drifts up a little, so the page reads as
  * one motion rather than a stack of blocks. */
-.hero{position:sticky;top:0;overflow:hidden;z-index:0}
+.hero{position:sticky;top:0;overflow:visible;z-index:0}
 .hero .stack,#sheets{will-change:opacity,transform}
 body>.pushing{transition:transform .5s cubic-bezier(.22,1,.36,1)}
 .work{position:relative;z-index:2;background:var(--paper)}
@@ -172,7 +172,11 @@ body>.pushing{transition:transform .5s cubic-bezier(.22,1,.36,1)}
 /* THE SHEETS ARE THE VELLUM PIECE ITSELF NOW, on the GPU: see sheets-gl.js. The
    canvas is opaque and paints the page colour under the sheets, so there is no
    blend mode: the ground IS the page, and the hero edge is seamless. */
-#sheets{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;touch-action:none}
+/* the canvas hangs 220px above the hero, so when the page is pushed down the discs keep
+   going up under the nav instead of ending at a line. The hero no longer clips: the
+   canvas is its own rectangle and clips itself on the right and the foot. */
+:root{--bleed:220px}
+#sheets{position:absolute;left:0;right:0;top:calc(-1 * var(--bleed));height:calc(100% + var(--bleed));width:100%;display:block;z-index:0;touch-action:none}
 .hero-grid{z-index:1}
 /* the type is a window onto the sheets, not a lid. The GRID has to be transparent too,
    not just its children -- it is a full-bleed box sitting over the canvas, and it was
@@ -260,7 +264,22 @@ footer .in a{font-size:13px}
    at 44 with tight leading, one under the other, no numbers, no years, no rules. The
    preview lives on the right and only exists while a title is under the pointer, which
    is why his right half is empty at rest. Hovering one title quiets the others. */
-.panel{display:grid;grid-template-columns:1.1fr 1fr;gap:64px;align-items:start}
+.panel{display:grid;grid-template-columns:1.1fr 1fr;gap:64px;align-items:start;position:relative}
+/* THE LEADER. The list is a table of contents, so the hovered title gets what a contents
+   page gives a title: a dotted leader across the gap that lands on its page, with the year
+   set at the end where the page number goes. It fills the space between the list and the
+   card with the one thing that belongs there, the link between them. It draws in from the
+   title, and turns a corner only when a row sits above or below the card. */
+.leader{position:absolute;inset:0;pointer-events:none;overflow:visible;opacity:0;transition:opacity .16s ease}
+.leader path{fill:none;stroke:var(--ink3);stroke-width:2;stroke-linecap:round;stroke-dasharray:0 6.5;
+  animation:lead-flow .6s linear infinite}
+/* the dots travel from the title to the card, one pitch per cycle so the run never skips */
+@keyframes lead-flow{to{stroke-dashoffset:-6.5}}
+@media (prefers-reduced-motion:reduce){.leader path{animation:none}}
+.leader-clip{transition:clip-path .34s cubic-bezier(.2,.7,.2,1)}
+.leader-yr{position:absolute;font:500 12px var(--jak);letter-spacing:.03em;color:var(--ink3);transform:translate(-100%,-50%);
+  opacity:0;transition:opacity .2s ease .16s;pointer-events:none;white-space:nowrap}
+.rows.hot~.leader{opacity:1}.rows.hot~.leader-yr{opacity:1}
 .rows{list-style:none;margin:0;padding:0}
 .rows a{display:block;padding:2px 0;text-decoration:none;font:300 44px/1.15 var(--hel);letter-spacing:-.015em;
   color:var(--ink);transition:color .18s ease}
@@ -274,39 +293,41 @@ footer .in a{font-size:13px}
    whole: no crop, no zoom, no stretch. A 16:9 recording gets a 16:9 plate, a 2:1 gets 2:1.
    The plate changes shape between projects; that is the honest cost of showing each one
    at its own size. --ar is width over height. */
-.preview{position:sticky;top:96px;aspect-ratio:var(--ar,16/9);border-radius:20px;overflow:hidden;
+/* ONE CARD, ONE SIZE. His way: every card is the same fixed size, and the recording is
+   fitted WHOLE inside a white inset plate, centred, whatever its own shape. The plate is
+   16:9, which six of the eight recordings are; the two wider ones get a sliver of plate
+   above and below, and the phone recordings sit in the middle of it the way his console
+   does. The press turns each recording's canvas into paper, so plate and picture read as
+   one surface and nothing is cropped, zoomed or stretched. The caption is a row under the
+   plate, never on it. */
+.preview{position:sticky;top:96px;border-radius:20px;padding:12px;
   background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px;
   opacity:0;transform:translateY(6px);transition:opacity .28s ease,transform .32s cubic-bezier(.22,1,.36,1)}
+.preview .stage{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:12px;background:var(--plate)}
+[data-theme="dark"] .preview .stage{outline:1px solid var(--outline);outline-offset:-1px}
 .preview.show{opacity:1;transform:none}
 @media(max-width:900px){.rows a{font-size:32px}}
-.preview video,.preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:none}
+/* THE GOLDEN RULE: every card has the same padding on all four sides, so the recording is
+   fitted to the stage, never the stage to the recording. Cover, not contain: a recording
+   that is not 16:9 loses a sliver at its edges rather than leaving a gap. */
+.preview video,.preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
 .preview video.on,.preview img.on{display:block}
 /* THE CLIPS WERE SHOT FOR ANOTHER SITE. They carry that site's beige ground baked in, so
    laid flat they would read as pasted cards. Multiplied into the plate the beige becomes
    this paper, the white of a phone screen becomes the plate, and only the pigment of the
    work remains: the same rule as every wash on the page. Dark mode cannot multiply, so
    the clip sits on the lifted plate a little dimmed, with the grain doing the joining. */
-/* ============ THE PRINT ==========================================================
- * Every cover goes through the same press: reduced to tone, the tone mapped onto her three
- * (oxblood in the shadows, gold through the middle, paper in the lights), and a screen laid
- * over the top. The riso disc's logic on a photograph. An SVG filter rather than a canvas,
- * so it costs nothing and it works on the videos. The colourway lives in the tableValues. */
-.print img,.print video{filter:url(#print-light) contrast(1.06);mix-blend-mode:normal}
-[data-theme="dark"] .print img,[data-theme="dark"] .print video{filter:url(#print-dark) contrast(1.04)}
-.print::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
-  background:radial-gradient(circle,rgba(20,23,27,.9) 0 27%,transparent 33%) 0 0/4px 4px;mix-blend-mode:multiply;opacity:.16}
-[data-theme="dark"] .print::after{background:radial-gradient(circle,rgba(250,249,247,.8) 0 27%,transparent 33%) 0 0/4px 4px;mix-blend-mode:screen;opacity:.10}
 /* saturate(.72): the old ground was #FFF5EF, and multiplied straight it leaves a peach
    tint on the paper. Pulling the chroma down first folds that beige into the ground and
    mutes the work's own colours toward the palette at the same time. */
 
 /* the caption is a bar at the plate's foot, the old card's meta row: it never sits on the
    clip, and the clip is cropped only where the bar covers it */
-.pv-cap{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;flex-direction:column;gap:3px;
-  padding:12px 20px 16px;background:var(--plate);border-top:1px solid var(--outline)}
+.pv-cap{position:relative;display:flex;flex-direction:column;gap:3px;padding:14px 8px 6px}
 .pv-cap b{font:500 15px var(--jak);color:var(--ink)}
+.pv-cap i{font:500 11.5px var(--jak);font-style:normal;letter-spacing:.02em;color:var(--ink3);margin:1px 0 3px}
 .pv-cap span{font:300 12.5px/1.5 var(--hel);color:var(--ink2);max-width:36ch}
-@media(max-width:900px){.panel{grid-template-columns:1fr}.preview{position:static;aspect-ratio:16/10}}
+@media(max-width:900px){.panel{grid-template-columns:1fr}.preview{position:static}}
 /* Concentric: outer = inner + padding. 14 + 18 = 32. */
 .card{border:1px solid var(--hair);border-radius:32px;padding:18px;background:var(--paper);
       text-decoration:none;color:inherit;display:flex;flex-direction:column;
@@ -320,7 +341,9 @@ footer .in a{font-size:13px}
 .card .arrow{color:var(--ink3);transition:color .2s ease,transform .2s ease;font-size:12px}
 .card:hover .arrow{color:var(--touch);transform:translate(2px,-2px)}
 
-footer{padding:64px 0 22px}
+/* the hero is sticky and now bleeds past its own box, so everything that comes after it has
+   to be opaque and above it, or the discs show through wherever a later section is thin */
+footer{padding:64px 0 22px;position:relative;z-index:2;background:var(--paper)}
 /* the same grid as the pinned rail, at the same height, so the links land in the rail's
    middle slot when the page runs out and the clock and copyright never move */
 footer .in{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:26px;font:300 13px var(--hel)}
@@ -373,6 +396,47 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
   #cur.fine.down i{transform:scale(.34)}
   #cur.text{opacity:0}
 }
+/* THE SHEET. A case study opens over the home rather than as another page: the home dims
+   and softens behind it, a row of tabs across the top names every case study so the reader
+   can move between them without going back, and the sheet itself is the case study page
+   with its chrome stripped. Close returns to exactly where the reader was; expand goes to
+   the page on its own. */
+html.sheet-open{overflow:hidden}
+html.cur-away #cur{opacity:0!important}
+.sheet-bg{position:fixed;inset:0;z-index:70;background:color-mix(in srgb,var(--ink) 34%,transparent);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;transition:opacity .32s ease;pointer-events:none}
+.sheet-tabs{position:fixed;top:30px;left:0;right:0;z-index:72;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:0 24px;
+  opacity:0;transform:translateY(-8px);transition:opacity .3s ease .08s,transform .4s cubic-bezier(.2,.7,.2,1) .08s;pointer-events:none}
+.sheet-tabs button{font:500 13px var(--jak);letter-spacing:.01em;color:var(--ink);background:var(--paper);border:1px solid var(--hair);
+  border-radius:999px;padding:9px 16px;cursor:pointer;transition:background .16s ease,color .16s ease,transform .12s ease}
+.sheet-tabs button:hover{background:color-mix(in srgb,var(--ink) 6%,var(--paper))}
+.sheet-tabs button:active{transform:scale(.96)}
+.sheet-tabs button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+/* the sheet floats: it stops 36px short of the bottom edge and is rounded on all four
+   corners, so it reads as a card held over the page rather than a drawer pulled up from it */
+.sheet{position:fixed;top:78px;left:max(24px,9.5vw);right:max(24px,9.5vw);bottom:36px;z-index:71;background:var(--paper);
+  border-radius:24px;outline:1px solid var(--outline);outline-offset:-1px;overflow:hidden;
+  box-shadow:0 20px 70px rgba(0,0,0,.22);transform:translateY(40px);opacity:0;pointer-events:none;
+  transition:transform .5s cubic-bezier(.2,.7,.2,1),opacity .3s ease}
+/* EXPANDED: the same sheet grown to the window's edges, on the same ease, the tabs put away
+   until it comes back. It stays a sheet over the home, so close still returns the reader. */
+.sheet{transition:transform .5s cubic-bezier(.2,.7,.2,1),opacity .3s ease,top .46s cubic-bezier(.2,.7,.2,1),left .46s cubic-bezier(.2,.7,.2,1),right .46s cubic-bezier(.2,.7,.2,1),bottom .46s cubic-bezier(.2,.7,.2,1),border-radius .46s ease}
+html.sheet-full .sheet{top:0;left:0;right:0;bottom:0;border-radius:0}
+html.sheet-open.sheet-full .sheet-tabs{opacity:0;transform:translateY(-8px);pointer-events:none}
+.sheet-act .i-in{display:none}
+html.sheet-full .sheet-act .i-out{display:none}
+html.sheet-full .sheet-act .i-in{display:block}
+.sheet iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--paper)}
+.sheet-act{position:absolute;top:18px;right:18px;z-index:2;display:flex;gap:4px}
+.sheet-act a,.sheet-act button{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;border:0;background:transparent;color:var(--ink2);cursor:pointer;
+  transition:background .14s ease,color .14s ease}
+.sheet-act a:hover,.sheet-act button:hover{background:color-mix(in srgb,var(--ink) 7%,transparent);color:var(--ink)}
+.sheet-act svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+html.sheet-open .sheet-bg,html.sheet-open .sheet{opacity:1;pointer-events:auto}
+html.sheet-open .sheet{transform:none}
+html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
+@media (max-width:760px){.sheet{left:12px;right:12px;top:64px;bottom:12px;border-radius:18px}.sheet-tabs{top:14px}}
+
 </style></head><body>
 
 <script>
@@ -442,15 +506,18 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
   <div class="tags" id="tags"></div>
   <div class="panel">
     <ol class="rows" id="rows"></ol>
-    <div class="preview print" id="preview"><video muted loop playsinline preload="none"></video><img alt=""><div class="grain" style="opacity:.4"></div>
-      <div class="pv-cap"><b id="pv-t"></b><span id="pv-s"></span></div></div>
+    <div class="preview" id="preview">
+      <div class="stage"><video muted loop playsinline preload="none"></video><img alt=""></div>
+      <div class="pv-cap"><b id="pv-t"></b><i id="pv-r"></i><span id="pv-s"></span></div></div>
+    <svg class="leader" id="leader" aria-hidden="true"><g class="leader-clip" id="leader-clip"><path id="leader-path" d=""/></g></svg>
+    <span class="leader-yr" id="leader-yr" aria-hidden="true"></span>
   </div>
 </div></section>
 
 <footer><div class="wrap">
   <div class="rule"></div>
   <div class="in">
-    <span><a href="mailto:jazkurnz06@gmail.com">Email</a><a href="#">LinkedIn</a><a href="#">X</a></span>
+    <span><a href="mailto:jazkurnz06@gmail.com">Email</a><a href="https://www.linkedin.com/in/jazlynn-kurniandra-a456292a8/" target="_blank" rel="noopener">LinkedIn</a><a href="https://x.com/jazlynnkurni" target="_blank" rel="noopener">X</a></span>
   </div>
 </div></footer>
 
@@ -584,7 +651,7 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{ if(loc
 })();
 
 /* ---------- HERO letter grid, locked values ---------- */
-const WORDS=["JAZLYNN","DESIGN","NEWYORK","PASSIONATE","CURIOUS","CHARM","PLAYFUL","MOTION","COGNITION","ENGINEERING"];
+const WORDS=["JAZLYNN","DESIGNER","PASSIONATE","CURIOUS","CHARMING","PLAYFUL","INTERACTION","COGNITION","ENGINEERING","NEWYORK"];
 const SPEED=.23, DRIFT=.74;
 /* FS follows the CSS row (0.85 of it) so the measured widths match what is drawn; the
    locked stretch of 84 at a 34px letter is kept as a ratio, 2.47 letters' worth */
@@ -607,6 +674,17 @@ function measure(){
   FS=row*.9; STRETCH=FS*2.47; gauge.font=`400 ${FS}px "Helvetica Neue",Helvetica,Arial,sans-serif`;
 }
 measure();
+/* EVERY LETTER STANDS THE SAME DISTANCE FROM ITS LEFT WALL. The glyph is measured for
+   where its ink actually starts, not where its advance box does: a G or an O has almost
+   no side bearing and was touching the border, an I or an N had plenty and floated.
+   The inset is the visible gap, so it is set on the ink and the base width grows by the
+   padding so the cell never clips. */
+function fit(o){
+  const m=gauge.measureText(o.ch), ink=-(m.actualBoundingBoxLeft||0);
+  const pad=Math.max(0, FS*.1-ink);
+  o.glyph.style.paddingLeft=pad.toFixed(1)+'px';
+  o.base=Math.ceil(m.width+pad)+4;
+}
 const lines=WORDS.map((w,li)=>{
   const el=document.createElement('div'); el.className='line';
   const cells=[...w].map((ch,ci)=>{
@@ -616,8 +694,8 @@ const lines=WORDS.map((w,li)=>{
     /* each cell carries its OWN flicker schedule. One global timer picking a random
        cell would make the whole wall pulse together; per-cell clocks with random
        phases give an irregular scatter, which is what "occasionally" looks like. */
-    return {cell:c, glyph:s, ch, base:Math.ceil(gauge.measureText(ch).width)+4, ci,
-            next:2+Math.random()*22, until:0, lit:false, col:''};
+    const o={cell:c, glyph:s, ch, base:0, ci, next:2+Math.random()*22, until:0, lit:false, col:''};
+    fit(o); return o;
   });
   stack.appendChild(el); return {cells, seed:li};
 });
@@ -633,7 +711,7 @@ window.wallClear=function(){
   return (sl+widest+28)/hw;
 };
 let rz=0; addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout(()=>{ measure();
-  lines.forEach(L=>L.cells.forEach(c=>{ c.base=Math.ceil(gauge.measureText(c.ch).width)+4; })); },120); });
+  lines.forEach(L=>L.cells.forEach(fit)); },120); });
 /* ============ INK: TWO BEHAVIOURS, ONE MECHANIC ==================================
  * A cell fills with gold or oxblood and its letter knocks out to paper. That part is
  * fixed: gold is 1.6:1 on this ground, so a gold LETTER would be invisible and the
@@ -775,39 +853,58 @@ document.querySelectorAll('canvas[data-lazy]').forEach(cv=>mount(cv,cv.dataset.l
 
 /* ---------- projects: rows, tags, hover preview ---------- */
 const PROJECTS=[
-  {n:'01',t:'Manus AI',        y:'2026',tags:['Internship','Approved & in dev'],       s:'Designing an AI community platform to drive adoption',                   href:'/work/manus-ai.html',          v:'/videos/work-manus.mp4',   img:'/videos/work-manus.jpg'},
-  {n:'02',t:'Clover',          y:'2026',tags:['Founding design engineer','0 to 1'],   s:'Designing the HUD interface and shipping the iOS companion app',        href:'/404.html?p=Clover',           v:'/videos/work-clover.mp4',  img:'/videos/work-clover.jpg'},
-  {n:'03',t:'Fostr',           y:'2026',tags:['Founding design engineer','0 to 1'],   s:'Building the brand, landing site and internal platform from 0 to 1',    href:'https://fostr.page/', ext:true, v:'/videos/work-fostr.mp4',   img:'/videos/work-fostr.jpg'},
-  {n:'04',t:'Olive',           y:'2026',tags:['Hackathon'],                            s:'Designing an AI-powered carbon tracking app',                            href:'https://drive.google.com/file/d/15-mX_sIkPU_Ww4R1UueWG10Wv9CQbhEy/view', ext:true, v:'/videos/work-olive.mp4', img:'/videos/work-olive.jpg'},
-  {n:'05',t:'Second Self',     y:'2026',tags:['Hackathon'],                            s:'Building an AI agent that lives on your own Mac',                        href:'https://devpost.com/software/second-self-giwmxh', ext:true, v:'/videos/second-self.mp4', img:'/videos/second-self.jpg'},
-  {n:'06',t:'Halodoc',         y:'2025',tags:['Internship','Shipped'],                 s:'Designing the onboarding journey for AI Prescription on mobile',         href:'/404.html?p=Halodoc',          v:'/videos/work-halodoc.mp4', img:'/videos/work-halodoc.jpg'},
-  {n:'07',t:'Conduit Commerce',y:'2025',tags:['Internship','Shipped'],                 s:'Designing and shipping a B2B SaaS website for an AI-feature launch',     href:'/work/conduit-commerce.html',  v:'/videos/work-conduit.mp4', img:'/videos/work-conduit.jpg'},
-  {n:'08',t:'SomiaCX',         y:'2025',tags:['Internship','0 to 1'],                  s:'Architecting a unified UVP system for three financial subsidiaries',     href:'/work/somia-cx.html',          img:'/images/work-somiacx.png'},
+  {n:'01',t:'Clover',          y:'2026',tags:['0 → 1','AI','Mobile'], role:'Founding design engineer', st:'0 to 1, in development',   s:'Designing the HUD interface and shipping the iOS companion app',        href:'/404.html?p=Clover',           v:'/videos/trim/work-clover.mp4',  img:'/videos/trim/work-clover.jpg'},
+  {n:'02',t:'Fostr',           y:'2026',tags:['0 → 1','Web'], role:'Founding design engineer', st:'Live',   s:'Building the brand, landing site and internal platform from 0 to 1',    href:'https://fostr.page/', ext:true, v:'/videos/work-fostr.mp4',   img:'/videos/work-fostr.jpg'},
+  {n:'03',t:'Halodoc',         y:'2026',tags:['AI','Mobile'], role:'Product designer', st:'Shipped to 20M+ users',                 s:'Designing the onboarding journey for AI Prescription on mobile',         href:'/404.html?p=Halodoc',          v:'/videos/trim/work-halodoc.mp4', img:'/videos/trim/work-halodoc.jpg'},
+  {n:'04',t:'Conduit Commerce',y:'2026',tags:['AI','Web'], role:'Product design lead', st:'Shipped',                 s:'Designing and shipping a B2B SaaS website for an AI-feature launch',     href:'/work/conduit-commerce.html',  v:'/videos/trim/work-conduit.mp4', img:'/videos/trim/work-conduit.jpg'},
+  {n:'05',t:'Second Self',     y:'2026',tags:['Personal projects','AI'], role:'Design engineer', st:'YHacks \u201926, 1st place',                            s:'Building an AI agent that lives on your own Mac',                        href:'https://devpost.com/software/second-self-giwmxh', ext:true, v:'/videos/second-self.mp4', img:'/videos/second-self.jpg'},
+  {n:'06',t:'Manus AI',        y:'2025',tags:['AI','Web'], role:'Product designer', st:'Approved, in development',       s:'Designing an AI community platform to drive adoption',                   href:'/work/manus-ai.html',          v:'/videos/work-manus.mp4',   img:'/videos/work-manus.jpg'},
+  {n:'07',t:'Olive',           y:'2025',tags:['Personal projects','AI','Mobile'], role:'Product designer', st:'NYU UX Design-a-thon \u201925, 2nd place',                            s:'Designing an AI-powered carbon tracking app',                            href:'https://drive.google.com/file/d/15-mX_sIkPU_Ww4R1UueWG10Wv9CQbhEy/view', ext:true, v:'/videos/trim/work-olive.mp4', img:'/videos/trim/work-olive.jpg'},
+  {n:'08',t:'SomiaCX',         y:'2024',tags:['0 → 1','Mobile'], role:'Product designer', st:'0 to 1',                  s:'Architecting a unified UVP system for three financial subsidiaries',     href:'/work/somia-cx.html',          img:'/images/trim/work-somiacx.png'},
 ];
 const rows=document.getElementById('rows'), tags=document.getElementById('tags');
-const pvT=document.getElementById('pv-t'), pvS=document.getElementById('pv-s');
+const pvT=document.getElementById('pv-t'), pvS=document.getElementById('pv-s'), pvR=document.getElementById('pv-r');
 rows.innerHTML=PROJECTS.map((p,i)=>`<li data-i="${i}" data-tags="${p.tags.join('|')}">
   <a href="${p.href}"${p.ext?' target="_blank" rel="noopener"':''}>${p.t}${p.ext?' <span class="ext">&#8599;</span>':''}</a></li>`).join('');
-const ALL=[...new Set(PROJECTS.flatMap(p=>p.tags))];
+/* one axis a recruiter actually filters on: the role, the surface, the proof */
+const ALL=['0 → 1','Personal projects','AI','Mobile','Web'];
 tags.innerHTML=['All',...ALL].map((t,i)=>`<button aria-pressed="${i===0}">${t}</button>`).join('');
 /* the preview is the project's own clip from the shipped site; SomiaCX has a still */
 const pvV=document.querySelector('#preview video'), pvI=document.querySelector('#preview img');
-/* the plate takes the file's own proportions: a video reports them at loadedmetadata, an image at load */
-const fitPlate=(w,h)=>{ if(w&&h) document.getElementById('preview').style.setProperty('--ar',(w/h).toFixed(4)); };
-pvV.addEventListener('loadedmetadata',()=>fitPlate(pvV.videoWidth,pvV.videoHeight));
-pvI.addEventListener('load',()=>fitPlate(pvI.naturalWidth,pvI.naturalHeight));
 let pvCur=-1;
 function show(i){
-  const p=PROJECTS[i]; pvT.textContent=p.t; pvS.textContent=p.s;
+  const p=PROJECTS[i]; pvT.textContent=p.t; pvS.textContent=p.s; pvR.textContent=`${p.role} · ${p.st}`;
   [...rows.children].forEach((li,j)=>li.classList.toggle('on',j===i));
+  if(leadFor!==i){ leadFor=i; lead(i,true); }
   if(pvCur===i) return; pvCur=i;
   if(p.v){ pvI.classList.remove('on'); pvV.poster=p.img||''; if(pvV.getAttribute('src')!==p.v){ pvV.src=p.v; pvV.load(); }
     pvV.classList.add('on'); pvV.play().catch(()=>{}); }
   else { pvV.pause(); pvV.classList.remove('on'); pvI.src=p.img; pvI.classList.add('on'); }
 }
 const preview=document.getElementById('preview');
+/* the leader is measured, not styled: from the end of the hovered title to the card's edge */
+const panel=document.querySelector('.panel'), leader=document.getElementById('leader'),
+      lclip=document.getElementById('leader-clip'), lpath=document.getElementById('leader-path'), lyr=document.getElementById('leader-yr');
+let leadFor=-1;
+function lead(i,draw){
+  const li=rows.children[i]; if(!li) return; const a=li.querySelector('a');
+  const R=document.createRange(); R.selectNodeContents(a);
+  const P=panel.getBoundingClientRect(), T=R.getBoundingClientRect(), C=preview.getBoundingClientRect();
+  const x0=T.right-P.left+20, y=T.top-P.top+T.height/2;
+  const cx=C.left-P.left, top=C.top-P.top, bot=C.bottom-P.top;
+  const cy=Math.max(top+26,Math.min(bot-26,y));
+  const yrX=cx-14; lyr.textContent=PROJECTS[i].y; lyr.style.left=yrX+'px'; lyr.style.top=cy+'px';
+  const x1=yrX-lyr.offsetWidth-12, gx=cx-56;
+  if(x1<=x0+12){ lpath.setAttribute('d',''); return; }
+  lpath.setAttribute('d', cy===y ? `M${x0} ${y}H${x1}` : `M${x0} ${y}H${gx}V${cy}H${x1}`);
+  if(draw){ lclip.style.transition='none'; lclip.style.clipPath=`inset(-8px calc(100% - ${x0}px) -8px -8px)`; lclip.getBoundingClientRect();
+    lclip.style.transition=''; }
+  lclip.style.clipPath='inset(-8px -8px -8px -8px)';
+}
+addEventListener('scroll',()=>{ if(rows.classList.contains('hot')&&leadFor>=0) lead(leadFor,false); },{passive:true});
+addEventListener('resize',()=>{ if(leadFor>=0) lead(leadFor,false); });
 const hot=on=>{rows.classList.toggle('hot',on); preview.classList.toggle('show',on);
-  if(!on){ [...rows.children].forEach(li=>li.classList.remove('on')); pvV.pause(); } else if(pvV.classList.contains('on')) pvV.play().catch(()=>{});};
+  if(!on){ [...rows.children].forEach(li=>li.classList.remove('on')); pvV.pause(); leadFor=-1; } else if(pvV.classList.contains('on')) pvV.play().catch(()=>{});};
 rows.addEventListener('pointerover',e=>{const li=e.target.closest('li'); if(li){show(+li.dataset.i); hot(true);}});
 rows.addEventListener('pointerleave',()=>hot(false));
 rows.addEventListener('focusin',e=>{const li=e.target.closest('li'); if(li){show(+li.dataset.i); hot(true);}});
@@ -829,6 +926,56 @@ show(0);
   f(); setInterval(f,1000);})();
 </script>
 
+<script>
+/* ---------- the sheet: a case study over the home ---------- */
+(function(){
+  const CASES=PROJECTS.filter(p=>p.href.startsWith('/work/')).map(p=>({t:p.t,slug:p.href.replace('/work/','').replace('.html','')}));
+  if(!CASES.length) return;
+  const bg=document.createElement('div'); bg.className='sheet-bg';
+  const tabs=document.createElement('div'); tabs.className='sheet-tabs'; tabs.setAttribute('role','tablist');
+  tabs.innerHTML=CASES.map(c=>`<button role="tab" data-slug="${c.slug}" aria-pressed="false">${c.t}</button>`).join('');
+  const sheet=document.createElement('div'); sheet.className='sheet'; sheet.setAttribute('role','dialog'); sheet.setAttribute('aria-modal','true');
+  sheet.innerHTML=`<div class="sheet-act"><button id="sheet-full" title="Expand" aria-label="Expand" aria-pressed="false"><svg class="i-out" viewBox="0 0 16 16"><path d="M3 6.5V3h3.5M13 9.5V13H9.5M13 3 9 7M3 13l4-4M13 3H9.5M13 3v3.5M3 13h3.5M3 13V9.5"/></svg><svg class="i-in" viewBox="0 0 16 16"><path d="M7 3v4H3M9 13V9h4M3 3l4 4M13 13 9 9"/></svg></button><button id="sheet-close" title="Close" aria-label="Close"><svg viewBox="0 0 16 16"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg></button></div><iframe title="Case study"></iframe>`;
+  let mounted=false, cur=null, restoreY=0;
+  function mount(){ if(mounted) return; mounted=true; document.body.append(bg,tabs,sheet); }
+  /* ONE CURSOR. The case study inside the frame draws its own dot, and the home cannot see the
+     pointer while it is in there, so the home's dot would freeze at the frame's edge as a second
+     cursor. The home hides its dot whenever the pointer is in the frame and shows it again on
+     the first move it can see, over the tabs or the backdrop. */
+  const fr=sheet.querySelector('iframe');
+  fr.addEventListener('pointerenter',()=>document.documentElement.classList.add('cur-away'));
+  addEventListener('pointermove',()=>document.documentElement.classList.remove('cur-away'),{passive:true});
+  function show(slug,push){
+    mount(); const c=CASES.find(x=>x.slug===slug); if(!c) return; document.documentElement.classList.add('cur-away');
+    if(cur!==slug){ sheet.querySelector('iframe').src=`/work/${slug}.html?sheet=1`; cur=slug; }
+    [...tabs.children].forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.slug===slug)));
+    if(!document.documentElement.classList.contains('sheet-open')){ restoreY=scrollY; document.documentElement.classList.add('sheet-open'); }
+    if(push) history.pushState({sheet:slug},'',`/?p=${slug}`);
+    document.title=c.t+' \u00b7 Jazlynn Kurniandra';
+  }
+  function hide(push){ if(!document.documentElement.classList.contains('sheet-open')) return;
+    document.documentElement.classList.remove('sheet-open','sheet-full'); const fb=sheet.querySelector('#sheet-full'); fb.setAttribute('aria-pressed','false'); fb.title=fb.ariaLabel='Expand';
+    /* closing a case study lands on the projects list, never back up at the hero */
+    toWork();
+    [...tabs.children].forEach(b=>b.setAttribute('aria-pressed','false'));
+    if(push) history.pushState({},'','/'); document.title='Jazlynn Kurniandra';
+    setTimeout(()=>{ if(!document.documentElement.classList.contains('sheet-open')){ sheet.querySelector('iframe').src='about:blank'; cur=null; } },400); }
+  /* the rows open the sheet; external work and the placeholders still go where they went */
+  rows.addEventListener('click',e=>{ const a=e.target.closest('a'); if(!a) return; const h=a.getAttribute('href')||'';
+    if(!h.startsWith('/work/')||e.metaKey||e.ctrlKey||e.shiftKey||e.button) return; e.preventDefault(); show(h.replace('/work/','').replace('.html',''),true); });
+  tabs.addEventListener('click',e=>{ const b=e.target.closest('button'); if(b) show(b.dataset.slug,true); });
+  bg.addEventListener('click',()=>hide(true));
+  sheet.addEventListener('click',e=>{ if(e.target.closest('#sheet-close')) hide(true);
+    if(e.target.closest('#sheet-full')){ const on=!document.documentElement.classList.contains('sheet-full');
+      document.documentElement.classList.toggle('sheet-full',on); const b=e.target.closest('#sheet-full');
+      b.setAttribute('aria-pressed',String(on)); b.title=b.ariaLabel=on?'Collapse':'Expand'; } });
+  addEventListener('keydown',e=>{ if(e.key==='Escape') hide(true); });
+  addEventListener('popstate',()=>{ const p=new URLSearchParams(location.search).get('p'); if(p) show(p,false); else hide(false); });
+  function toWork(){ const w=document.getElementById('work'); if(w){ document.documentElement.style.scrollBehavior='auto'; scrollTo(0,w.offsetTop-40); document.documentElement.style.scrollBehavior=''; window.__heroApply&&window.__heroApply(); } }
+  /* arriving on a case study link: the list is what waits behind the sheet, and what remains when it closes */
+  const p0=new URLSearchParams(location.search).get('p'); if(p0){ toWork(); addEventListener('load',toWork,{once:true}); show(p0,false); }
+})();
+</script>
 <script>
 /* ---------- the scroll: engulf the hero, fade the hint, pin the rail ---------- */
 (function(){
@@ -874,6 +1021,6 @@ show(0);
   /* LOCKED 2026-09-23. Her eight, picked in the riso lab against frosted glass: two
      creams, two greys, a dusky mauve, a grey green, a lilac grey, a sage. */
   const SWATCH=['#dfddc8','#c7c7c7','#827a85','#9ba69c','#c4c1c8','#dfddc8','#c2beb3','#dfdac8'];
-  mountSheets(document.getElementById('sheets'), SHEETS, SWATCH, { paper: '#FAF9F7', ground: '#1C1A17', clear: () => window.wallClear ? window.wallClear() : 0 });
+  mountSheets(document.getElementById('sheets'), SHEETS, SWATCH, { paper: '#FAF9F7', ground: '#1C1A17', bleed: 220, clear: () => window.wallClear ? window.wallClear() : 0 });
 </script>
 </body></html>

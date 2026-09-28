@@ -356,7 +356,15 @@ export function mountSheets(cv, sheets, swatch, opts) {
     ink: i % swatch.length, op: 0.84 + rnd() * 0.38, seed: rnd() * 100,
     emph: 0, alive: 1,
   }));
-  const toComp = (ux, uy) => [((ux * cssW) - cssW / 2) / unit, (cssH / 2 - uy * cssH) / unit];
+  /* THE CANVAS BLEEDS ABOVE THE HERO. The page can be pushed down (the line under the
+     name), and a canvas that stopped at the hero's top showed its edge: discs cut flat,
+     paper above. So the canvas is taller than the hero by opts.bleed and hangs that far
+     above it, under the nav, and the composition is laid out against the HERO's box,
+     not the canvas's: heroH is the hero, cssH the canvas, and y runs from the hero's
+     own centre. Unit coordinates of the sheets still mean the hero. */
+  const bleed = opts.bleed || 0;
+  let heroH = 1;
+  const toComp = (ux, uy) => [((ux * cssW) - cssW / 2) / unit, (cssH / 2 - (bleed + uy * heroH)) / unit];
 
   /* THE SHEETS NEVER TOUCH THE WALL. The wall's reach is set by its row height, which
      follows the viewport's height; the room to the right of it follows the width. Those
@@ -373,7 +381,7 @@ export function mountSheets(cv, sheets, swatch, opts) {
   }
   function resize() {
     const r = cv.getBoundingClientRect(); if (!r.width) return false;
-    dpr = Math.min(2, devicePixelRatio || 1); cssW = r.width; cssH = r.height;
+    dpr = Math.min(2, devicePixelRatio || 1); cssW = r.width; cssH = r.height; heroH = Math.max(1, cssH - bleed);
     W = Math.round(cssW * dpr); H = Math.round(cssH * dpr); cv.width = W; cv.height = H;
     unit = UNIT_CSS;
     for (const d of discs) { if (!d.moved) d.ux = fit(d); const [x, y] = toComp(d.ux, d.uy); d.x = d.tx = x; d.y = d.ty = y; d.r = (d.ur * cssW) / unit; d.vx = d.vy = 0; }
@@ -385,7 +393,7 @@ export function mountSheets(cv, sheets, swatch, opts) {
   const ptr = { x: 0, y: 0.15, inside: false };
   const light = { x: 0, y: 0.15 };
   let hover = null, drag = null, grab = { x: 0, y: 0 }, lastInput = -999, now = 0;
-  const at = (e) => { const r = cv.getBoundingClientRect(); return toComp((e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height); };
+  const at = (e) => { const r = cv.getBoundingClientRect(); return toComp((e.clientX - r.left) / r.width, (e.clientY - r.top - bleed) / heroH); };
   const pick = (x, y) => { for (let i = discs.length - 1; i >= 0; i--) { const d = discs[i], dx = x - d.x, dy = y - d.y; if (dx * dx + dy * dy <= d.r * d.r) return d; } return null; };
 
   cv.addEventListener("pointermove", (e) => {
@@ -402,7 +410,7 @@ export function mountSheets(cv, sheets, swatch, opts) {
     discs.splice(discs.indexOf(d), 1); discs.push(d);
     drag = d; grab.x = d.x - x; grab.y = d.y - y; cv.setPointerCapture(e.pointerId); lastInput = now; wake();
   });
-  const drop = () => { if (drag) { drag.ux = (drag.x * unit + cssW / 2) / cssW; drag.uy = (cssH / 2 - drag.y * unit) / cssH; drag.moved = true; } drag = null; lastInput = now; };
+  const drop = () => { if (drag) { drag.ux = (drag.x * unit + cssW / 2) / cssW; drag.uy = (cssH / 2 - drag.y * unit - bleed) / heroH; drag.moved = true; } drag = null; lastInput = now; };
   addEventListener("pointerup", drop); addEventListener("pointercancel", drop);
 
   function step(dt) {
