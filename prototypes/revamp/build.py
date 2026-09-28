@@ -1108,7 +1108,6 @@ about = page('About', f"""<main class="ab"><div class="wrap">
               </div>
             </div>
             <div class="lid" id="lid">
-              <div class="edge"></div>
               <div class="face in shell">
                 <div class="screen" id="screen"><img id="fallback" src="/images/about/about-me-stack/camera.jpg" alt=""><div class="glare"></div></div>
                 <div class="brand">JAZLYNN</div>
@@ -1121,7 +1120,7 @@ about = page('About', f"""<main class="ab"><div class="wrap">
           </div>
     </div>
     <div class="bio"><div class="label">Hello</div>
-      <p style="margin-top:12px">I used to be a proper artist. At fifteen my work was being exhibited, auctioned and sold, and most of it came from the beach. I spent my childhood going back and forth to Bali, and nature was what I drew from. Starting that young shaped how I see things: <b style="color:#A99939">the best ideas, the ones that feel new, arrive where unrelated fields meet.</b></p>
+      <p style="margin-top:12px">I am an artist at heart. At fifteen my work was being exhibited, auctioned and sold, and most of it came from the beach. I spent my childhood going back and forth to Bali, and nature was what I drew from. Starting that young shaped how I see things: <b style="color:#A99939">the best ideas, the ones that feel new, arrive where unrelated fields meet.</b></p>
       <p>That is why I ended up in design engineering and product management. Both sit where people meet technology, just through different mediums, and I have never liked being confined to one. What started as paper and pencil became paintings, then products.</p>
       <p>Life is too short to be constrained to one medium. Learning new forms of knowledge with empathy, care and intent is the quality I carry into every piece of work.</p>
     </div>
