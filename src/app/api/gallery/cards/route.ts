@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     const { name, color, drawing } = body ?? {};
 
     // Basic shape validation. Strict enough to reject garbage, loose enough to not over-engineer.
-    if (typeof color !== "string" || !["orange", "green", "blue", "clay"].includes(color)) {
+    if (typeof color !== "string" || !["charcoal", "paper", "green", "purple", "orange", "blue", "clay", "gold", "oxblood"].includes(color)) {
       return NextResponse.json({ error: "Invalid color" }, { status: 400 });
     }
     if (typeof drawing !== "string" || !drawing.startsWith("data:image/png;base64,")) {

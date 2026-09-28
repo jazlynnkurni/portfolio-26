@@ -17,7 +17,7 @@ export const MAX_CARDS = 12;
 export type GalleryCard = {
   id: string;
   name: string;
-  color: "orange" | "green" | "blue" | "clay";
+  color: "charcoal" | "paper" | "green" | "purple" | "orange" | "blue" | "clay" | "gold" | "oxblood";
   drawing: string; // base64-encoded PNG data URL of the canvas
   createdAt: number; // unix ms
 };
