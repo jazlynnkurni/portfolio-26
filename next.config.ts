@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
         { source: "/work/:slug((?!.*\\.html$)[^/]+)", destination: "/work/:slug.html" },
       ],
       afterFiles: [],
-      fallback: [{ source: "/:path*", destination: "/404.html" }],
+      fallback: [{ source: "/:path*", destination: "/soon.html" }],
     };
   },
 };

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """build.py -- renders the case studies and the 404 into the revamp's design system.
-Run:  python3 build.py   (writes work/*.html and 404.html). Edit the DATA, not the output.
+Run:  python3 build.py   (writes work/*.html and soon.html). Edit the DATA, not the output.
 Media is served through the images/ and videos/ symlinks into ~/Desktop/portfolio/public."""
 import html, os, re, pathlib
 
@@ -262,6 +262,17 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 .take li:before{content:counter(t,decimal-leading-zero);font:300 20px/1.4 var(--hel);color:var(--ink3)}
 .take li:last-child{border-bottom:1px solid var(--hair)}
 @media(max-width:900px){.take{grid-template-columns:1fr}}
+/* ---- phones and tablets: one column, the same rhythm ---- */
+@media(max-width:640px){
+  .cs-hero{padding-top:104px}.cs-hero h1{font-size:26px}.toc a{height:36px;padding:0 12px;font-size:12.5px}
+  .cs-hero .plate{margin-top:32px}section.cs{padding-top:64px}.row{gap:20px;margin-top:32px}
+  .three,.pair,.pair.trio{grid-template-columns:1fr}.deck{max-width:100%!important}
+  .flow .cell p{min-height:0}.ab{padding-top:104px}.ab .keeps{grid-template-columns:1fr 1fr;gap:10px}
+  .ab .keep .box{padding:18px}.thanks{flex-direction:column;align-items:flex-start;gap:12px}.more .cells{grid-template-columns:1fr}
+  .gal{padding-top:104px}.wall{grid-template-columns:1fr}.wall .slot{border-right:1px solid var(--hair)}
+  footer .in{flex-wrap:wrap;gap:10px}
+}
+
 /* thanks + more */
 .thanks{margin-top:96px;display:flex;gap:24px;align-items:center;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:24px 0}
 .thanks img.sig{width:118px;height:auto;flex:0 0 auto}
@@ -538,9 +549,9 @@ def THANKS():
             '<p>I design better than I summarize. Let\'s fix that over a call or interview. Reach out <a href="mailto:jazkurnz06@gmail.com">here</a>.</p></div></div>')
 
 PROJECTS = [
-  dict(n='01', t='Clover',           y='2026', href='/404.html?p=Clover',            s='Designing the HUD interface and shipping the iOS companion app'),
+  dict(n='01', t='Clover',           y='2026', href='/soon.html?p=Clover',            s='Designing the HUD interface and shipping the iOS companion app'),
   dict(n='02', t='Fostr',            y='2026', href='https://fostr.page/', ext=True, s='Building the brand, landing site and internal platform from 0 to 1'),
-  dict(n='03', t='Halodoc',          y='2026', href='/404.html?p=Halodoc',           s='Designing the onboarding journey for AI Prescription on mobile'),
+  dict(n='03', t='Halodoc',          y='2026', href='/soon.html?p=Halodoc',           s='Designing the onboarding journey for AI Prescription on mobile'),
   dict(n='04', t='Conduit Commerce', y='2026', href='/work/conduit-commerce.html',  s='Designing and shipping a B2B SaaS website for an AI-feature launch'),
   dict(n='05', t='Second Self',      y='2026', href='https://devpost.com/software/second-self-giwmxh', ext=True, s='Building an AI agent that lives on your own Mac'),
   dict(n='06', t='Manus AI',         y='2025', href='/work/manus-ai.html',          s='Designing an AI community platform to drive adoption'),
@@ -860,6 +871,8 @@ ABOUT_CSS = """
 .ab .row p{color:var(--ink2)}
 @media(max-width:700px){.ab .row{grid-template-columns:90px 1fr}.ab .row p{grid-column:2}}
 .ab .off .cell .plate{margin-top:12px}
+.skip{display:inline-block;margin-top:14px;font:500 12.5px var(--jak);color:var(--ink2);text-decoration:none;border-bottom:1px solid var(--hair)}
+.skip:hover{color:var(--ink)}
 /* ---- the flip phone, from flip-lab: closed until the reader comes near ---- */
 :root{--shell-a:#5a1d2c;--shell-b:#340414;--shell-c:#22030d;--key:#3f0c1b;--lx:50%;--ly:30%;--hx:-1px;--hy:-1px}
 /* ---------- the stage ---------- */
@@ -1253,8 +1266,11 @@ GALLERY_JS = """<script>
   const W=680,H=380,BRUSH=4;
   /* the palette as card stock. The stroke follows the hero grid's rule: a gold, oxblood or
      charcoal card knocks the ink out to paper; the paper card takes ink. */
-  const STOCK={gold:'#A99939',oxblood:'#340414',charcoal:'#1C1A17',paper:'#FAF9F7'};
-  const INK=(c)=>c==='paper'?'#14171B':'#FAF9F7';
+  const STOCK={charcoal:'#1C1A17',paper:'#FAF9F7',green:'#9ba69c',purple:'#827a85'};
+  /* cards from the old site carry other colour names; each lands on one of ours, by name */
+  const OLD={gold:'green',oxblood:'purple',orange:'purple',blue:'charcoal',clay:'green'};
+  const tone=(c)=>STOCK[c]?c:(OLD[c]||['charcoal','paper','green','purple'][(String(c||'').length+3)%4]);
+  const INK=(c)=>{const t=tone(c);return (t==='paper'||t==='green')?'#14171B':'#FAF9F7';};
   const $=(s,r=document)=>r.querySelector(s);
   const intro=$('#intro'), wallSec=$('#wall'), gate=$('#gate');
 
@@ -1287,10 +1303,10 @@ GALLERY_JS = """<script>
   /* ---------- the desk ---------- */
   const cv=$('#pad'), ctx=cv.getContext('2d'), dpr=Math.min(devicePixelRatio||1,2);
   cv.width=W*dpr; cv.height=H*dpr; ctx.scale(dpr,dpr);
-  let color='gold', strokes=[], cur=null, down=false;
+  let color='charcoal', strokes=[], cur=null, down=false;
   const mono=$('#mono');
   function repaint(){
-    ctx.fillStyle=STOCK[color]; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=STOCK[tone(color)]; ctx.fillRect(0,0,W,H);
     ctx.strokeStyle=INK(color); ctx.fillStyle=INK(color); ctx.lineWidth=BRUSH; ctx.lineCap='round'; ctx.lineJoin='round';
     for(const s of strokes){
       if(s.length===1){ ctx.beginPath(); ctx.arc(s[0].x,s[0].y,BRUSH/2,0,6.2832); ctx.fill(); continue; }
@@ -1313,9 +1329,17 @@ GALLERY_JS = """<script>
   const grid=$('#grid'), GRID=12;
   function card(c, yours){
     const d=document.createElement('div'); d.className='slot';
-    d.innerHTML=`${yours?'<span class="you">That\\u2019s you</span>':''}<div class="card" style="background:${STOCK[c.color]||STOCK.gold}"><img src="${c.drawing}" alt=""><span class="mono" style="color:${INK(c.color)}">JK</span></div><span class="who" title="${esc(c.name)}">${esc(c.name)}</span>`;
+    d.innerHTML=`${yours?'<span class="you">That\\u2019s you</span>':''}<div class="card" style="background:${STOCK[tone(c.color)]}"><img src="${c.drawing}" alt="" data-ink="${INK(c.color)}"><span class="mono" style="color:${INK(c.color)}">JK</span></div><span class="who" title="${esc(c.name)}">${esc(c.name)}</span>`;
+    d.querySelector('img').addEventListener('load',e=>strokes(e.target),{once:true});
     return d;
   }
+  /* A DRAWING FROM THE OLD SITE has its ground baked in. It is read as ink on paper: the dark
+     marks become the stroke, the rest goes clear, and the stroke takes the card's ink. */
+  function strokes(img){ try{ const w=img.naturalWidth,h=img.naturalHeight; if(!w) return; const c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d'); x.drawImage(img,0,0);
+    const d=x.getImageData(0,0,w,h), px=d.data; if(px[3]<250) return;   /* already transparent strokes */
+    const ink=img.dataset.ink||'#14171B', r=parseInt(ink.slice(1,3),16), g=parseInt(ink.slice(3,5),16), b=parseInt(ink.slice(5,7),16);
+    for(let i=0;i<px.length;i+=4){ const l=(0.299*px[i]+0.587*px[i+1]+0.114*px[i+2]); const a=Math.max(0,Math.min(255,(120-l)*3)); px[i]=r; px[i+1]=g; px[i+2]=b; px[i+3]=a; }
+    x.putImageData(d,0,0); img.src=c.toDataURL(); }catch(e){} }
   const esc=(s)=>String(s||'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
   async function hang(mine){
     grid.innerHTML=''; grid.appendChild(card(mine,true));
@@ -1332,7 +1356,7 @@ GALLERY_JS = """<script>
       const to=$('.slot .card',grid); if(!from||!to) return;
       const t=to.getBoundingClientRect();
       const g=document.createElement('div'); g.id='ghost'; g.innerHTML=`<img src="${mine.drawing}" alt="">`;
-      g.style.left=from.left+'px'; g.style.top=from.top+'px'; g.style.width=from.width+'px'; g.style.height=from.height+'px'; g.style.background=STOCK[mine.color];
+      g.style.left=from.left+'px'; g.style.top=from.top+'px'; g.style.width=from.width+'px'; g.style.height=from.height+'px'; g.style.background=STOCK[tone(mine.color)];
       document.body.appendChild(g); to.style.visibility='hidden';
       requestAnimationFrame(()=>{ g.style.transform=`translate(${t.left-from.left}px,${t.top-from.top}px) scale(${t.width/from.width},${t.height/from.height})`; g.style.opacity='0'; });
       setTimeout(()=>{ to.style.visibility=''; g.remove(); }, 720);
@@ -1341,7 +1365,8 @@ GALLERY_JS = """<script>
   }
 
   /* ---------- the memory layer ---------- */
-  try{ if(localStorage.getItem(SEEN_KEY)==='true'){ const j=localStorage.getItem(CARD_KEY); if(j){ showWall(JSON.parse(j), null); } } }catch(e){}
+  /* the desk comes first for everyone; a returning visitor also gets a way straight to the wall */
+  try{ const j=localStorage.getItem(CARD_KEY); if(j){ const mine=JSON.parse(j); const a=document.createElement('a'); a.href='#'; a.className='skip'; a.textContent='I already hung one, take me to the wall \u2192'; a.addEventListener('click',e=>{e.preventDefault(); showWall(mine,null);}); (err.parentNode||document.body).insertBefore(a,err); } }catch(e){}
 
   go.addEventListener('click', async ()=>{
     if(go.disabled) return; go.disabled=true; go.textContent='Hanging your art\\u2026'; err.textContent='';
@@ -1392,7 +1417,7 @@ gallery = page('Art Gallery', f"""<main class="gal"><div class="wrap">
       <div class="plate" id="padPlate"><canvas id="pad" width="680" height="380"></canvas><span class="mono" id="mono">JK</span></div>
       <div class="side">
         <div class="cell"><div class="label">Name</div><input id="name" type="text" maxlength="60" placeholder="Your name here" autocomplete="off"></div>
-        <div class="cell"><div class="label">Card</div><div class="sw">{SWATCHES}</div></div>
+        <div class="cell"><div class="label">Card</div><div class="sw"><button type="button" data-c="charcoal" aria-label="charcoal card" aria-pressed="true" style="background:#1C1A17"></button><button type="button" data-c="paper" aria-label="paper card" aria-pressed="false" style="background:#FAF9F7;outline:1px solid var(--hair)"></button><button type="button" data-c="green" aria-label="green card" aria-pressed="false" style="background:#9ba69c"></button><button type="button" data-c="purple" aria-label="purple card" aria-pressed="false" style="background:#827a85"></button></div></div>
         <div class="cell"><div class="label">Then</div><div class="acts"><button type="button" id="clear">Clear</button><button type="button" id="go" class="go" disabled>Enter &rarr;</button></div><p class="err" id="err"></p></div>
       </div>
     </div>
@@ -1410,5 +1435,5 @@ gallery = gallery.replace('</body></html>', GALLERY_JS + '</body></html>')
 
 # ------------------------------------------------------------------ write
 os.makedirs('work', exist_ok=True)
-for path, doc in [('work/manus-ai.html', manus), ('work/conduit-commerce.html', conduit), ('work/somia-cx.html', somia), ('404.html', four), ('about.html', about), ('art-gallery.html', gallery)]:
+for path, doc in [('work/manus-ai.html', manus), ('work/conduit-commerce.html', conduit), ('work/somia-cx.html', somia), ('soon.html', four), ('about.html', about), ('art-gallery.html', gallery)]:
     open(path,'w').write(doc); print(f'{path:28s} {len(doc)//1024} KB')

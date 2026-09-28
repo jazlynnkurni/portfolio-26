@@ -316,6 +316,7 @@ footer .in a{font-size:13px}
 [data-theme="dark"] .preview .stage{outline:1px solid var(--outline);outline-offset:-1px}
 .preview.show{opacity:1;transform:none}
 @media(max-width:900px){.rows a{font-size:32px}}
+@media(max-width:640px){.rows a{font-size:26px}.tags{gap:6px;margin:16px 0 28px}.tags button{padding:7px 11px;font-size:12px}.pv-cap{padding:12px 4px 4px}.hero-foot{display:none}.work{padding-top:40px}}
 /* THE GOLDEN RULE: every card has the same padding on all four sides, so the recording is
    fitted to the stage, never the stage to the recording. Cover, not contain: a recording
    that is not 16:9 loses a sliver at its edges rather than leaving a gap. */
@@ -444,8 +445,10 @@ html.sheet-open.sheet-full .sheet-tabs{opacity:0;transform:translateY(-8px);poin
 .sheet-act .i-in{display:none}
 html.sheet-full .sheet-act .i-out{display:none}
 html.sheet-full .sheet-act .i-in{display:block}
-.sheet iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--paper)}
-.sheet-act{position:absolute;top:18px;right:18px;z-index:2;display:flex;gap:4px}
+.sheet iframe{position:absolute;left:0;right:0;top:52px;bottom:0;width:100%;height:calc(100% - 52px);border:0;background:var(--paper)}
+/* the sheet's own bar: the buttons live on it, the case study starts under it */
+.sheet-bar{position:absolute;left:0;right:0;top:0;height:52px;z-index:2;background:var(--paper);border-bottom:1px solid var(--hair)}
+.sheet-act{position:absolute;top:8px;right:12px;z-index:3;display:flex;gap:4px}
 .sheet-act a,.sheet-act button{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;border:0;background:transparent;color:var(--ink2);cursor:pointer;
   transition:background .14s ease,color .14s ease}
 .sheet-act a:hover,.sheet-act button:hover{background:color-mix(in srgb,var(--ink) 7%,transparent);color:var(--ink)}
@@ -687,7 +690,10 @@ function measure(){
      at the strict golden share (61.8%) the letters fell to the floor and looked lost.
      Rows stay between 38 and 72px. 70% and 80% both read as too small. */
   const N=WORDS.length, free=innerHeight-72-96-120;         /* hero min-height minus its paddings */
-  const rowPx=Math.max(38,Math.min(72, (free*.88)/(N+(N-1)*.2)));
+  /* on a narrow screen the longest word decides the row: its letters must fit the width at rest */
+  const longest=Math.max(...WORDS.map(w=>w.length)), wide=(stack.getBoundingClientRect().width||innerWidth-60);
+  const fitPx=wide/(longest*0.62+0.4);
+  const rowPx=Math.max(24,Math.min(72, (free*.88)/(N+(N-1)*.2), fitPx));
   document.documentElement.style.setProperty('--row',rowPx.toFixed(2)+'px');
   /* a custom property reads back as its declared text ("clamp(...)"), never as pixels,
      so the row is measured off a real cell */
@@ -875,9 +881,9 @@ document.querySelectorAll('canvas[data-lazy]').forEach(cv=>mount(cv,cv.dataset.l
 
 /* ---------- projects: rows, tags, hover preview ---------- */
 const PROJECTS=[
-  {n:'01',t:'Clover',          y:'2026',cur:'smartglasses and dictation rings, super fun stuff',tags:['0 → 1','AI','Mobile'], role:'Founding design engineer', st:'0 to 1, in development',   s:'Designing the HUD interface and shipping the iOS companion app',        href:'/404.html?p=Clover',           v:'/videos/trim/work-clover.mp4',  img:'/videos/trim/work-clover.jpg'},
+  {n:'01',t:'Clover',          y:'2026',cur:'smartglasses and dictation rings, super fun stuff',tags:['0 → 1','AI','Mobile'], role:'Founding design engineer', st:'0 to 1, in development',   s:'Designing the HUD interface and shipping the iOS companion app',        href:'/soon.html?p=Clover',           v:'/videos/trim/work-clover.mp4',  img:'/videos/trim/work-clover.jpg'},
   {n:'02',t:'Fostr',           y:'2026',cur:'internal platform and branding',tags:['0 → 1','Web'], role:'Founding design engineer', st:'Live',   s:'Building the brand, landing site and internal platform from 0 to 1',    href:'https://fostr.page/', ext:true, v:'/videos/work-fostr.mp4',   img:'/videos/work-fostr.jpg'},
-  {n:'03',t:'Halodoc',         y:'2026',cur:'product-centric internship and agentic prompting',tags:['AI','Mobile'], role:'Product designer', st:'Shipped to 20M+ users',                 s:'Designing the onboarding journey for AI Prescription on mobile',         href:'/404.html?p=Halodoc',          v:'/videos/trim/work-halodoc.mp4', img:'/videos/trim/work-halodoc.jpg'},
+  {n:'03',t:'Halodoc',         y:'2026',cur:'product-centric internship and agentic prompting',tags:['AI','Mobile'], role:'Product designer', st:'Shipped to 20M+ users',                 s:'Designing the onboarding journey for AI Prescription on mobile',         href:'/soon.html?p=Halodoc',          v:'/videos/trim/work-halodoc.mp4', img:'/videos/trim/work-halodoc.jpg'},
   {n:'04',t:'Conduit Commerce',y:'2026',cur:'project lead for B2B SaaS redesign',tags:['AI','Web'], role:'Product design lead', st:'Shipped',                 s:'Designing and shipping a B2B SaaS website for an AI-feature launch',     href:'/work/conduit-commerce.html',  v:'/videos/trim/work-conduit.mp4', img:'/videos/trim/work-conduit.jpg'},
   {n:'05',t:'Second Self',     y:'2026',cur:'YHacks #1 winner for Personal AI Agent',tags:['Personal projects','AI'], role:'Design engineer', st:'YHacks \u201926, 1st place',                            s:'Building an AI agent that lives on your own Mac',                        href:'https://devpost.com/software/second-self-giwmxh', ext:true, v:'/videos/second-self.mp4', img:'/videos/second-self.jpg'},
   {n:'06',t:'Manus AI',        y:'2025',cur:'we got acquired by meta during the process lol',tags:['AI','Web'], role:'Product designer', st:'Approved, in development',       s:'Designing an AI community platform to drive adoption',                   href:'/work/manus-ai.html',          v:'/videos/work-manus.mp4',   img:'/videos/work-manus.jpg'},
@@ -957,7 +963,7 @@ show(0);
   const tabs=document.createElement('div'); tabs.className='sheet-tabs'; tabs.setAttribute('role','tablist');
   tabs.innerHTML=CASES.map(c=>`<button role="tab" data-slug="${c.slug}" aria-pressed="false">${c.t}</button>`).join('');
   const sheet=document.createElement('div'); sheet.className='sheet'; sheet.setAttribute('role','dialog'); sheet.setAttribute('aria-modal','true');
-  sheet.innerHTML=`<div class="sheet-act"><button id="sheet-full" title="Expand" aria-label="Expand" aria-pressed="false"><svg class="i-out" viewBox="0 0 16 16"><path d="M3 6.5V3h3.5M13 9.5V13H9.5M13 3 9 7M3 13l4-4M13 3H9.5M13 3v3.5M3 13h3.5M3 13V9.5"/></svg><svg class="i-in" viewBox="0 0 16 16"><path d="M7 3v4H3M9 13V9h4M3 3l4 4M13 13 9 9"/></svg></button><button id="sheet-close" title="Close" aria-label="Close"><svg viewBox="0 0 16 16"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg></button></div><iframe title="Case study"></iframe>`;
+  sheet.innerHTML=`<div class="sheet-bar"></div><div class="sheet-act"><button id="sheet-full" title="Expand" aria-label="Expand" aria-pressed="false"><svg class="i-out" viewBox="0 0 16 16"><path d="M3 6.5V3h3.5M13 9.5V13H9.5M13 3 9 7M3 13l4-4M13 3H9.5M13 3v3.5M3 13h3.5M3 13V9.5"/></svg><svg class="i-in" viewBox="0 0 16 16"><path d="M7 3v4H3M9 13V9h4M3 3l4 4M13 13 9 9"/></svg></button><button id="sheet-close" title="Close" aria-label="Close"><svg viewBox="0 0 16 16"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg></button></div><iframe title="Case study"></iframe>`;
   let mounted=false, cur=null, restoreY=0;
   function mount(){ if(mounted) return; mounted=true; document.body.append(bg,tabs,sheet); }
   /* ONE CURSOR. The case study inside the frame draws its own dot, and the home cannot see the
