@@ -595,7 +595,7 @@ DECK_JS = """<script>(function(){
 
 def case(name, n, body_sections, title):
     body = ''.join(body_sections) + f'<div class="wrap">{THANKS()}{MORE(name)}</div>' + DECK_JS
-    return page(f'{name} — {title}', body, CASE_CSS)
+    return page(f'{name} · {title}', body, CASE_CSS)
 
 # ------------------------------------------------------------------ MANUS AI
 TOC5=[('overview','Overview'),('problem','Problem'),('research','Research'),('development','Development'),('testing','Testing'),('solution','Solution')]
