@@ -2,7 +2,7 @@
 """build.py -- renders the case studies and the 404 into the revamp's design system.
 Run:  python3 build.py   (writes work/*.html and 404.html). Edit the DATA, not the output.
 Media is served through the images/ and videos/ symlinks into ~/Desktop/portfolio/public."""
-import html, os, re
+import html, os, re, pathlib
 
 # ------------------------------------------------------------------ shared chrome
 TOKENS = """
@@ -23,7 +23,7 @@ h1,h2,h3,h4{font-family:var(--jak);font-weight:500;letter-spacing:-.012em;text-w
 p{text-wrap:pretty;margin:0}
 a{color:inherit}
 .wrap{max-width:1180px;margin:0 auto;padding:0 30px}
-.label{font-family:var(--jak);font-weight:600;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3)}
+.label{font-family:var(--jak);font-weight:600;font-size:10.5px;line-height:1.5;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3)}
 /* nav: the pill from index.html, verbatim */
 nav{position:fixed;top:0;left:0;right:0;z-index:60;pointer-events:none}
 nav .in{display:flex;justify-content:space-between;align-items:center;padding-top:24px}
@@ -64,6 +64,15 @@ footer a:hover{color:var(--touch)}
     transform:scale(1);transition:transform .46s cubic-bezier(.33,1.18,.37,1),opacity .32s ease,box-shadow .32s ease}
   [data-theme="dark"] #cur i{background:var(--ink);box-shadow:0 3px 14px rgba(250,249,247,.26)}
   #cur.on{opacity:1}
+  #cur{transition:height .32s cubic-bezier(.33,1.18,.37,1),width .5s cubic-bezier(.33,1.18,.37,1) .05s}
+  #cur:not(.pill){transition:width .34s cubic-bezier(.2,.7,.2,1),height .3s cubic-bezier(.2,.7,.2,1) .1s}
+  #cur b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;font:500 12.5px var(--jak);letter-spacing:.01em;
+    color:var(--paper);opacity:0;transition:opacity .16s ease}
+  #cur.pill{width:var(--pw,180px);height:34px}
+  #cur.pill i{border-radius:999px;transform:none;opacity:1;background:var(--ink);box-shadow:0 8px 26px rgba(28,26,23,.22)}
+  #cur i{transition:transform .32s cubic-bezier(.33,1.18,.37,1),opacity .2s ease,border-radius .3s ease,background .2s ease}
+  #cur.pill b{opacity:1;transition:opacity .22s ease .22s}
+  [data-theme="dark"] #cur b{color:var(--paper)}
   #cur.hot i{transform:scale(2.6);opacity:.62;box-shadow:0 6px 22px rgba(28,26,23,.22)}
   [data-theme="dark"] #cur.hot i{box-shadow:0 6px 22px rgba(250,249,247,.2)}
   #cur.down i{transform:scale(2.1);opacity:.75}
@@ -102,7 +111,7 @@ CASE_CSS = """
 .cs-hero .eyebrow{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
 .cs-hero .eyebrow .logo{height:22px;width:auto;opacity:.9}
 [data-theme="dark"] .cs-hero .eyebrow .logo{filter:invert(1) hue-rotate(180deg)}
-.cs-hero h1{font-size:clamp(28px,4vw,44px);line-height:1.12;max-width:22ch;margin-top:24px}
+.cs-hero h1{font-size:clamp(28px,4vw,44px);line-height:1.12;max-width:22ch;margin-top:12px}
 .cs-hero .facts{display:grid;grid-template-columns:repeat(12,1fr);gap:24px;margin-top:48px;border-top:1px solid var(--hair);padding-top:24px}
 .cs-hero .facts>div{grid-column:span 3}
 .cs-hero .facts p{font-size:14px;line-height:1.55;color:var(--ink2);margin-top:8px}
@@ -110,17 +119,7 @@ CASE_CSS = """
 .cs-hero .facts ul{list-style:none;margin:8px 0 0;padding:0;font-size:14px;line-height:1.55;color:var(--ink2)}
 @media(max-width:900px){.cs-hero .facts>div{grid-column:span 6}}
 @media(max-width:560px){.cs-hero .facts>div{grid-column:span 12}}
-.cs-hero .plate{margin-top:48px}
-/* ============ THE PRINT ==========================================================
- * Every cover goes through the same press: reduced to tone, the tone mapped onto her three
- * (oxblood in the shadows, gold through the middle, paper in the lights), and a screen laid
- * over the top. The riso disc's logic on a photograph. An SVG filter rather than a canvas,
- * so it costs nothing and it works on the videos. The colourway lives in the tableValues. */
-.cs-hero .plate img,.cs-hero .plate video{filter:url(#print-light) contrast(1.06);mix-blend-mode:normal}
-[data-theme="dark"] .cs-hero .plate img,[data-theme="dark"] .cs-hero .plate video{filter:url(#print-dark) contrast(1.04)}
-.cs-hero .plate::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
-  background:radial-gradient(circle,rgba(20,23,27,.9) 0 27%,transparent 33%) 0 0/4px 4px;mix-blend-mode:multiply;opacity:.16}
-[data-theme="dark"] .cs-hero .plate::after{background:radial-gradient(circle,rgba(250,249,247,.8) 0 27%,transparent 33%) 0 0/4px 4px;mix-blend-mode:screen;opacity:.10}
+.cs-hero .plate{width:min(100%,920px);margin:48px auto 0}
 /* the table of contents is a row of the hero's cells */
 .toc{display:flex;flex-wrap:wrap;margin-top:24px}
 .toc a{display:flex;align-items:center;height:40px;padding:0 18px;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
@@ -147,7 +146,13 @@ section.cs:last-of-type{padding-bottom:32px}
 .row.r7{grid-template-columns:5fr 7fr}
 .row.r75{grid-template-columns:7fr 5fr}
 @media(max-width:900px){.row,.row.r7,.row.r75{grid-template-columns:1fr;gap:24px}}
+.solo{margin-top:48px;max-width:64ch}
+/* two small sketches side by side, shown under their file size so they stay crisp */
+.pair{display:grid;grid-template-columns:repeat(2,minmax(0,170px));gap:16px}
+.pair.trio{grid-template-columns:repeat(3,1fr);margin-top:48px}
+.pair figure{margin:0}
 .tx h3{font-size:17px;line-height:1.3}
+.tx ul+h3,.tx p+h3,.tx ol+h3{margin-top:28px}
 .tx h3 .a{color:var(--ink3);font-weight:400}
 .tx p{font-size:15.5px;line-height:1.62;color:var(--ink2);margin-top:12px}
 .tx p b,.tx li b{font-weight:400;color:var(--ink)}
@@ -159,12 +164,38 @@ section.cs:last-of-type{padding-bottom:32px}
 .plate{position:relative;border-radius:20px;overflow:hidden;background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px}
 .plate img,.plate video{display:block;width:100%;height:auto}
 .plate.pad{padding:24px}
+/* a bare plate is no plate: the picture draws its own edges, so a box around it was a box in a box */
+.plate.bare{background:transparent;outline:0;border-radius:0}
 .plate.pad img,.plate.pad video{border-radius:8px}
 figure{margin:0}
 figure.mt{margin-top:48px}
 figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;max-width:60ch}
-.three{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
-.three figcaption{margin-top:10px}
+/* THE DECK. Three plates in a row gave each image a third of the width, which is
+   too small to read. Now one card holds the width and the others wait under it: the pile
+   shows two edges below the top card so the reader knows there is more, and a click sends
+   the top card to the bottom. Same size for every card, so nothing jumps. */
+.deck{margin-top:48px;cursor:pointer;outline:0}
+.deck .pile{position:relative;aspect-ratio:16/10;margin-bottom:20px}
+.deck .card{position:absolute;inset:0;margin:0;transform-origin:50% 100%;
+  transition:transform .48s cubic-bezier(.2,.7,.2,1),opacity .3s ease}
+.deck .card .plate{height:100%;margin:0}
+.deck .card .plate{background:var(--plate)}
+.deck .card .plate.bare{background:transparent}
+.deck .card .plate.bare img{border-radius:12px}
+/* the pile takes the FIRST card's own proportions (set on load), so the cards in a group,
+   which come from the same flow, are shown whole and all at one size */
+.deck .card .plate img,.deck .card .plate video{height:100%;object-fit:contain}
+.deck .card figcaption{position:absolute;left:0;right:0;top:calc(100% + 12px);opacity:0;transition:opacity .25s ease}
+.deck .card.top figcaption{opacity:1;transition-delay:.18s}
+.deck .card.top{z-index:3}
+.deck .card.next{z-index:2;transform:translateY(10px) scale(.965)}
+.deck .card.after{z-index:1;transform:translateY(20px) scale(.93)}
+.deck .card.gone{z-index:0;opacity:0;transform:translateY(20px) scale(.93)}
+.deck .card.leaving{z-index:4;transform:translateY(56px) scale(1.02);opacity:0}
+.deck .deck-foot{display:flex;justify-content:space-between;align-items:baseline;margin-top:44px;font-family:var(--jak);font-weight:500;font-size:12.5px;color:var(--ink3)}
+.deck .deck-foot b{font-weight:600;color:var(--ink)}
+.deck:focus-visible .pile{outline:2px solid var(--ink);outline-offset:6px;border-radius:20px}
+.deck .card figcaption{margin-top:0}
 @media(max-width:700px){.three{grid-template-columns:1fr}}
 /* cells: the hero grid's object, holding text */
 .cells{display:grid;grid-template-columns:repeat(3,1fr);margin-top:48px}
@@ -180,6 +211,7 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 .cell .big{font:300 40px/1 var(--hel);letter-spacing:-.02em;color:var(--ink);margin:0}
 .cell .big+p{margin-top:12px}
 .cell img.av{width:56px;height:56px;border-radius:50%;object-fit:cover;outline:1px solid var(--outline);outline-offset:-1px;display:block;margin-bottom:14px}
+.cell svg.av{width:56px;height:56px;display:block;margin-bottom:14px}
 .cell .kv{font-size:12.5px;color:var(--ink3);margin-top:4px}
 .cell.ink{background:var(--flick-b);color:var(--paper);border-color:transparent}
 .cell.ink p,.cell.ink h3{color:inherit}
@@ -200,10 +232,12 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 .flow{display:grid;grid-template-columns:repeat(4,1fr);margin-top:48px}
 .flow .cell{display:flex;flex-direction:column;gap:14px}
 .flow .cell p{margin:0;font-size:14px;color:var(--ink)}
-.flow .cell .m{border-radius:12px;overflow:hidden;outline:1px solid var(--outline);outline-offset:-1px;background:var(--plate)}
-.flow .cell .m video,.flow .cell .m img{display:block;width:100%;height:auto}
-.flow .cell .ic{height:48px;width:auto;opacity:.85}
-[data-theme="dark"] .flow .cell .ic{filter:invert(1)}
+/* four equal plates: the recordings fill theirs, the icons sit centred in the same frame,
+   so a step that is a drawing and a step that is a recording are the same object */
+.flow .cell .m{border-radius:12px;overflow:hidden;outline:1px solid var(--outline);outline-offset:-1px;background:var(--plate);
+  aspect-ratio:1920/1042;display:grid;place-items:center}
+.flow .cell .m video,.flow .cell .m img{display:block;width:100%;height:100%;object-fit:cover}
+.flow .cell .m.icon .ic{width:auto;height:44%;color:var(--ink2)}
 @media(max-width:900px){.flow{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.flow{grid-template-columns:1fr}}
 /* takeaways */
@@ -215,17 +249,24 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 @media(max-width:900px){.take{grid-template-columns:1fr}}
 /* thanks + more */
 .thanks{margin-top:96px;display:flex;gap:24px;align-items:center;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:24px 0}
-.thanks img{width:96px;height:96px;object-fit:contain}
+.thanks img.sig{width:118px;height:auto;flex:0 0 auto}
 .thanks h3{font-size:17px}
 .thanks p{font-size:15px;color:var(--ink2);margin-top:6px;line-height:1.55}
 .thanks a{color:var(--touch)}
-.more{margin-top:96px}
+.more{margin:96px 0}
 .more .cells{margin-top:16px}
 .more a.cell{display:block;text-decoration:none;color:inherit;transition:background .16s ease}
 .more a.cell:hover{background:color-mix(in srgb,var(--ink) 4%,transparent)}
 .more a.cell .t{font:300 28px/1.15 var(--hel);letter-spacing:-.015em;color:var(--ink);display:block}
 .more a.cell p{margin-top:8px}
 .more a.cell .n{font:500 11px var(--jak);letter-spacing:.12em;color:var(--ink3);display:block;margin-bottom:12px}
+
+
+/* IN THE SHEET. Opened from the home page, the case study is the sheet's whole content:
+   no nav, no footer, the sheet's own chrome carries the tabs and the close. */
+html.sheet nav,html.sheet footer,html.sheet site-mark{display:none}
+html.sheet .cs-hero{padding-top:56px}
+html.sheet body{background:transparent}
 """
 NAV = """<nav><div class="wrap in">
   <site-mark href="/"></site-mark>
@@ -236,9 +277,17 @@ NAV = """<nav><div class="wrap in">
     </button>
     <a class="l" href="/#work">Projects</a><a class="l" href="http://localhost:3000/sandbox">Sandbox</a><a class="l" href="/art-gallery.html">Art Gallery</a><a class="l" href="/about.html">About</a></span>
 </div></nav>"""
-THEME_HEAD = """<script>(function(){const q=new URLSearchParams(location.search).get('theme');let t=q||localStorage.getItem('theme');
+THEME_HEAD = """<script>(function(){if(new URLSearchParams(location.search).get('sheet')=='1')document.documentElement.classList.add('sheet');const q=new URLSearchParams(location.search).get('theme');let t=q||localStorage.getItem('theme');
 if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>"""
 SITE_JS = """<script>
+/* ---------- alpha recordings: Safari takes the HEVC, everyone else the WebM ---------- */
+(function(){
+  const safari=/^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent);
+  document.querySelectorAll('video[data-alpha]').forEach(v=>{
+    v.src=v.dataset.alpha+(safari?'.mov':'.webm');
+    v.addEventListener('error',()=>{ if(v.src.indexOf('-alpha')>-1){ v.src=v.dataset.flat; v.load(); } },{once:true});
+  });
+})();
 /* ---------- THE PAGE MAKES ROOM ----------
    When the line drops out from under the name, everything below the nav moves down just
    far enough to clear its foot, on the site's ease, and comes back to its place when the
@@ -260,7 +309,7 @@ SITE_JS = """<script>
 /* ---------- the cursor ---------- */
 (function(){
   if(!matchMedia('(hover: hover) and (pointer:fine)').matches) return;
-  const c=document.createElement('div'); c.id='cur'; c.appendChild(document.createElement('i')); document.body.appendChild(c);
+  const c=document.createElement('div'); c.id='cur'; c.appendChild(document.createElement('i')); const lb=document.createElement('b'); c.appendChild(lb); document.body.appendChild(c);
   let tx=-100,ty=-100,x=-100,y=-100,raf=0,shown=false;
   const HOT='a,button,[role=button],label,summary,.rows li,.tags button';
   function loop(){
@@ -273,7 +322,13 @@ SITE_JS = """<script>
     tx=e.clientX; ty=e.clientY;
     if(!shown){ x=tx; y=ty; shown=true; c.classList.add('on'); }
     const t=e.target.closest ? e.target.closest(HOT) : null;
-    c.classList.toggle('hot',!!t);
+    /* THE PILL. Over anything with a data-cur line the dot opens into a pill that says it,
+       the way the live site's cursor becomes the email over the intro. The width is measured
+       off the label so the morph runs between two real numbers. */
+    const say=e.target.closest ? e.target.closest('[data-cur]') : null;
+    if(say){ if(lb.textContent!==say.dataset.cur) lb.textContent=say.dataset.cur; c.style.setProperty('--pw',(lb.scrollWidth+34)+'px'); }
+    c.classList.toggle('pill',!!say);
+    c.classList.toggle('hot',!!t&&!say);
     c.classList.toggle('text',!t && getComputedStyle(e.target).cursor==='text');
     if(!raf) raf=requestAnimationFrame(loop);
   },{passive:true});
@@ -325,7 +380,7 @@ document.querySelectorAll('video[data-io]').forEach(v=>io.observe(v));})();
 </script>"""
 FOOTER = """<footer><div class="wrap"><div class="rule"></div><div class="in">
   <span style="font-size:12.5px;color:var(--ink3)">My local time <b id="clock" style="font-weight:400;color:var(--ink2);font-variant-numeric:tabular-nums"></b></span>
-  <span style="display:flex;gap:20px"><a href="mailto:jazkurnz06@gmail.com">Email</a><a href="#">LinkedIn</a><a href="#">X</a></span>
+  <span style="display:flex;gap:20px"><a href="mailto:jazkurnz06@gmail.com">Email</a><a href="https://www.linkedin.com/in/jazlynn-kurniandra-a456292a8/" target="_blank" rel="noopener">LinkedIn</a><a href="https://x.com/jazlynnkurni" target="_blank" rel="noopener">X</a></span>
   <span style="font-size:12.5px;color:var(--ink3)">© 2026 Jazlynn Kurniandra</span>
 </div></div></footer>"""
 
@@ -335,7 +390,7 @@ def page(title, body, extra_css=""):
 <title>{html.escape(title)} — Jazlynn Kurniandra</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="/site-mark.js?v=sig6"></script>
+<script src="/site-mark.js?v=sig8"></script>
 <style>{TOKENS}{BASE}{extra_css}</style>{THEME_HEAD}</head><body>
 {NAV}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -343,6 +398,16 @@ def page(title, body, extra_css=""):
   <filter id="print-light" color-interpolation-filters="sRGB">
     <feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"/>
     <feComponentTransfer><feFuncR type="table" tableValues="0.204 0.980"/><feFuncG type="table" tableValues="0.016 0.976"/><feFuncB type="table" tableValues="0.078 0.969"/></feComponentTransfer>
+  </filter>
+  <!-- DITHER, purple: the photograph goes to grey, takes a fine grain, is cut to seven steps so the
+       grain reads as a dot screen, then the steps are mapped from the signature purple to paper -->
+  <filter id="dither-purple" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+    <feColorMatrix in="SourceGraphic" type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0" result="g"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="1" seed="7" stitchTiles="stitch" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  1 0 0 0 0" result="nl"/>
+    <feComposite in="g" in2="nl" operator="arithmetic" k1="0" k2="1" k3="0.55" k4="-0.27" result="gn"/>
+    <feComponentTransfer in="gn" result="q"><feFuncR type="discrete" tableValues="0 .17 .33 .5 .67 .83 1"/><feFuncG type="discrete" tableValues="0 .17 .33 .5 .67 .83 1"/><feFuncB type="discrete" tableValues="0 .17 .33 .5 .67 .83 1"/></feComponentTransfer>
+    <feComponentTransfer in="q"><feFuncR type="table" tableValues="0.510 0.980"/><feFuncG type="table" tableValues="0.478 0.976"/><feFuncB type="table" tableValues="0.522 0.969"/></feComponentTransfer>
   </filter>
   <!-- on charcoal the shadows are the ground itself -->
   <filter id="print-dark" color-interpolation-filters="sRGB">
@@ -366,32 +431,64 @@ def P(*ps): return ''.join(f'<p>{rich(p)}</p>' for p in ps)
 def H3(t): return f'<h3>{rich(t)} <span class="a">&rarr;</span></h3>'
 def UL(items): return '<ul>'+''.join(f'<li>{rich(i)}</li>' for i in items)+'</ul>'
 def TX(*inner): return '<div class="tx">'+''.join(inner)+'</div>'
-def media(src, alt="", pad=False):
+def media(src, alt="", pad=False, bare=False, cur=None):
     cls = 'plate pad' if pad else 'plate'
+    if bare: cls += ' bare'
+    attrs = f'class="{cls}"' + (f' data-cur="{E(cur)}"' if cur else '')
     if src.endswith('.mp4'):
-        return f'<div class="{cls}"><video src="{src}" muted loop playsinline preload="metadata" data-io></video></div>'
-    return f'<div class="{cls}"><img src="{src}" alt="{E(alt)}" loading="lazy"></div>'
-def FIG(src, cap="", alt="", pad=False, mt=True):
+        # a recording with an alpha twin on disk (<name>-alpha.webm / .mov) plays with its ground
+        # transparent, so it sits on the page's own paper in either colour mode
+        base = src[:-4] + '-alpha'
+        if os.path.exists(base.lstrip('/') + '.webm'):
+            return f'<div {attrs}><video muted loop playsinline preload="metadata" data-io data-alpha="{base}" data-flat="{src}"></video></div>'
+        return f'<div {attrs}><video src="{src}" muted loop playsinline preload="metadata" data-io></video></div>'
+    return f'<div {attrs}><img src="{src}" alt="{E(alt)}" loading="lazy"></div>'
+def FIG(src, cap="", alt="", pad=False, mt=True, bare=False):
     c = f'<figcaption>{rich(cap)}</figcaption>' if cap else ''
-    return f'<figure class="{"mt" if mt else ""}">{media(src, alt or cap, pad)}{c}</figure>'
+    return f'<figure class="{"mt" if mt else ""}">{media(src, alt or cap, pad, bare)}{c}</figure>'
 def ROW(left, right, kind=""):
     return f'<div class="row {kind}">{left}{right}</div>'
-def THREE(items):
-    out=''.join(f'<figure>{media(s,a)}<figcaption>{rich(c)}</figcaption></figure>' for s,c,a in items)
-    return f'<div class="three">{out}</div>'
+def THREE(items, bare=False):
+    """Three or more images that used to sit side by side are a DECK now: one card at a
+    time at full width, the rest stacked under it. Click or press right for the next card;
+    the card you were on drops to the bottom of the pile. Every card is the same size."""
+    cards=''.join(f'<figure class="card" data-i="{k}">{media(s,a,False,bare)}<figcaption>{rich(c)}</figcaption></figure>' for k,(s,c,a) in enumerate(items))
+    return f'<div class="deck" data-n="{len(items)}" tabindex="0" role="group" aria-label="{len(items)} images, click for the next"><div class="pile">{cards}</div><div class="deck-foot"><span class="deck-n"><b>1</b> / {len(items)}</span><span class="deck-hint">click for the next</span></div></div>'
 def CELLS(cells, cols=3):
     return f'<div class="cells c{cols}">'+''.join(cells)+'</div>'
 def CELL(inner, cls=""): return f'<div class="cell {cls}">{inner}</div>'
 def STAT(big, text): return CELL(f'<p class="big">{E(big)}</p><p>{rich(text)}</p>')
 def QUOTES(qs): return '<div class="quotes">'+''.join(f'<div class="cell"><p>{rich(q)}</p><p class="who">{E(w)}</p></div>' for q,w in qs)+'</div>'
+PERSON_SVG = '<svg class="av" viewBox="0 0 56 56" aria-hidden="true" style="color:{c}"><circle cx="28" cy="28" r="28" fill="currentColor"/><circle cx="28" cy="21" r="7.5" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M14 44c2.2-7.6 7.4-11.5 14-11.5S39.8 36.4 42 44" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>'
 def PERSONA(av, name, kv, bullets):
-    return CELL(f'<img class="av" src="{av}" alt=""><h4>{E(name)}</h4><p class="kv">{E(kv)}</p>'+UL(bullets))
+    """av is a photo path, or 'person:<colour>' for the outline figure in a palette colour."""
+    if av.startswith('person:'):
+        head = PERSON_SVG.format(c=av.split(':',1)[1])
+    else:
+        head = f'<img class="av" src="{av}" alt="">'
+    return CELL(f'{head}<h4>{E(name)}</h4><p class="kv">{E(kv)}</p>'+UL(bullets))
 def HMW(a, b):
     return CELLS([CELL(f'<h3>{E(a)}</h3>','ink'), CELL(f'<h3>{E(b)}</h3>','gold')], 2)
+def ICON(src):
+    """A flow icon is inlined so its lines take the page's ink and its knock-outs take the plate,
+    in either colour mode; as an <img> its baked colours went black on charcoal."""
+    svg = pathlib.Path(src.lstrip('/')).read_text()
+    svg = re.sub(r'<\?xml[^>]*>', '', svg)
+    svg = re.sub(r'stroke="#[0-9A-Fa-f]{3,6}"', 'style="stroke:currentColor"', svg)
+    # a dark fill in the source is a solid shape (the front figure's body): it takes the ink;
+    # a light fill is a knock-out and takes the plate
+    def fill(m):
+        h = m.group(1); h = ''.join(ch*2 for ch in h) if len(h) == 3 else h
+        r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+        return 'style="fill:currentColor"' if (0.3*r + 0.59*g + 0.11*b) < 128 else 'style="fill:var(--plate)"'
+    svg = re.sub(r'fill="#([0-9A-Fa-f]{3,6})"', fill, svg)
+    svg = svg.replace('style="stroke:currentColor" style="fill:var(--plate)"','style="stroke:currentColor;fill:var(--plate)"').replace('style="fill:var(--plate)" style="stroke:currentColor"','style="stroke:currentColor;fill:var(--plate)"')
+    svg = re.sub(r'<svg ', '<svg class="ic" aria-hidden="true" ', svg, count=1)
+    return svg
 def FLOW(steps):
     out=''
     for cap, kind, src in steps:
-        if kind=='icon': m=f'<img class="ic" src="{src}" alt="">'
+        if kind=='icon': m=f'<div class="m icon">{ICON(src)}</div>'
         elif kind=='video': m=f'<div class="m"><video src="{src}" muted loop playsinline preload="metadata" data-io></video></div>'
         else: m=f'<div class="m"><img src="{src}" alt="" loading="lazy"></div>'
         out+=f'<div class="cell"><p>{E(cap)}</p>{m}</div>'
@@ -399,32 +496,39 @@ def FLOW(steps):
 def SECTION(id, eyebrow, h2, lede, *blocks):
     lede_html = f'<div class="lede">{P(*lede)}</div>' if lede else '<div></div>'
     return f'<section class="cs" id="{id}"><div class="wrap"><div class="head"><div><div class="label">{E(eyebrow)}</div><h2>{rich(h2)}</h2></div>{lede_html}</div>{"".join(blocks)}</div></section>'
-def TAKE(photos, points):
-    ph = ''.join(f'<figure style="margin-top:{0 if i==0 else 16}px">{media(s,a)}</figure>' for i,(s,a) in enumerate(photos))
+def ph_args(t):
+    """(src, alt) or (src, alt, cursor line): the third is what the cursor says over the photo"""
+    return (t[0], t[1], False, False, t[2] if len(t)>2 else None)
+def TAKE(photos, points, cur=None):
+    """photos are bare: they draw their own edges. cur is the line the cursor says over them."""
+    if len(photos) >= 2:
+        ph = THREE([(t[0], '', t[1]) for t in photos], bare=True).replace('class="deck"', f'class="deck" style="margin-top:0;max-width:420px"' + (f' data-cur="{E(cur)}"' if cur else ''))
+    else:
+        ph = ''.join(f'<figure style="margin-top:0;max-width:420px">{media(t[0], t[1], False, True, t[2] if len(t)>2 else None)}</figure>' for t in photos)
     ol = '<ol>'+''.join(f'<li>{rich(p)}</li>' for p in points)+'</ol>'
     return f'<div class="take"><div>{ph}</div><div><div class="label">Final thoughts</div><h3 style="font-size:22px;margin-top:12px">Key takeaways and next steps.</h3>{ol}</div></div>'
 def NEXT(items):
     return CELLS([CELL(f'<div class="label">Next step {i+1:02d}</div><p style="color:var(--ink);margin-top:12px">{rich(t)}</p>') for i,t in enumerate(items)], 3)
 def THANKS():
-    return ('<div class="thanks"><img src="/images/manus/thanks/cartoon-jaz.png" alt=""><div><h3>Thanks for visiting!</h3>'
+    return ('<div class="thanks"><img class="sig" src="/jaz-signature.svg?v=green1" alt="Jazlynn"><div><h3>Thanks for visiting!</h3>'
             '<p>I design better than I summarize. Let\'s fix that over a call or interview. Reach out <a href="mailto:jazkurnz06@gmail.com">here</a>.</p></div></div>')
 
 PROJECTS = [
-  dict(n='01', t='Manus AI',         y='2026', href='/work/manus-ai.html',          s='Designing an AI community platform to drive adoption'),
-  dict(n='02', t='Clover',           y='2026', href='/404.html?p=Clover',            s='Designing the HUD interface and shipping the iOS companion app'),
-  dict(n='03', t='Fostr',            y='2026', href='https://fostr.page/', ext=True, s='Building the brand, landing site and internal platform from 0 to 1'),
-  dict(n='04', t='Olive',            y='2026', href='https://drive.google.com/file/d/15-mX_sIkPU_Ww4R1UueWG10Wv9CQbhEy/view', ext=True, s='Designing an AI-powered carbon tracking app'),
+  dict(n='01', t='Clover',           y='2026', href='/404.html?p=Clover',            s='Designing the HUD interface and shipping the iOS companion app'),
+  dict(n='02', t='Fostr',            y='2026', href='https://fostr.page/', ext=True, s='Building the brand, landing site and internal platform from 0 to 1'),
+  dict(n='03', t='Halodoc',          y='2026', href='/404.html?p=Halodoc',           s='Designing the onboarding journey for AI Prescription on mobile'),
+  dict(n='04', t='Conduit Commerce', y='2026', href='/work/conduit-commerce.html',  s='Designing and shipping a B2B SaaS website for an AI-feature launch'),
   dict(n='05', t='Second Self',      y='2026', href='https://devpost.com/software/second-self-giwmxh', ext=True, s='Building an AI agent that lives on your own Mac'),
-  dict(n='06', t='Halodoc',          y='2025', href='/404.html?p=Halodoc',           s='Designing the onboarding journey for AI Prescription on mobile'),
-  dict(n='07', t='Conduit Commerce', y='2025', href='/work/conduit-commerce.html',  s='Designing and shipping a B2B SaaS website for an AI-feature launch'),
-  dict(n='08', t='SomiaCX',          y='2025', href='/work/somia-cx.html',          s='Architecting a unified UVP system for three financial subsidiaries'),
+  dict(n='06', t='Manus AI',         y='2025', href='/work/manus-ai.html',          s='Designing an AI community platform to drive adoption'),
+  dict(n='07', t='Olive',            y='2025', href='https://drive.google.com/file/d/15-mX_sIkPU_Ww4R1UueWG10Wv9CQbhEy/view', ext=True, s='Designing an AI-powered carbon tracking app'),
+  dict(n='08', t='SomiaCX',          y='2024', href='/work/somia-cx.html',          s='Architecting a unified UVP system for three financial subsidiaries'),
 ]
 def MORE(current):
     others=[p for p in PROJECTS if p['href'].startswith('/work/') and p['t']!=current][:2]
     cells=''.join(f'<a class="cell" href="{p["href"]}"><span class="n">{p["n"]} &middot; {E(p["y"])}</span><span class="t">{E(p["t"])}</span><p>{E(p["s"])}</p></a>' for p in others)
     return f'<div class="more"><div class="label">More projects</div><div class="cells c2">{cells}</div></div>'
 
-def HERO(n, name, logo, title, media_src, role, duration, team, results, toc, pad=False):
+def HERO(n, name, logo, title, media_src, role, duration, team, results, toc, pad=False, bare=False, width=None):
     tocs=''.join(f'<a href="#{i}" class="{"g" if k%2 else ""}">{E(l)}</a>' for k,(i,l) in enumerate(toc))
     return f"""<header class="cs-hero"><div class="wrap">
   <div class="eyebrow"><span class="label">Project {n}</span><img class="logo" src="{logo}" alt="{E(name)}"></div>
@@ -436,19 +540,40 @@ def HERO(n, name, logo, title, media_src, role, duration, team, results, toc, pa
     <div><div class="label">Team</div><ul>{''.join(f'<li>{E(t)}</li>' for t in team)}</ul></div>
     <div><div class="label">Results</div><div class="chips">{''.join(f'<span>{E(r)}</span>' for r in results)}</div></div>
   </div>
-  {media(media_src, name, pad)}
+  {media(media_src, name, pad, bare).replace('class="plate', f'style="width:min(100%,{width}px)" class="plate', 1) if width else media(media_src, name, pad, bare)}
 </div></header>"""
 
+DECK_JS = """<script>(function(){
+  document.querySelectorAll('.deck').forEach(deck=>{
+    const cards=[...deck.querySelectorAll('.card')], n=cards.length, num=deck.querySelector('.deck-n b');
+    let top=0, busy=false;
+    const pile=deck.querySelector('.pile'), first=cards[0].querySelector('img,video');
+    const ratio=()=>{ const w=first.naturalWidth||first.videoWidth, h=first.naturalHeight||first.videoHeight; if(w&&h){ pile.style.aspectRatio=(w/h).toFixed(4); if(!deck.style.maxWidth) deck.style.maxWidth=w+'px'; } };
+    if(first){ ratio(); first.addEventListener('load',ratio); first.addEventListener('loadedmetadata',ratio); }
+    /* the caption sits under the pile, so the pile's bottom margin has to clear it */
+    function place(){ cards.forEach((c,k)=>{ const d=(k-top+n)%n;
+      c.className='card '+(d===0?'top':d===1?'next':d===2?'after':'gone'); }); num.textContent=top+1; }
+    function next(dir){ if(busy) return; busy=true;
+      const leaving=cards[top]; top=(top+dir+n)%n;
+      if(dir>0){ leaving.className='card leaving'; place(); leaving.className='card leaving';
+        setTimeout(()=>{ leaving.className='card '+(n===2?'next':'gone'); place(); busy=false; },300); }
+      else { place(); busy=false; } }
+    deck.addEventListener('click',e=>{ if(e.target.closest('a')) return; next(1); });
+    deck.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){e.preventDefault();next(1);} if(e.key==='ArrowLeft'){e.preventDefault();next(-1);} });
+    place();
+  });
+})();</script>"""
+
 def case(name, n, body_sections, title):
-    body = ''.join(body_sections) + f'<div class="wrap">{THANKS()}{MORE(name)}</div>'
+    body = ''.join(body_sections) + f'<div class="wrap">{THANKS()}{MORE(name)}</div>' + DECK_JS
     return page(f'{name} — {title}', body, CASE_CSS)
 
 # ------------------------------------------------------------------ MANUS AI
 TOC5=[('overview','Overview'),('problem','Problem'),('research','Research'),('development','Development'),('testing','Testing'),('solution','Solution')]
-manus = case('Manus AI','01',[
- HERO('01','Manus AI','/images/manus/hero/logo.svg','Designing an AI community platform to drive adoption.','/images/manus/hero/laptop-mockup.mp4',
+manus = case('Manus AI','06',[
+ HERO('06','Manus AI','/images/manus/hero/logo.svg','Designing an AI community platform to drive adoption.','/videos/trim/manus-hero.mp4',
    'Leading user research, architecting the design system, user flows and interaction mechanisms, and ideating the UI features.','3 months, winter break',
-   ['1 product designer (me!)','1 co-founder CMO','2 engineers','2 PMs','1 business strategist'],['Retention ~30% → 65–70%','Shipped & handed off'],TOC5),
+   ['1 product designer (me!)','1 co-founder CMO','2 engineers','2 PMs','1 business strategist'],['Retention ~30% → 65–70%','Shipped & handed off'],TOC5, bare=True),
  SECTION('overview','At a glance','Manus was growing faster than its users could keep up with.',
    ['Over winter break, I interned at Manus AI, a general AI agent that was growing faster than its users could keep up with. As the agent became more intelligent, it became harder for everyday users to understand, adopt, and actually leverage it. With the newly launched Manus 1.5 Max, feature depth was outpacing user comprehension, and the existing community was a static archive no one was navigating.',
     'I led the end-to-end redesign of the Manus Community: not a visual refresh, but a re-architecture from passive content IA to an AI-guided learning system that scales alongside both the product and its users.']),
@@ -468,8 +593,8 @@ manus = case('Manus AI','01',[
            ("I want to contribute and share what I've built, but I have no idea if anyone will see it or if it even matters. There's no feedback, no signal that my work is visible.",'Manus community member')]),
    ROW(TX(H3('User interviews (13) and secondary research'), UL(['**Cognitive overload** averaged across non-technical users who couldn\'t identify what Manus could do for them specifically.','**Community structure felt like a static archive**, leading users to disengage within minutes of arriving.','**Users wanted to contribute** but had no clear pathway to do so, leaving them passive instead of active.'])),
        TX(H3('Understanding our users'), P('Thirteen participants in two groups: **Community Newcomers (5)** and **Power Users (8)**.'))),
-   CELLS([PERSONA('/images/manus/research/persona-newcomer.png','Community Newcomer','Age 22–35',['**Doesn\'t know where to start** or what Manus is capable of doing for them.','**Wants to learn fast**, find relevant opportunities, and get value quickly.']),
-          PERSONA('/images/manus/research/persona-power-user.png','Power User','Age 25–40+',['Has **no structured way** to surface or share their work meaningfully.','**Wants visibility and credibility** for their contributions within the community.'])],2),
+   CELLS([PERSONA('person:#9ba69c','Community Newcomer','Age 22–35',['**Doesn\'t know where to start** or what Manus is capable of doing for them.','**Wants to learn fast**, find relevant opportunities, and get value quickly.']),
+          PERSONA('person:#827a85','Power User','Age 25–40+',['Has **no structured way** to surface or share their work meaningfully.','**Wants visibility and credibility** for their contributions within the community.'])],2),
    '<div class="label" style="margin-top:96px">Finding the gaps in the market</div><h2 style="font-size:clamp(22px,2.6vw,30px);line-height:1.2;margin-top:12px;max-width:28ch">What existed already left gaps where users needed structure, signal, and momentum.</h2>',
    CELLS([CELL('<h3>Discord / chat communities</h3>'+UL(['Fast, informal interaction','Knowledge fragments instantly','No durable contribution tracking'])),
           CELL('<h3>Gamified builder platforms</h3>'+UL(['Short-term engagement spikes','Incentivizes activity over impact','High cognitive load'])),
@@ -478,37 +603,37 @@ manus = case('Manus AI','01',[
    HMW('How might we make AI capabilities legible to everyday users?','How might we turn passive members into active contributors?'),
  ),
  SECTION('development','Development','Iterating toward a system that could actually scale.',[],
-   FIG('/images/manus/development/whiteboard-sketches.png','Lo-fi whiteboards across four iterations. The search bar was repurposed as an AI feature, scalable explore and event CTAs arrived in version 2, and the engineering team kept event submission manual through Luma to prioritise reliability and speed to launch.'),
-   ROW(FIG('/images/manus/development/second-approach-hifi-specs.png','Second approach hi-fi specs across six responsive breakpoints.',mt=False),
+   FIG('/images/trim/manus/whiteboard-sketches.png','Lo-fi whiteboards across four iterations. The search bar was repurposed as an AI feature, scalable explore and event CTAs arrived in version 2, and the engineering team kept event submission manual through Luma to prioritise reliability and speed to launch.'),
+   ROW(FIG('/images/trim/manus/second-approach-hifi-specs.png','Second approach hi-fi specs across six responsive breakpoints.',mt=False,bare=True),
        TX(H3('Problem with static scalability'), P('After internally launching the static experience, we ran a third round of usability testing. **7 out of 10 users disengaged quickly.** But the more revealing finding wasn\'t that they left, it was where they lingered before leaving.'),
           H3('Interactive elements'), P('Users spent significantly less time on the role selector and the three-card feature section, and disproportionately more time on the Global Distribution map and the Next Hackathon countdown. Both were the only two elements with motion: the map was pulsing, the countdown was live.')),'r7'),
-   ROW(media('/videos/manus/interaction-walkthrough.mp4'), TX(H3('Take away'), P('This told me two things: the information architecture needed realignment, and users were drawn to interactivity that felt personally relevant and alive. Immediately, I began another round of iteration for longer time-on-page.')),'r7'),
+   ROW(media('/videos/trim/manus-interaction-walkthrough.mp4'), TX(H3('Take away'), P('This told me two things: the information architecture needed realignment, and users were drawn to interactivity that felt personally relevant and alive. Immediately, I began another round of iteration for longer time-on-page.')),'r7'),
  ),
  SECTION('testing','Testing','Testing our personalized journey feature.',[],
-   THREE([('/images/manus/testing/your-path-second.png','Second prototype. A simpler "choose your path" role grid.',''),('/images/manus/testing/your-path-third-v1.png','Third prototype v1. A Your Path card with role, focus area and mode.',''),('/images/manus/testing/your-path-third-v2.png','Third prototype v2. Recommended next steps expand from the card.','')]),
+   '<div class="pair trio">'+FIG('/images/manus/testing/your-path-second.png','Second prototype. A simpler "choose your path" role grid.',mt=False,bare=True)+FIG('/images/manus/testing/your-path-third-v1.png','Third prototype v1. A Your Path card with role, focus area and mode.',mt=False,bare=True)+FIG('/images/manus/testing/your-path-third-v2.png','Third prototype v2. Recommended next steps expand from the card.',mt=False,bare=True)+'</div>',
    ROW(TX(H3('Adjustment to personalized path #1'), P('Based on 8 usability tests, I found that the **"Start My AI-Guided Path"** CTA had the highest click-through of any version tested. I pulled inspiration from RPG-style gamification: instead of assigning users a generic role, the system treats each user as a character with their own stats, focus areas, and progression mode, making the community feel like a world they\'re actively moving through, not a page they\'re passively browsing.','The "Powered by Manus" tag was a detail the founder specifically liked, because it demonstrated the product\'s own intelligence working natively inside the community experience.')),
        TX(H3('Adjustment to personalized path #2'), P('After presenting to my PM, **she mentioned they were planning to add more community roles.** The original design used a fixed 3-card layout, one card per featured opportunity. It worked for the current three roles, but it would break the moment the community team launched a new one.','Every new role, Campus Leader, Ambassador, Regional Hub, would require a manual design update. I redesigned the recommendations layer to be role-agnostic and AI-driven, so the "Powered by Manus" inference layer surfaces what\'s relevant to each user, whether that\'s a hackathon, an ambassador program, or a role that doesn\'t exist yet.'))),
-   THREE([('/images/manus/testing/hackathon-card-before.png','Second prototype. Three post-it style recommendation cards.',''),('/images/manus/testing/hackathon-card-after-1.png','Third prototype, before. A single hackathon card with effort and duration.',''),('/images/manus/testing/hackathon-card-after.png','Third prototype, after. The same card with a "Why this matters" reveal.','')]),
+   '<div class="pair trio">'+FIG('/images/manus/testing/hackathon-card-before.png','Second prototype. Three post-it style recommendation cards.',mt=False,bare=True)+FIG('/images/manus/testing/hackathon-card-after-1.png','Third prototype, before. A single hackathon card with effort and duration.',mt=False,bare=True)+FIG('/images/manus/testing/hackathon-card-after.png','Third prototype, after. The same card with a "Why this matters" reveal.',mt=False,bare=True)+'</div>',
    ROW(FIG('/images/manus/adjustment/journey-flow.png','Mapping a comprehensive user journey and shared APIs with the PM and engineers.',mt=False), TX(H3('Mapping the journey with PM and SWEs'), P('A shared flow across the engineering team, community team, PM and design, so every opportunity surfaced by the inference layer had an owner and an API behind it.')),'r75'),
  ),
  SECTION('solution','Solution','An AI-guided community system that adapts as users grow.',[],
-   ROW(media('/videos/manus/solution-1-dashboard.mp4'), TX('<div class="label">01</div>',H3('Centralized community dashboard'), P('A single home for everything a Manus user needs to know, do, and track. Users land on a dashboard that orients them immediately: their role, their active path, upcoming events, and pending contributions all visible in one place. Reminders surface when something needs attention. Nothing gets missed because nothing is buried.')),'r7'),
+   ROW(media('/videos/trim/manus-solution-1-dashboard.mp4'), TX('<div class="label">01</div>',H3('Centralized community dashboard'), P('A single home for everything a Manus user needs to know, do, and track. Users land on a dashboard that orients them immediately: their role, their active path, upcoming events, and pending contributions all visible in one place. Reminders surface when something needs attention. Nothing gets missed because nothing is buried.')),'r7'),
    ROW(media('/videos/manus/solution-2-paths.mp4'), TX('<div class="label">02</div>',H3('AI-guided personalized paths'), P('"Your Path, Powered by Manus" infers each user\'s role, focus area, and current mode from their behavior, then generates a guided next step tailored to them. Instead of a generic feed, users are met with "Recommended this week. Prioritized by fit, not engagement." Every recommendation carries a "Why this matters" explanation so users always know the reasoning behind what they\'re shown.')),'r7'),
    ROW(media('/videos/manus/solution-3-recommendations.mp4'), TX('<div class="label">03</div>',H3('Scalable role-agnostic recommendations'), P('The final system is role-agnostic and AI-driven: when users log into Manus, the inference layer immediately surfaces relevant opportunities, whether they\'re interested in hackathons, ambassador programs, campus leadership, or roles that don\'t exist yet. The community scales without the design breaking.')),'r7'),
    '<div class="label" style="margin-top:96px">The results</div>',
    CELLS([STAT('65–70%','Retention, up from ~30% following rollout of the AI-guided architecture.'),STAT('2.1×','Time-on-site, indicating deeper engagement with paths, events, and recommendations.'),STAT('80%','of users reported improved clarity around where to start and how to contribute meaningfully.')]),
    TX(P('Following the rollout, users specifically cited personalized paths, contextual recommendations, and "why this matters" explanations as the primary reasons they felt motivated to stay. **75%** described the experience as more personally relevant compared to the static version.')),
    TAKE([('/images/manus/final-thoughts/photo-group.jpg','Manus AI team'),('/images/manus/final-thoughts/photo-skyline.jpg','MBS skyline from the Manus office'),('/images/manus/final-thoughts/photo-laptop.jpg','Manus workspace')],
-        ['Designing for community at scale is less about driving engagement and more about building trust through guidance and simplicity.','Pivoting early concepts through research was critical to finding the right way to solve problems.','The most important design decision is asking "so what?" before your users have to ask it themselves.']),
+        ['Designing for community at scale is less about driving engagement and more about building trust through guidance and simplicity.','Pivoting early concepts through research was critical to finding the right way to solve problems.','The most important design decision is asking "so what?" before your users have to ask it themselves.'], cur='best team eva'),
    NEXT(['Increase transparency in AI decisions by adding lightweight user feedback.','Track time-to-first-meaningful-action for actual contribution.','Finish up development and launch!']),
  ),
 ], 'Designing an AI community platform to drive adoption')
 
 # ------------------------------------------------------------------ CONDUIT COMMERCE
-conduit = case('Conduit Commerce','07',[
- HERO('07','Conduit Commerce','/images/conduit/hero/conduit-logo.svg','Designing and shipping a B2B SaaS website for an AI-feature launch.','/videos/conduit/hero/hero-laptop-mockup.mp4',
+conduit = case('Conduit Commerce','04',[
+ HERO('04','Conduit Commerce','/images/conduit/hero/conduit-logo.svg','Designing and shipping a B2B SaaS website for an AI-feature launch.','/videos/trim/conduit-hero.mp4',
    'Leading product design, company branding, UX strategy, design system creation, UX copywriting, and usability testing.','3 months',
-   ['2 UX designers (me!)','1 UX researcher','1 marketing designer','1 founder','1 PM'],['~40% lower bounce rate','~28% more demo requests','Shipped & live'],TOC5),
+   ['2 UX designers (me!)','1 UX researcher','1 marketing designer','1 founder','1 PM'],['~40% lower bounce rate','~28% more demo requests','Shipped & live'],TOC5, bare=True),
  SECTION('overview','At a glance','A Copilot launch for an industry that still ran on spreadsheets and phone calls.',
    ['As Product Design Lead, I led a team of 3 designers to support Conduit Commerce\'s Copilot launch. Conduit is a fintech backed by Dragonfly and Altos Ventures, and I worked directly with the founder, recognized on Forbes 30 Under 30, to align the design with the product\'s technical ambition and the practical needs of their B2B customer base.',
     'Conduit Copilot is an AI that streamlines the entire buying and selling process for wholesale and distribution businesses, an industry largely unfamiliar with AI adoption. The product was a genuine leap forward. Our job was to make sure their branding and website said so.']),
@@ -516,10 +641,10 @@ conduit = case('Conduit Commerce','07',[
    ['Conduit Commerce is a B2B SaaS and CaaS platform built for a specific, underserved audience: the people who buy and sell physical goods in wholesale and distribution. Think carpet sellers, materials buyers, regional distributors. Their product suite spans four pillars: Copilot, Ops, Wholesale, and Dropship.',
     'Conduit was looking to expand toward more tech-savvy, modern clients without losing their core base, Midwest wholesale buyers. It\'s a challenge of acquisition and retention at once, and it all comes down to how the brand, design, and copy position the product. Especially with their newly launched Copilot.'],
    '<div class="label" style="margin-top:48px">Solution preview</div>',
-   FLOW([('User lands on website','icon','/images/manus/flow-icons/laptop.svg'),('Explores Copilot','video','/videos/conduit/solution-4-instructional-animations.mp4'),('Understands Conduit\'s core','video','/videos/conduit/solution-1-dashboard.mp4'),('Books a demo','icon','/images/manus/flow-icons/people.svg')]),
+   FLOW([('User lands on website','icon','/images/manus/flow-icons/laptop.svg'),('Explores Copilot','video','/videos/trim/conduit-solution-4-instructional-animations.mp4'),('Understands Conduit\'s core','video','/videos/trim/conduit-solution-1-dashboard.mp4'),('Books a demo','icon','/images/manus/flow-icons/people.svg')]),
    '<div class="label" style="margin-top:96px">Initial pivot</div><h2 style="font-size:clamp(22px,2.6vw,30px);line-height:1.2;margin-top:12px;max-width:26ch">The first design looked great. Users thought we were selling hiking gear.</h2>',
-   ROW(f'<div style="display:grid;gap:16px">{media("/images/conduit/initial-pivot/lofi-sketch-1.jpg")}{media("/images/conduit/initial-pivot/lofi-sketch-2.jpg")}</div>', TX(H3('LoFi exploration'), P('To rapid-prototype, I split my team into two pairs and produced two IA prototypes, then compared them to see what each could learn from the other. I did this so we would come up with original ideas first instead of building on one basis. We presented both to Conduit\'s PM, then pushed the exploration into Claude.')),'r7'),
-   ROW(media('/videos/conduit/initial-pivot-ia-systems.mp4'), TX(H3('Information architecture systems exploration'), P('I used Claude to expedite the IA exploration and system-level thinking in this phase for quick usability feedback.')),'r7'),
+   ROW('<div class="pair">'+FIG('/images/conduit/initial-pivot/lofi-sketch-1.jpg','Pair one.',mt=False)+FIG('/images/conduit/initial-pivot/lofi-sketch-2.jpg','Pair two.',mt=False)+'</div>', TX(H3('LoFi exploration'), P('To rapid-prototype, I split my team into two pairs and produced two IA prototypes, then compared them to see what each could learn from the other. I did this so we would come up with original ideas first instead of building on one basis. We presented both to Conduit\'s PM, then pushed the exploration into Claude.')),'r7'),
+   ROW(media('/videos/trim/conduit-ia-systems.mp4'), TX(H3('Information architecture systems exploration'), P('I used Claude to expedite the IA exploration and system-level thinking in this phase for quick usability feedback.')),'r7'),
    ROW(media('/images/conduit/initial-pivot/following-trends-japanese.mp4'), TX(H3('Following trends'), P('After feedback I used Framer to prototype the visual direction. The first design round drew on a trend: Ukiyo-e Japanese woodblock prints, a nature-forward visual language with texture, warmth, and mountain landscapes. It was distinctive. Intentional. And it communicated absolutely nothing about what Conduit Commerce did for a wholesale distributor.')),'r7'),
  ),
  SECTION('research','Research','Style over function was losing our users.',[],
@@ -528,35 +653,34 @@ conduit = case('Conduit Commerce','07',[
            ("I get that it's AI for suppliers and retailers, but what does it actually do? 'Proactive outreach' doesn't tell me anything.",'Conduit user')]),
    ROW(TX(H3('User interviews (11) and secondary research'), UL(['**4 out of 7 current users** reported the site failed to load entirely on slower connections, before they even saw the product.','Many potential users who weren\'t used to Conduit **didn\'t understand the products** they were selling.','**8 out of 11 users** described the first design as a lifestyle brand, not a B2B operations tool.'])),
        TX(H3('Understanding our users'), P('Eleven participants in two groups: **Core Users (7)** and **Potential Users (4)**.'))),
-   CELLS([PERSONA('/images/conduit/users/core-user-avatar.png','Core user','Age 35–40+',['**Can\'t load the site reliably** on slower connections, leaving before seeing the product at all.','**Wants to know how to optimize** their Conduit subscription. Most didn\'t even know of the Copilot launch.']),
-          PERSONA('/images/conduit/users/potential-user-avatar.png','Potential user','Age 25–35',['**Doesn\'t understand how Conduit\'s products connect**, whether Ops, Dropship, and Wholesale are one system or separate tools.','**Wants a clearer picture** of how everything fits together before committing to a demo.'])],2),
+   CELLS([PERSONA('person:#827a85','Core user','Age 35–40+',['**Can\'t load the site reliably** on slower connections, leaving before seeing the product at all.','**Wants to know how to optimize** their Conduit subscription. Most didn\'t even know of the Copilot launch.']),
+          PERSONA('person:#9ba69c','Potential user','Age 25–35',['**Doesn\'t understand how Conduit\'s products connect**, whether Ops, Dropship, and Wholesale are one system or separate tools.','**Wants a clearer picture** of how everything fits together before committing to a demo.'])],2),
    '<div class="label" style="margin-top:96px">Finding the gaps in the market</div>',
    CELLS([CELL('<h3>Competitor #1</h3>'+UL(['Strong B2B buyer focus','Clear supplier/retailer split','Category-specific only','No storytelling components'])),
           CELL('<h3>Competitor #2</h3>'+UL(['Outcome-led copy','Strong trust signals','No AI positioning','Not operations-focused'])),
           CELL('<h3>Competitor #3</h3>'+UL(['Feature-rich and functional','Clear product hierarchy','Not aesthetics heavy','Built for technical buyers only']))]),
-   ROW(THREE([('/images/conduit/gaps/moodboard-1.png','Moodboard 1',''),('/images/conduit/gaps/moodboard-2.png','Moodboard 2',''),('/images/conduit/gaps/moodboard-3.png','Moodboard 3','')]).replace('class="three"','class="three" style="margin-top:0;grid-template-columns:1fr;gap:12px"'),
-       TX(H3('The pattern across all competitors'), UL(['None of them were competing on aesthetics. They were competing on clarity and function.','The best performing B2B sites led with outcomes, not features. Plain language over industry jargon.']),
-          H3('The direction this revealed'), P('Conduit didn\'t need to out-design its competitors. It needed to out-communicate them. Clarity and functional UX copy were the gaps nobody in this market was filling.','Conduit is one of the first to implement AI into wholesale operations at this level. Users had no reference point for what that even meant. In situations like these, the words and the simplicity of the UI do more work than any visual treatment ever could.')),'r7'),
+   ROW(TX(H3('The pattern across all competitors'), UL(['None of them were competing on aesthetics. They were competing on clarity and function.','The best performing B2B sites led with outcomes, not features. Plain language over industry jargon.'])),
+       TX(H3('The direction this revealed'), P('Conduit didn\'t need to out-design its competitors. It needed to out-communicate them. Clarity and functional UX copy were the gaps nobody in this market was filling.','Conduit is one of the first to implement AI into wholesale operations at this level. Users had no reference point for what that even meant. In situations like these, the words and the simplicity of the UI do more work than any visual treatment ever could.'))),
    '<div class="label" style="margin-top:48px">Our direction</div>',
    HMW('How might we write UX copy that sells the product?','How might we create animations that demonstrate?'),
  ),
  SECTION('development','Development','A human-centered design approach and conversational copy.',[],
-   ROW(FIG('/images/conduit/development/figma-design-system-screenshot.png','The finalized design system in Figma.',mt=False), TX(H3('The founder disagreement'), P('The founder wanted to mirror competitor sites. I pushed back. Not because the competitors looked bad, but because their audiences were different. B2B SaaS for coastal tech buyers has different visual expectations than a wholesale operations tool for Midwest distributors. Designing for your actual audience rather than your aspirational peer set is a harder sell internally, but it\'s the right call. The testing data backed it, and the first design failure proved the point before the argument was fully resolved.')),'r7'),
-   ROW(FIG('/images/conduit/development/design-system-exploration.png','Moodboards, typography and the palette.',mt=False), TX(H3('Design system exploration'), P('We were aiming for something original but sleek. Modern without being cold. After multiple iterations we landed on a design system built around shades of blue with soft gradients, and deliberately avoided sharp, rigid shapes. Conduit needed to feel flexible and inviting, something that pulls users in rather than presenting a wall of information.','Their clients were mainly non-tech-savvy people. We didn\'t want to infer coldness with the introduction of Copilot; we wanted a new era of Conduit that felt modern and tech-oriented while nudging users toward AI adoption. I sent this over to our marketing designer to begin the video assets for the website.')),'r7'),
-   ROW(FIG('/images/conduit/development/ux-copy-wholesale-and-ops.png','The two UX copy documents, Wholesale and Ops.',mt=False), TX(H3('The UX copy rewrite'), P('I delivered two full UX copy documents, one for Conduit **Wholesale**, one for Conduit **Ops**. Each follows the same IA framework:'),
-       UL(['Wholesale hero: "Order anytime, on your schedule. No calls, no emails, no waiting on anyone."','Ops hero: "Your whole team, always on the same page. One live view of every order, account, and update."','Copilot moved from vague AI claims to a concrete outcome: "The assistant that handles the busywork, so you can focus on the relationship."'])),'r7'),
+   ROW(FIG('/images/trim/conduit/figma-design-system-screenshot.png','The finalized design system in Figma.',mt=False,bare=True), TX(H3('The founder disagreement'), P('The founder wanted to mirror competitor sites. I pushed back. Not because the competitors looked bad, but because their audiences were different. B2B SaaS for coastal tech buyers has different visual expectations than a wholesale operations tool for Midwest distributors. Designing for your actual audience rather than your aspirational peer set is a harder sell internally, but it\'s the right call. The testing data backed it, and the first design failure proved the point before the argument was fully resolved.')),'r7'),
+   ROW(FIG('/images/trim/conduit/design-system-exploration.png','Moodboards, typography and the palette.',mt=False,bare=True), TX(H3('Design system exploration'), P('We were aiming for something original but sleek. Modern without being cold. After multiple iterations we landed on a design system built around shades of blue with soft gradients, and deliberately avoided sharp, rigid shapes. Conduit needed to feel flexible and inviting, something that pulls users in rather than presenting a wall of information.','Their clients were mainly non-tech-savvy people. We didn\'t want to infer coldness with the introduction of Copilot; we wanted a new era of Conduit that felt modern and tech-oriented while nudging users toward AI adoption. I sent this over to our marketing designer to begin the video assets for the website.')),'r7'),
+   '<div class="solo">'+TX(H3('The UX copy rewrite'), P('I delivered two full UX copy documents, one for Conduit **Wholesale**, one for Conduit **Ops**. Each follows the same IA framework:'),
+       UL(['Wholesale hero: "Order anytime, on your schedule. No calls, no emails, no waiting on anyone."','Ops hero: "Your whole team, always on the same page. One live view of every order, account, and update."','Copilot moved from vague AI claims to a concrete outcome: "The assistant that handles the busywork, so you can focus on the relationship."']))+'</div>',
  ),
  SECTION('testing','Testing','Some you win, some you lose.',
    ['Because of the founders\' rapid iteration timeline, there was no third round of usability testing before final dev handoff. With AI-accelerated product cycles, thoroughness is sometimes traded for speed. This is a real constraint that\'s becoming a reality for us product designers.']),
  SECTION('solution','Solution','A B2B SaaS website designed around user habits, while nudging AI adoption.',[],
-   ROW(media('/videos/conduit/solution-1-dashboard.mp4'), TX('<div class="label">01</div>',H3('Centralized product dashboard'), P('A single home for all of Conduit\'s four core products. Each showcased with their benefits, their function, and all ending with an incentivized CTA to increase engagement.')),'r7'),
-   ROW(media('/videos/conduit/solution-2-design-uniformity.mp4'), TX('<div class="label">02</div>',H3('Human-centered design uniformity'), P('All pages were designed around a cohesive visual language of gradients and soft-to-deep blues. Blue carries connotations of trust, reliability, and forward motion, which mapped directly to what a B2B audience needs to feel before making an operational decision. The gradient treatment kept it from feeling clinical.')),'r7'),
-   ROW(media('/videos/conduit/solution-3-conversational-copy.mp4'), TX('<div class="label">03</div>',H3('Conversational UX copy'), P('Benefit-first, conversational copy across all product pages, written to onboard newcomers while still resonating with core users. Less jargon, a lower barrier to understanding what Conduit does, and a clear reason for every visitor to keep reading. We tackled retention with copy as a tool, not just a description.')),'r7'),
-   ROW(media('/videos/conduit/solution-4-instructional-animations.mp4'), TX('<div class="label">04</div>',H3('Instructional animations'), P('The best way to showcase Conduit\'s products, especially Copilot, was through instructional micro-animations. Instead of decorative motion that slowed load times and communicated nothing, every animation serves a function: demonstrating how the product works as users interact with it.')),'r7'),
+   ROW(media('/videos/trim/conduit-solution-1-dashboard.mp4'), TX('<div class="label">01</div>',H3('Centralized product dashboard'), P('A single home for all of Conduit\'s four core products. Each showcased with their benefits, their function, and all ending with an incentivized CTA to increase engagement.')),'r7'),
+   ROW(media('/videos/trim/conduit-solution-2-design-uniformity.mp4'), TX('<div class="label">02</div>',H3('Human-centered design uniformity'), P('All pages were designed around a cohesive visual language of gradients and soft-to-deep blues. Blue carries connotations of trust, reliability, and forward motion, which mapped directly to what a B2B audience needs to feel before making an operational decision. The gradient treatment kept it from feeling clinical.')),'r7'),
+   ROW(media('/videos/trim/conduit-solution-3-conversational-copy.mp4'), TX('<div class="label">03</div>',H3('Conversational UX copy'), P('Benefit-first, conversational copy across all product pages, written to onboard newcomers while still resonating with core users. Less jargon, a lower barrier to understanding what Conduit does, and a clear reason for every visitor to keep reading. We tackled retention with copy as a tool, not just a description.')),'r7'),
+   ROW(media('/videos/trim/conduit-solution-4-instructional-animations.mp4'), TX('<div class="label">04</div>',H3('Instructional animations'), P('The best way to showcase Conduit\'s products, especially Copilot, was through instructional micro-animations. Instead of decorative motion that slowed load times and communicated nothing, every animation serves a function: demonstrating how the product works as users interact with it.')),'r7'),
    '<div class="label" style="margin-top:96px">The results</div>',
    CELLS([STAT('~40%','lower bounce rate. Users can now immediately identify what Conduit does and who it\'s for.'),STAT('3×','time-on-site. Users are reading and engaging, not abandoning on slow connections.'),STAT('~28%','more demo requests in the first month post-launch.')]),
    TX(P('Following the launch, the **4 current users** who had reported complete site failures on slower connections can now access the site reliably.')),
-   TAKE([('/images/conduit/final-thoughts/imessage-screenshot.png','Group chat with my designers during finals season')],
+   TAKE([('/images/conduit/final-thoughts/imessage-screenshot.png','Group chat with my designers during finals season','our designers battling thru finals (and weekly syncs)')],
         ['Following trends and mirroring competitors doesn\'t make your design effective. Your design should fit your product and your user, not the aesthetic of whoever raised a Series B last quarter.','Working with AI tools in a fast-paced startup means trading thoroughness for speed. You expedite the process but sometimes skip the steps that would have caught something important.','The smallest details carry the most weight. Too much animation weakened engagement before users even read a word.','To become a product designer is to become a good teacher. Assume users know nothing when they arrive, and build an experience that teaches them as they scroll.']),
    NEXT(['Expand the design system for product surfaces beyond the Copilot landing site.','Conduct a post-launch usability study now that the site has real traffic.','Add trust signals, security badges and compliance language, for credibility.']),
  ),
@@ -565,9 +689,9 @@ conduit = case('Conduit Commerce','07',[
 # ------------------------------------------------------------------ SOMIACX
 UVPS=[('01 Support','Safety net','kept'),('02 Advisor','Future planning','kept'),('03 Mentor','Vehicle understanding','merged with 04'),('04 Assistant','Routine management','kept'),('05 Buddy','Shared wallet','cut, low ROI'),('06 Connector','Local investment','cut, misaligned KPI')]
 somia = case('SomiaCX','08',[
- HERO('08','SomiaCX × MUFG Bank','/images/somiacx/hero/somiacx-mufg-logo.png','Architecting a unified UVP system for three financial subsidiaries.','/images/somiacx/hero/phone-home.png',
+ HERO('08','SomiaCX × MUFG Bank','/images/somiacx/hero/somiacx-mufg-logo.png','Architecting a unified UVP system for three financial subsidiaries.','/images/trim/somia/hero.png',
    'UX designer: market research, product alignment, UVP architecture, LoFi and MidFi prototyping.','3 months',
-   ['1 founder','1 PM','2 UX designers (me!)','1 SWE','1 UI designer'],['Support tickets −18%','~72% onboarding retention','~25% fewer branch visits'],TOC5, pad=True),
+   ['1 founder','1 PM','2 UX designers (me!)','1 SWE','1 UI designer'],['Support tickets −18%','~72% onboarding retention','~25% fewer branch visits'],TOC5, bare=True),
  SECTION('overview','At a glance','Three subsidiaries, one app, and users who had almost nothing in common.',
    ['My first product internship. I interned at SomiaCX as a UX designer, embedded inside a project for MUFG. They have three separate subsidiaries (a bank, an insurance company, and a vehicle financing arm) that were being merged into one unified financial app. Each had different users, different revenue models, and different internal teams who didn\'t always agree on what the product should do.',
     'I worked on the UVP architecture that would hold all of it together: a shared value framework that made each subsidiary feel coherent, not competing, and that served an incredibly diverse user base, from upper-income urban professionals to low-income, unbanked Indonesians with no digital literacy. By the end I had the chance to present to our stakeholders.']),
@@ -576,13 +700,13 @@ somia = case('SomiaCX','08',[
     'These three groups had almost nothing in common: different income levels, different relationships with technology, different mental models of what a financial app was even for. Yet all three were expected to converge inside a single unified ecosystem. This wasn\'t just a design challenge. It was a product strategy, stakeholder alignment, and cultural inclusion challenge all at once.'],
    '<p class="label" style="margin-top:24px">*Due to tight NDA restrictions, some end products can\'t be shown.</p>',
    '<div class="label" style="margin-top:48px">Solution preview</div>',
-   FLOW([('User discovers the app','icon','/images/somiacx/hero/phone.svg'),('UVP system shows their financial path','img','/images/somiacx/problem/solution-preview-lofi-uvp-4.png'),('Explores personalized financial features','img','/images/somiacx/problem/solution-preview-midfi-uvp-5.png'),('Users grow financial confidence with MUFG','icon','/images/manus/flow-icons/people.svg')]),
+   FLOW([('User discovers the app','icon','/images/somiacx/hero/phone.svg'),('UVP system shows their financial path','img','/images/trim/somia/lofi-uvp-4.png'),('Explores personalized financial features','img','/images/trim/somia/midfi-uvp-5.png'),('Users grow financial confidence with MUFG','icon','/images/manus/flow-icons/people.svg')]),
  ),
  SECTION('research','Research','Users were failing to see themselves in the product, given their diverse needs.',[],
    ROW(THREE([('/images/somiacx/research/research-card-1-comics.png','Three customer comics: different priorities, constraints, expectations.',''),('/images/somiacx/research/research-card-2-ideas.png','The ideation board.',''),('/images/somiacx/research/research-card-3-ranked.png','Ranked priorities and findings.','')]).replace('class="three"','class="three" style="margin-top:0;grid-template-columns:1fr;gap:12px"'),
        TX(H3('Desk research'), P('I conducted further analysis from company-shared private datasets (marketing, financial, and customer intelligence), and extensive desk research to really understand the problem.')),'r7'),
-   ROW(FIG('/images/somiacx/research/news-article-affinity-map.png','A Jakarta vehicle news article beside the UVP affinity map.',mt=False), TX(H3('The insight that unlocked everything'), P('At the end of 2023, Indonesia had approximately **132.43 million motorcycles and 17.17 million passenger cars.** Beyond pure numbers, vehicles in Indonesia carry deep cultural weight: social signals, shared family assets, and often the single largest financial commitment a household makes. Vehicle financing installments touch every one of MUFG\'s three subsidiaries, and every one of their user segments.','It was the cultural anchor the unified experience needed.')),'r7'),
-   ROW(FIG('/images/somiacx/research/field-research.png','Testing photos, branch office visits, sticky-note workshops.',mt=False), TX(H3('Field research'), P('I created sacrificial lo-fi concepts and took them directly into the field and to branch offices.')),'r7'),
+   ROW(FIG('/images/somiacx/research/news-article-affinity-map.png','A Jakarta vehicle news article beside the UVP affinity map.',mt=False,bare=True), TX(H3('The insight that unlocked everything'), P('At the end of 2023, Indonesia had approximately **132.43 million motorcycles and 17.17 million passenger cars.** Beyond pure numbers, vehicles in Indonesia carry deep cultural weight: social signals, shared family assets, and often the single largest financial commitment a household makes. Vehicle financing installments touch every one of MUFG\'s three subsidiaries, and every one of their user segments.','It was the cultural anchor the unified experience needed.')),'r7'),
+   ROW(FIG('/images/somiacx/research/field-research.png','Testing photos, branch office visits, sticky-note workshops.',mt=False,bare=True), TX(H3('Field research'), P('I created sacrificial lo-fi concepts and took them directly into the field and to branch offices.')),'r7'),
    '<div class="label" style="margin-top:96px">Finding the gaps in the market</div>',
    ROW(FIG('/images/somiacx/understanding-users/bca-bri-mobile-phone.png','BCA and BRI mobile home screens, each surfacing a separate set of fragmented features.',mt=False),
        CELLS([CELL('<h3>One feature per subsidiary</h3><p>Internal conflict with no visible unity. Not user-friendly, especially for users who are financially and digitally illiterate.</p><p class="st">Instead</p><p>Relevant financial services that unify all three subsidiaries into one coherent experience.</p>'),
@@ -593,14 +717,14 @@ somia = case('SomiaCX','08',[
    HMW('How might we utilize collectivism as a design principle?','How might we implement familiarity in innovation?'),
  ),
  SECTION('testing','Testing','Understanding our users.',[],
-   THREE([('/images/somiacx/usability/quote-car-owner.png','A car owner: wants to save for family but has no idea where to start.',''),('/images/somiacx/usability/quote-motorcycle-customer.png','A motorcycle customer: the language felt made for people richer than them.',''),('/images/somiacx/usability/quote-motorcycle-owner-2.png','A motorcycle owner: pays installments, doesn\'t know what else the app offers.','')]),
+   THREE([('/images/trim/somia/quote-car-owner.png','A car owner: wants to save for family but has no idea where to start.',''),('/images/trim/somia/quote-motorcycle-customer.png','A motorcycle customer: the language felt made for people richer than them.',''),('/images/trim/somia/quote-motorcycle-owner-2.png','A motorcycle owner: pays installments, doesn\'t know what else the app offers.','')], bare=True),
    ROW(TX(H3('User interviews (12) and secondary research'), UL(['Users across income segments **couldn\'t connect their installment payments** to broader financial services available within the same ecosystem.','Lower-income users felt the product tone and language **created distance.** It didn\'t feel made for someone like them.','Internal teams had **no unified customer view.** Each subsidiary managed users independently, making holistic service slow.'])), '<div></div>'),
-   CELLS([PERSONA('/images/manus/research/persona-power-user.png','Motorcycle owners','Income ~$193–$1,290/month',['Pays installments regularly but doesn\'t know what other financial services they qualify for within the same app.','Wants to understand the total cost of vehicle ownership without going to a branch every time.']),
-          PERSONA('/images/manus/research/persona-newcomer.png','Car owners','Income ~$320–$1,290+/month',['Manages banking and financing separately; no single view of their full financial picture.','Wants one place to track installments, insurance, and savings without switching between apps or branches.']),
-          PERSONA('/images/conduit/users/core-user-avatar.png','Internal subsidiary team','Income ~$658–$1,290+/month',['Each subsidiary operates its own system. No shared logic, no unified customer view across the three.','Wants a platform architecture that lets them serve customers across subsidiaries.'])],3),
+   CELLS([PERSONA('person:#827a85','Motorcycle owners','Income ~$193–$1,290/month',['Pays installments regularly but doesn\'t know what other financial services they qualify for within the same app.','Wants to understand the total cost of vehicle ownership without going to a branch every time.']),
+          PERSONA('person:#9ba69c','Car owners','Income ~$320–$1,290+/month',['Manages banking and financing separately; no single view of their full financial picture.','Wants one place to track installments, insurance, and savings without switching between apps or branches.']),
+          PERSONA('person:#827a85','Internal subsidiary team','Income ~$658–$1,290+/month',['Each subsidiary operates its own system. No shared logic, no unified customer view across the three.','Wants a platform architecture that lets them serve customers across subsidiaries.'])],3),
  ),
  SECTION('development','Development','Six pillars built around culture. Four survived stakeholder reality.',[],
-   *[FIG(f'/images/somiacx/development/uvp-{i}.png', cap, mt=(i>1)) for i,cap in enumerate([
+   *[FIG(f'/images/trim/somia/uvp-{i}.png', cap, mt=(i>1), bare=True) for i,cap in enumerate([
      'UVP 1, Support (safety net). "Make the unpredictable, predictable."','UVP 2, Advisor (future planning). "Optimize your future with your own advisor."','UVP 3, Mentor (vehicle understanding). "Knowledgeable companionship with your own vehicle mentor."','UVP 4, Assistant (routine management). "Manage life chores easier with your personalized assistant."','UVP 5, Buddy (family and social savings). "Better together with a Buddy."','UVP 6, Connector (local inclusion). "Grow together with your local community."'],1)],
  ),
  SECTION('solution','Solution','A shared UVP architecture that unifies subsidiaries without disregarding their users.',[],
@@ -681,11 +805,12 @@ ABOUT_CSS = """
 .die-wrap:active{cursor:grabbing}
 .die{position:relative;width:var(--s,260px);height:var(--s,260px);transform-style:preserve-3d;will-change:transform;
   transform:rotateX(-22deg) rotateY(32deg)}
-.die .face{position:absolute;inset:0;background:#f4efe3;backface-visibility:hidden;--r:5.5%;
-  -webkit-mask:radial-gradient(circle at 0 0,transparent var(--r),#000 calc(var(--r) + .5px)) 0 0/12.5% 12.5% repeat;
-  mask:radial-gradient(circle at 0 0,transparent var(--r),#000 calc(var(--r) + .5px)) 0 0/12.5% 12.5% repeat}
-.die .face i{position:absolute;inset:8%;border:1px solid var(--oxblood);opacity:.7;pointer-events:none}
-.die .face img{position:absolute;left:11%;top:11%;width:78%;height:78%;object-fit:cover;display:block;filter:saturate(.88);-webkit-user-drag:none}
+.die .face{position:absolute;inset:0;background:#f4efe3;backface-visibility:hidden}
+/* the die is the palette: each face a square of the signature green, each photograph pressed
+   in the signature purple through the dither, no frame between them */
+.die .face{background:#9ba69c}
+.die .face i{display:none}
+.die .face img{position:absolute;left:11%;top:11%;width:78%;height:78%;object-fit:cover;display:block;filter:url(#dither-purple);-webkit-user-drag:none}
 .die .f1{transform:translateZ(calc(var(--s,260px) / 2))}
 .die .f2{transform:rotateY(180deg) translateZ(calc(var(--s,260px) / 2))}
 .die .f3{transform:rotateY(90deg) translateZ(calc(var(--s,260px) / 2))}
@@ -768,7 +893,7 @@ about = page('About', f"""<main class="ab"><div class="wrap">
     {CELLS([CELL(f'<div class="label">{E(n)}</div><div class="plate"><img src="{src}" alt="{E(n)}" loading="lazy"></div>') for n,src in OFF], 4)}</div>
 
   <div class="sec"><div class="label">Contact</div><h2>Let&rsquo;s work together.</h2>
-    <div class="reach"><span class="now"><i class="dot"></i>Available for 2026 roles</span><a href="mailto:jazkurnz06@gmail.com">jazkurnz06@gmail.com</a><a href="#">LinkedIn &#8599;</a><a href="#">X &#8599;</a></div></div>
+    <div class="reach"><span class="now"><i class="dot"></i>Available for 2026 roles</span><a href="mailto:jazkurnz06@gmail.com">jazkurnz06@gmail.com</a><a href="https://www.linkedin.com/in/jazlynn-kurniandra-a456292a8/" target="_blank" rel="noopener">LinkedIn &#8599;</a><a href="https://x.com/jazlynnkurni" target="_blank" rel="noopener">X &#8599;</a></div></div>
 </div></main>""", CASE_CSS+ABOUT_CSS).replace('</body></html>', DIE_JS+'</body></html>')
 
 # ------------------------------------------------------------------ ART GALLERY
@@ -831,8 +956,11 @@ GALLERY_CSS = """
 [data-theme="dark"] .slot:hover .card{box-shadow:0 12px 28px rgba(0,0,0,.4)}
 .slot .who{display:block;font:300 12.5px var(--hel);color:var(--ink3);margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* the tag on your own card: an inked tile with the knocked out label, like the wall's letters */
-.you{position:absolute;top:10px;left:10px;z-index:2;font:600 10px var(--jak);letter-spacing:.14em;text-transform:uppercase;
-  background:var(--flick-a);color:var(--ink);padding:5px 9px;transform:rotate(-6deg);transform-origin:top left;pointer-events:none;
+/* a sticker on the card's top right corner, inked so it reads on every stock, with a paper
+   ring so it sits ON the card instead of dissolving into it */
+.you{position:absolute;top:8px;right:14px;z-index:2;font:600 10px var(--jak);letter-spacing:.14em;text-transform:uppercase;
+  background:var(--ink);color:var(--paper);padding:5px 9px;border-radius:3px;box-shadow:0 0 0 2px var(--paper),0 4px 12px rgba(0,0,0,.14);
+  transform:rotate(4deg);transform-origin:top right;pointer-events:none;
   opacity:0;animation:you .5s cubic-bezier(.33,1.18,.37,1) .7s forwards}
 @keyframes you{to{opacity:1}}
 @media(max-width:900px){.wall{grid-template-columns:repeat(2,1fr)}.wall .slot:nth-child(3n){border-right:0}.wall .slot:nth-child(2n){border-right:1px solid var(--hair)}.wall .slot:nth-child(n+3){border-top:0}}
