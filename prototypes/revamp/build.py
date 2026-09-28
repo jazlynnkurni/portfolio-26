@@ -1073,9 +1073,9 @@ function setOpen(on){
   const stayEl=document.getElementById('stay'); const want=on||!!(stayEl&&stayEl.checked); if(want===open) return; open=want;
   from=ang; to=open?-P.ang:180; dur=open?900:700; t0=performance.now(); cancelAnimationFrame(raf); raf=requestAnimationFrame(tick);
 }
-place(180);
+place(-P.ang); open=true;
 let leaveT=0;
-stage.addEventListener('pointerenter',()=>{clearTimeout(leaveT);setOpen(true);});stage.addEventListener('pointerleave',()=>{clearTimeout(leaveT);leaveT=setTimeout(()=>{setOpen(false);phone.style.transform='';},120);});
+stage.addEventListener('pointerleave',()=>{phone.style.transform='';});
 /* the light and the tilt follow the pointer across the stage */
 stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
   document.documentElement.style.setProperty('--lx',`${x*100}%`);document.documentElement.style.setProperty('--ly',`${y*100}%`);
@@ -1093,7 +1093,7 @@ about = page('About', f"""<main class="ab"><div class="wrap">
     <p>Product designer and design engineer in New York. Cognitive science and HCI at Columbia.</p></div>
 
   <div class="hello">
-    <div class="flip-stage" id="stage" aria-label="A flip phone. Come near and it opens on six photographs; the keys change the photo."><div class="phone" id="phone">
+    <div class="flip-stage" id="stage" aria-label="A flip phone open on six photographs; the keys change the photo."><div class="phone" id="phone">
             <div class="base">
               <div class="slab"></div>
               <div class="shell"></div>
