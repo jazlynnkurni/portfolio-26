@@ -872,8 +872,6 @@ ABOUT_CSS = """
 .ab .row p{color:var(--ink2)}
 @media(max-width:700px){.ab .row{grid-template-columns:90px 1fr}.ab .row p{grid-column:2}}
 .ab .off .cell .plate{margin-top:12px}
-.skip{display:inline-block;margin-top:14px;font:500 12.5px var(--jak);color:var(--ink2);text-decoration:none;border-bottom:1px solid var(--hair)}
-.skip:hover{color:var(--ink)}
 /* ---- the flip phone, from flip-lab: closed until the reader comes near ---- */
 :root{--shell-a:#5a1d2c;--shell-b:#340414;--shell-c:#22030d;--key:#3f0c1b;--lx:50%;--ly:30%;--hx:-1px;--hy:-1px}
 /* ---------- the stage ---------- */
@@ -1213,6 +1211,9 @@ GALLERY_CSS = """
 .acts button.go{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .acts button.go:disabled{background:transparent;color:var(--ink3);border-color:var(--hair);cursor:not-allowed}
 .gal .err{font-size:13px;color:var(--touch);margin-top:12px}
+/* a returning visitor's way past the desk: a quiet line under the buttons, on the cell's own rhythm */
+.gal .skip{display:block;margin-top:16px;font:500 12px var(--jak);letter-spacing:.01em;color:var(--ink3);text-decoration:none;width:fit-content;border-bottom:1px solid var(--hair);padding-bottom:1px;transition:color .16s ease}
+.gal .skip:hover{color:var(--ink);border-color:var(--ink3)}
 /* ---- the wall: the grid's own cells, three across ---- */
 .wall{margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr)}
 .wall .slot{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);border-left:1px solid var(--hair);padding:20px;min-width:0;position:relative}
