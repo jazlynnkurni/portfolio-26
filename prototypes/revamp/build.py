@@ -1216,9 +1216,10 @@ GALLERY_CSS = """
 .gal .skip:hover{color:var(--ink);border-color:var(--ink3)}
 /* ---- the wall: the grid's own cells, three across ---- */
 .wall{margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr)}
-.wall .slot{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);border-left:1px solid var(--hair);padding:20px;min-width:0;position:relative}
-.wall .slot:nth-child(3n){border-right:1px solid var(--hair)}
-.wall .slot:nth-child(n+4){border-top:0}
+/* every slot draws all four sides and the shared ones overlap, so a card is a box whether or
+   not it has a neighbour */
+.wall{padding:1px 0 0 1px}
+.wall .slot{border:1px solid var(--hair);margin:-1px 0 0 -1px;padding:20px;min-width:0;position:relative}
 .wall .slot.empty::after{content:"";display:block;aspect-ratio:680/380;border:1px dashed var(--hair);border-radius:8px}
 .wall .slot.empty{padding-bottom:49px}
 .wall .slot.in{animation:hangin .35s ease both}
@@ -1238,7 +1239,7 @@ GALLERY_CSS = """
   transform:rotate(4deg);transform-origin:top right;pointer-events:none;
   opacity:0;animation:you .5s cubic-bezier(.33,1.18,.37,1) .7s forwards}
 @keyframes you{to{opacity:1}}
-@media(max-width:900px){.wall{grid-template-columns:repeat(2,1fr)}.wall .slot:nth-child(3n){border-right:0}.wall .slot:nth-child(2n){border-right:1px solid var(--hair)}.wall .slot:nth-child(n+3){border-top:0}}
+@media(max-width:900px){.wall{grid-template-columns:repeat(2,1fr)}}
 /* ---- the works: her own pieces, three columns, packed by height ---- */
 .works{margin-top:96px;padding-bottom:32px}
 .works .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
