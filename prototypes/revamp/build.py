@@ -1220,7 +1220,9 @@ GALLERY_CSS = """
 .wall .slot:nth-child(3n){border-right:1px solid var(--hair)}
 .wall .slot:nth-child(n+4){border-top:0}
 .wall .slot.empty::after{content:"";display:block;aspect-ratio:680/380;border:1px dashed var(--hair);border-radius:8px}
-.wall .slot.empty{padding-bottom:49px}   /* 20 + the name line, so an empty slot is as tall as a full one */
+.wall .slot.empty{padding-bottom:49px}
+.wall .slot.in{animation:hangin .35s ease both}
+@keyframes hangin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}   /* 20 + the name line, so an empty slot is as tall as a full one */
 .card{position:relative;width:100%;aspect-ratio:680/380;border-radius:8px;overflow:hidden;outline:1px solid var(--outline);outline-offset:-1px;
   transition:transform .46s cubic-bezier(.33,1.18,.37,1),box-shadow .32s ease}
 .card img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
@@ -1346,10 +1348,10 @@ GALLERY_JS = """<script>
   async function hang(mine){
     grid.innerHTML=''; grid.appendChild(card(mine,true));
     let others=[];
-    try{ const r=await fetch('/api/gallery/cards',{cache:'no-store'}); const j=await r.json(); others=(j.cards||[]).filter(c=>c.id!==mine.id).slice(0,GRID-1); }catch(e){}
-    others.forEach((c,i)=>{ const el=card(c,false); el.style.opacity='0'; el.style.transform='translateY(8px)'; grid.appendChild(el);
-      setTimeout(()=>{ el.style.transition='opacity .35s ease,transform .35s ease'; el.style.opacity='1'; el.style.transform='none'; }, 250+i*40); });
-    for(let i=1+others.length;i<GRID;i++){ const e=document.createElement('div'); e.className='slot empty'; grid.appendChild(e); }
+    try{ const r=await fetch('/api/gallery/cards',{cache:'no-store'}); const j=await r.json(); others=(Array.isArray(j.cards)?j.cards:[]).filter(c=>c&&c.id!==mine.id).slice(0,GRID-1); }catch(e){}
+    let hung=0;
+    others.forEach((c,i)=>{ try{ const el=card(c,false); el.classList.add('in'); el.style.animationDelay=(250+i*40)+'ms'; grid.appendChild(el); hung++; }catch(e){} });
+    for(let i=1+hung;i<GRID;i++){ const e=document.createElement('div'); e.className='slot empty'; grid.appendChild(e); }
   }
   function showWall(mine, from){
     intro.hidden=true; wallSec.hidden=false;
@@ -1386,14 +1388,14 @@ GALLERY_JS = """<script>
 
 # her works, as on the live site: no titles, no captions. width/height ratios from the files.
 WORKS = [
-  ('/images/art-gallery/works/ceramic-mask.jpg',1.138),('/images/art-gallery/works/izakaya-sushi.png',1.699),
-  ('/images/art-gallery/works/metropolis-hands.png',0.707),('/images/art-gallery/works/sunflower-collage.png',0.707),
-  ('/images/art-gallery/works/anime-action.png',1.415),('/images/art-gallery/works/fallen-angel.png',1.415),
-  ('/images/art-gallery/works/die-character-sheet.png',1.415),('/images/art-gallery/works/green-alien.png',1.0),
-  ('/images/art-gallery/works/goggle-girl.png',1.0),('/images/art-gallery/works/angel.png',0.707),
-  ('/images/art-gallery/works/cat.png',1.0),('/images/art-gallery/works/police.png',0.698),
-  ('/images/art-gallery/works/spider-verse.png',0.707),('/images/art-gallery/works/tsk-art.png',1.415),
-  ('/images/art-gallery/works/yourclothes.png',1.0),
+  ('/images/trim/works/ceramic-mask.jpg',1.138),('/images/trim/works/izakaya-sushi.jpg',1.699),
+  ('/images/trim/works/metropolis-hands.jpg',0.707),('/images/trim/works/sunflower-collage.jpg',0.707),
+  ('/images/trim/works/anime-action.jpg',1.415),('/images/trim/works/fallen-angel.jpg',1.415),
+  ('/images/trim/works/die-character-sheet.jpg',1.415),('/images/trim/works/green-alien.jpg',1.0),
+  ('/images/trim/works/goggle-girl.jpg',1.0),('/images/trim/works/angel.jpg',0.707),
+  ('/images/trim/works/cat.jpg',1.0),('/images/trim/works/police.jpg',0.698),
+  ('/images/trim/works/spider-verse.jpg',0.707),('/images/trim/works/tsk-art.jpg',1.415),
+  ('/images/trim/works/yourclothes.jpg',1.0),
   ('/videos/art-gallery/process-reel-1.mp4',1.816),('/videos/art-gallery/process-reel-2.mp4',1.831),('/videos/art-gallery/animation-loop.mp4',1.778),
 ]
 def WORKS_HTML():

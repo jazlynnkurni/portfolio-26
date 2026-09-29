@@ -338,7 +338,9 @@ html.sheet body{background:transparent}
 .wall .slot:nth-child(3n){border-right:1px solid var(--hair)}
 .wall .slot:nth-child(n+4){border-top:0}
 .wall .slot.empty::after{content:"";display:block;aspect-ratio:680/380;border:1px dashed var(--hair);border-radius:8px}
-.wall .slot.empty{padding-bottom:49px}   /* 20 + the name line, so an empty slot is as tall as a full one */
+.wall .slot.empty{padding-bottom:49px}
+.wall .slot.in{animation:hangin .35s ease both}
+@keyframes hangin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}   /* 20 + the name line, so an empty slot is as tall as a full one */
 .card{position:relative;width:100%;aspect-ratio:680/380;border-radius:8px;overflow:hidden;outline:1px solid var(--outline);outline-offset:-1px;
   transition:transform .46s cubic-bezier(.33,1.18,.37,1),box-shadow .32s ease}
 .card img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
@@ -433,7 +435,7 @@ if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches
       <h1>Welcome to Jazlynn&rsquo;s Art Exhibit.</h1>
       <p>Thanks for being a part of it. Enjoy the rest of your stay!</p></div>
     <div class="wall" id="grid"></div>
-    <div class="works"><div class="label">Works</div><div class="cols"><div class="col"><div class="plate"><img src="/images/art-gallery/works/ceramic-mask.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/anime-action.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/die-character-sheet.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/angel.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/spider-verse.png" alt="" loading="lazy"></div><div class="plate"><video src="/videos/art-gallery/process-reel-2.mp4" muted loop playsinline preload="metadata" data-io></video></div></div><div class="col"><div class="plate"><img src="/images/art-gallery/works/izakaya-sushi.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/sunflower-collage.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/green-alien.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/cat.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/tsk-art.png" alt="" loading="lazy"></div><div class="plate"><video src="/videos/art-gallery/process-reel-1.mp4" muted loop playsinline preload="metadata" data-io></video></div><div class="plate"><video src="/videos/art-gallery/animation-loop.mp4" muted loop playsinline preload="metadata" data-io></video></div></div><div class="col"><div class="plate"><img src="/images/art-gallery/works/metropolis-hands.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/fallen-angel.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/goggle-girl.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/police.png" alt="" loading="lazy"></div><div class="plate"><img src="/images/art-gallery/works/yourclothes.png" alt="" loading="lazy"></div></div></div></div>
+    <div class="works"><div class="label">Works</div><div class="cols"><div class="col"><div class="plate"><img src="/images/trim/works/ceramic-mask.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/anime-action.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/die-character-sheet.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/angel.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/spider-verse.jpg" alt="" loading="lazy"></div><div class="plate"><video src="/videos/art-gallery/process-reel-2.mp4" muted loop playsinline preload="metadata" data-io></video></div></div><div class="col"><div class="plate"><img src="/images/trim/works/izakaya-sushi.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/sunflower-collage.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/green-alien.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/cat.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/tsk-art.jpg" alt="" loading="lazy"></div><div class="plate"><video src="/videos/art-gallery/process-reel-1.mp4" muted loop playsinline preload="metadata" data-io></video></div><div class="plate"><video src="/videos/art-gallery/animation-loop.mp4" muted loop playsinline preload="metadata" data-io></video></div></div><div class="col"><div class="plate"><img src="/images/trim/works/metropolis-hands.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/fallen-angel.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/goggle-girl.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/police.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/yourclothes.jpg" alt="" loading="lazy"></div></div></div></div>
   </section>
 </div></main>
 <footer><div class="wrap"><div class="rule"></div><div class="in">
@@ -624,10 +626,10 @@ document.querySelectorAll('video[data-io]').forEach(v=>io.observe(v));})();
   async function hang(mine){
     grid.innerHTML=''; grid.appendChild(card(mine,true));
     let others=[];
-    try{ const r=await fetch('/api/gallery/cards',{cache:'no-store'}); const j=await r.json(); others=(j.cards||[]).filter(c=>c.id!==mine.id).slice(0,GRID-1); }catch(e){}
-    others.forEach((c,i)=>{ const el=card(c,false); el.style.opacity='0'; el.style.transform='translateY(8px)'; grid.appendChild(el);
-      setTimeout(()=>{ el.style.transition='opacity .35s ease,transform .35s ease'; el.style.opacity='1'; el.style.transform='none'; }, 250+i*40); });
-    for(let i=1+others.length;i<GRID;i++){ const e=document.createElement('div'); e.className='slot empty'; grid.appendChild(e); }
+    try{ const r=await fetch('/api/gallery/cards',{cache:'no-store'}); const j=await r.json(); others=(Array.isArray(j.cards)?j.cards:[]).filter(c=>c&&c.id!==mine.id).slice(0,GRID-1); }catch(e){}
+    let hung=0;
+    others.forEach((c,i)=>{ try{ const el=card(c,false); el.classList.add('in'); el.style.animationDelay=(250+i*40)+'ms'; grid.appendChild(el); hung++; }catch(e){} });
+    for(let i=1+hung;i<GRID;i++){ const e=document.createElement('div'); e.className='slot empty'; grid.appendChild(e); }
   }
   function showWall(mine, from){
     intro.hidden=true; wallSec.hidden=false;
