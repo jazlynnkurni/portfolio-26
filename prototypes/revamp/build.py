@@ -51,6 +51,7 @@ nav a.l:hover{color:var(--ink)}
 [data-theme="dark"] #theme .sun{display:none}
 :root:not([data-theme="dark"]) #theme .moon{display:none}
 @media(max-width:640px){nav .in{padding-top:16px} nav a.l{padding:9px 10px;font-size:12.5px}}
+@media(max-width:480px){nav .in{flex-direction:column;align-items:flex-start;gap:10px} nav a.l{padding:8px 9px;font-size:12px}}
 footer{padding:64px 0 46px}
 body>.pushing{transition:transform .5s cubic-bezier(.22,1,.36,1)}
 footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
