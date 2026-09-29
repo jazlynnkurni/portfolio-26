@@ -291,7 +291,7 @@ footer .in a{font-size:13px}
   opacity:0;transition:opacity .2s ease .16s;pointer-events:none;white-space:nowrap}
 .rows.hot~.leader{opacity:1}.rows.hot~.leader-yr{opacity:1}
 .rows{list-style:none;margin:0;padding:0}
-.rows a{display:block;padding:2px 0;text-decoration:none;font:300 44px/1.15 var(--hel);letter-spacing:-.015em;
+.rows a{display:inline-block;padding:2px 0;text-decoration:none;font:300 44px/1.15 var(--hel);letter-spacing:-.015em;
   color:var(--ink);transition:color .18s ease}
 .rows.hot a{color:var(--ink3)}
 .rows.hot li.on a{color:var(--ink)}
@@ -571,7 +571,7 @@ a.addEventListener('click',()=>{a.href=base+'?theme='+(document.documentElement.
   if(!matchMedia('(hover: hover) and (pointer:fine)').matches) return;
   const c=document.createElement('div'); c.id='cur'; c.appendChild(document.createElement('i')); const lb=document.createElement('b'); c.appendChild(lb); document.body.appendChild(c);
   let tx=-100,ty=-100,x=-100,y=-100,raf=0,shown=false;
-  const HOT='a,button,[role=button],label,summary,.rows li,.tags button';
+  const HOT='a,button,[role=button],label,summary,.tags button';
   function loop(){
     /* a plain ease toward the pointer: a beat behind it, never bouncing */
     x+=(tx-x)*.42; y+=(ty-y)*.42;
@@ -936,8 +936,9 @@ addEventListener('scroll',()=>{ if(rows.classList.contains('hot')&&leadFor>=0) l
 addEventListener('resize',()=>{ if(leadFor>=0) lead(leadFor,false); });
 const hot=on=>{rows.classList.toggle('hot',on); preview.classList.toggle('show',on);
   if(!on){ [...rows.children].forEach(li=>li.classList.remove('on')); pvV.pause(); leadFor=-1; } else if(pvV.classList.contains('on')) pvV.play().catch(()=>{});};
-rows.addEventListener('pointerover',e=>{const li=e.target.closest('li'); if(li){show(+li.dataset.i); hot(true);}});
+rows.addEventListener('pointerover',e=>{const a=e.target.closest('a'); const li=a&&a.closest('li'); if(li){show(+li.dataset.i); hot(true);} else if(!e.target.closest('a')) hot(false);});
 rows.addEventListener('pointerleave',()=>hot(false));
+rows.addEventListener('pointermove',e=>{ if(!e.target.closest('a')) hot(false); },{passive:true});
 rows.addEventListener('focusin',e=>{const li=e.target.closest('li'); if(li){show(+li.dataset.i); hot(true);}});
 rows.addEventListener('focusout',e=>{if(!rows.contains(e.relatedTarget)) hot(false);});
 tags.addEventListener('click',e=>{
