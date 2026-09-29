@@ -297,7 +297,8 @@ footer .in a{font-size:13px}
 .rows.hot li.on a{color:var(--ink)}
 .rows li.off{display:none}
 /* external work leaves the site: the arrow says so, quietly */
-.rows .ext{font-size:.5em;vertical-align:.9em;color:var(--ink3);margin-left:.1em}
+.rows .ext{display:inline-block;vertical-align:.55em;color:var(--ink3);margin-left:.12em;line-height:0}
+.rows .ext svg{width:.36em;height:.36em}
 /* THE PLATE IS EXACTLY THE FILE. Each project's plate takes that recording's own
    proportions, read off the file the moment it loads, and the media is fitted inside it
    whole: no crop, no zoom, no stretch. A 16:9 recording gets a 16:9 plate, a 2:1 gets 2:1.
@@ -895,7 +896,7 @@ const PROJECTS=[
 const rows=document.getElementById('rows'), tags=document.getElementById('tags');
 const pvT=document.getElementById('pv-t'), pvS=document.getElementById('pv-s'), pvR=document.getElementById('pv-r');
 rows.innerHTML=PROJECTS.map((p,i)=>`<li data-i="${i}" data-tags="${p.tags.join('|')}">
-  <a href="${p.href}"${p.ext?' target="_blank" rel="noopener"':''}${p.cur?` data-cur="${p.cur}"`:''}>${p.t}${p.ext?' <span class="ext">&#8599;</span>':''}</a></li>`).join('');
+  <a href="${p.href}"${p.ext?' target="_blank" rel="noopener"':''}${p.cur?` data-cur="${p.cur}"`:''}>${p.t}${p.ext?' <span class="ext"><svg class="ext-arrow" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>':''}</a></li>`).join('');
 /* one axis a recruiter actually filters on: the role, the surface, the proof */
 const ALL=['0 → 1','Personal projects','AI','Mobile','Web'];
 tags.innerHTML=['All',...ALL].map((t,i)=>`<button aria-pressed="${i===0}">${t}</button>`).join('');
