@@ -329,6 +329,9 @@ html.sheet body{background:transparent}
 .acts button.go{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .acts button.go:disabled{background:transparent;color:var(--ink3);border-color:var(--hair);cursor:not-allowed}
 .gal .err{font-size:13px;color:var(--touch);margin-top:12px}
+/* a returning visitor's way past the desk: a quiet line under the buttons, on the cell's own rhythm */
+.gal .skip{display:block;margin-top:16px;font:500 12px var(--jak);letter-spacing:.01em;color:var(--ink3);text-decoration:none;width:fit-content;border-bottom:1px solid var(--hair);padding-bottom:1px;transition:color .16s ease}
+.gal .skip:hover{color:var(--ink);border-color:var(--ink3)}
 /* ---- the wall: the grid's own cells, three across ---- */
 .wall{margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr)}
 .wall .slot{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);border-left:1px solid var(--hair);padding:20px;min-width:0;position:relative}
