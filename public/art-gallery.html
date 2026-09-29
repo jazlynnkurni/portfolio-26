@@ -419,7 +419,7 @@ if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches
       <div class="plate" id="padPlate"><canvas id="pad" width="680" height="380"></canvas><span class="mono" id="mono">JK</span></div>
       <div class="side">
         <div class="cell"><div class="label">Name</div><input id="name" type="text" maxlength="60" placeholder="Your name here" autocomplete="off"></div>
-        <div class="cell"><div class="label">Card</div><div class="sw"><button type="button" data-c="charcoal" aria-label="charcoal card" aria-pressed="true" style="background:#1C1A17"></button><button type="button" data-c="paper" aria-label="paper card" aria-pressed="false" style="background:#FAF9F7;outline:1px solid var(--hair)"></button><button type="button" data-c="green" aria-label="green card" aria-pressed="false" style="background:#9ba69c"></button><button type="button" data-c="purple" aria-label="purple card" aria-pressed="false" style="background:#827a85"></button></div></div>
+        <div class="cell"><div class="label">Card</div><div class="sw"><button type="button" data-c="gold" aria-label="gold card" aria-pressed="true" style="background:#A99939"></button><button type="button" data-c="oxblood" aria-label="oxblood card" aria-pressed="false" style="background:#340414"></button><button type="button" data-c="charcoal" aria-label="charcoal card" aria-pressed="false" style="background:#1C1A17"></button><button type="button" data-c="paper" aria-label="paper card" aria-pressed="false" style="background:#FAF9F7;outline:1px solid var(--hair)"></button></div></div>
         <div class="cell"><div class="label">Then</div><div class="acts"><button type="button" id="clear">Clear</button><button type="button" id="go" class="go" disabled>Enter &rarr;</button></div><p class="err" id="err"></p></div>
       </div>
     </div>
@@ -543,11 +543,11 @@ document.querySelectorAll('video[data-io]').forEach(v=>io.observe(v));})();
   const W=680,H=380,BRUSH=4;
   /* the palette as card stock. The stroke follows the hero grid's rule: a gold, oxblood or
      charcoal card knocks the ink out to paper; the paper card takes ink. */
-  const STOCK={charcoal:'#1C1A17',paper:'#FAF9F7',green:'#9ba69c',purple:'#827a85'};
+  const STOCK={gold:'#A99939',oxblood:'#340414',charcoal:'#1C1A17',paper:'#FAF9F7'};
   /* cards from the old site carry other colour names; each lands on one of ours, by name */
-  const OLD={gold:'green',oxblood:'purple',orange:'purple',blue:'charcoal',clay:'green'};
-  const tone=(c)=>STOCK[c]?c:(OLD[c]||['charcoal','paper','green','purple'][(String(c||'').length+3)%4]);
-  const INK=(c)=>{const t=tone(c);return (t==='paper'||t==='green')?'#14171B':'#FAF9F7';};
+  const OLD={orange:'gold',blue:'charcoal',clay:'oxblood',green:'gold',purple:'oxblood'};
+  const tone=(c)=>STOCK[c]?c:(OLD[c]||['gold','oxblood','charcoal','paper'][(String(c||'').length+3)%4]);
+  const INK=(c)=>tone(c)==='paper'?'#14171B':'#FAF9F7';
   const $=(s,r=document)=>r.querySelector(s);
   const intro=$('#intro'), wallSec=$('#wall'), gate=$('#gate');
 
@@ -580,7 +580,7 @@ document.querySelectorAll('video[data-io]').forEach(v=>io.observe(v));})();
   /* ---------- the desk ---------- */
   const cv=$('#pad'), ctx=cv.getContext('2d'), dpr=Math.min(devicePixelRatio||1,2);
   cv.width=W*dpr; cv.height=H*dpr; ctx.scale(dpr,dpr);
-  let color='charcoal', strokes=[], cur=null, down=false;
+  let color='gold', strokes=[], cur=null, down=false;
   const mono=$('#mono');
   function repaint(){
     ctx.fillStyle=STOCK[tone(color)]; ctx.fillRect(0,0,W,H);
