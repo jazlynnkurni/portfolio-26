@@ -965,13 +965,13 @@ DIE_JS = """<script>
 </script>"""
 FACES = ['bagels','camera','dog-beach','mun','snowboarding','teaching']
 FOCUS = ['Design engineering','Product design','Product management','HCI research','Brand and identity','Illustration and motion']
-WORKED = [  # years and the one line are the projects list's own; roles are hers to fill in
-  ('2026','Clover','HUD and companion app','Designing the HUD interface and shipping the iOS companion app.'),
-  ('2026','Manus AI','Community platform','Designing an AI community platform to drive adoption. Acquired by Meta.'),
-  ('2026','Fostr','Brand, site and platform','Building the brand, landing site and internal platform from 0 to 1.'),
-  ('2025','Halodoc','AI Prescription onboarding','Designing the onboarding journey for AI Prescription on mobile.'),
-  ('2025','Conduit Commerce','B2B SaaS website','Designing and shipping a B2B SaaS website for an AI feature launch.'),
-  ('2025','SomiaCX','UVP system','Architecting a unified UVP system for three financial subsidiaries.'),
+WORKED = [  # dates from the resume (and the confirmed Eden / Halodoc dates); newest first
+  ('Jun 2026 to now','Eden','Founding design engineer','Designing the HUD interface and shipping the iOS companion app for Clover, the smartglasses.'),
+  ('Jul 2026 to now','Fostr','Founding design engineer','Building the brand, landing site and internal platform from 0 to 1.'),
+  ('Jun to Aug 2026','Halodoc','Product intern','Designing the onboarding journey for AI Prescription on mobile, for 20M+ users.'),
+  ('Feb to May 2026','Conduit Commerce','Product design lead','Designing and shipping a B2B SaaS website for an AI feature launch.'),
+  ('Nov 2025 to Jan 2026','Manus AI','Product design intern','Designing an AI community platform to drive adoption. Acquired by Meta.'),
+  ('Jul to Sep 2024','SomiaCX','UX design intern','Architecting a unified UVP system for three financial subsidiaries of MUFG.'),
 ]
 # each thing she keeps close, one item at a time; the strips are split into items in images/trim/off
 OFF = [
