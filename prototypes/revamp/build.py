@@ -866,7 +866,7 @@ ABOUT_CSS = """
 .ab .cell .n{font:500 11px var(--jak);letter-spacing:.12em;color:var(--ink3);display:block;margin-bottom:10px}
 .ab .cell h3{font-size:15.5px}
 .ab .rows{margin-top:24px;border-top:1px solid var(--hair)}
-.ab .row{display:grid;grid-template-columns:150px 1.1fr 1.6fr;gap:24px;padding:18px 0;border-bottom:1px solid var(--hair);font-size:14.5px;line-height:1.55;margin:0;align-items:start}
+.ab .row{display:grid;grid-template-columns:110px 1.1fr 1.6fr;gap:24px;padding:18px 0;border-bottom:1px solid var(--hair);font-size:14.5px;line-height:1.55;margin:0;align-items:start}
 .ab .row .y{color:var(--ink3);font-variant-numeric:tabular-nums}
 .ab .row .o{color:var(--ink)}.ab .row .o small{display:block;color:var(--ink3);font-size:12.5px;margin-top:2px}
 .ab .row p{color:var(--ink2)}
@@ -966,12 +966,12 @@ DIE_JS = """<script>
 FACES = ['bagels','camera','dog-beach','mun','snowboarding','teaching']
 FOCUS = ['Design engineering','Product design','Product management','HCI research','Brand and identity','Illustration and motion']
 WORKED = [  # dates from the resume (and the confirmed Eden / Halodoc dates); newest first
-  ('Jun 2026 to now','Eden','Founding design engineer','Designing the HUD interface and shipping the iOS companion app for Clover, the smartglasses.'),
-  ('Jul 2026 to now','Fostr','Founding design engineer','Building the brand, landing site and internal platform from 0 to 1.'),
-  ('Jun to Aug 2026','Halodoc','Product intern','Designing the onboarding journey for AI Prescription on mobile, for 20M+ users.'),
-  ('Feb to May 2026','Conduit Commerce','Product design lead','Designing and shipping a B2B SaaS website for an AI feature launch.'),
-  ('Nov 2025 to Jan 2026','Manus AI','Product design intern','Designing an AI community platform to drive adoption. Acquired by Meta.'),
-  ('Jul to Sep 2024','SomiaCX','UX design intern','Architecting a unified UVP system for three financial subsidiaries of MUFG.'),
+  ('2026','Eden','Founding design engineer','Designing the HUD interface and shipping the iOS companion app for Clover, the smartglasses.'),
+  ('2026','Fostr','Founding design engineer','Building the brand, landing site and internal platform from 0 to 1.'),
+  ('2026','Halodoc','Product intern','Designing the onboarding journey for AI Prescription on mobile, for 20M+ users.'),
+  ('2026','Conduit Commerce','Product design lead','Designing and shipping a B2B SaaS website for an AI feature launch.'),
+  ('2025','Manus AI','Product design intern','Designing an AI community platform to drive adoption. Acquired by Meta.'),
+  ('2024','SomiaCX','UX design intern','Architecting a unified UVP system for three financial subsidiaries of MUFG.'),
 ]
 # each thing she keeps close, one item at a time; the strips are split into items in images/trim/off
 OFF = [
@@ -1146,7 +1146,7 @@ about = page('About', f"""<main class="ab"><div class="wrap">
     <div class="rows" data-cur="reach out for resume">{''.join(f'<div class="row"><span class="y">{y}</span><span class="o">{E(o)}<small>{E(r)}</small></span><p>{E(l)}</p></div>' for y,o,r,l in WORKED)}</div></div>
 
   <div class="sec"><div class="label">Education</div><h2>Where I&rsquo;ve studied</h2>
-    <div class="rows"><div class="row"><span class="y">Now</span><span class="o">Columbia University<small>New York</small></span><p>Cognitive Science, with a specialization in Human-Computer Interaction.</p></div><div class="row"><span class="y">2023 to 2025</span><span class="o">Shoreline College<small>Washington</small></span><p>Direct Transfer Associate of Arts.</p></div></div></div>
+    <div class="rows"><div class="row"><span class="y">2025</span><span class="o">Columbia University<small>New York</small></span><p>Cognitive Science, with a specialization in Human-Computer Interaction.</p></div><div class="row"><span class="y">2023</span><span class="o">Shoreline College<small>Washington</small></span><p>Direct Transfer Associate of Arts.</p></div></div></div>
 
   <div class="sec off"><div class="label">Off the clock</div><h2>What I keep close</h2>
     <div class="keeps">{''.join(KEEP(n,t,items) for n,t,items in OFF)}</div></div>
