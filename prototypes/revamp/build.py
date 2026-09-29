@@ -1154,7 +1154,7 @@ about = page('About', f"""<main class="ab"><div class="wrap">
     <div class="keeps">{''.join(KEEP(n,t,items) for n,t,items in OFF)}</div></div>
 
   <div class="sec"><div class="label">Contact</div><h2>Let&rsquo;s work together.</h2>
-    <div class="reach"><span class="now"><i class="dot"></i>Available for 2026 roles</span><a href="mailto:jazkurnz06@gmail.com">jazkurnz06@gmail.com</a><a href="https://www.linkedin.com/in/jazlynn-kurniandra-a456292a8/" target="_blank" rel="noopener">LinkedIn &#8599;</a><a href="https://x.com/jazlynnkurni" target="_blank" rel="noopener">X &#8599;</a></div></div>
+    <div class="reach"><span class="now"><i class="dot"></i>Available for 2026 roles</span><a href="mailto:jazkurnz06@gmail.com">jazkurnz06@gmail.com</a><a href="https://www.linkedin.com/in/jazlynn-kurniandra-a456292a8/" target="_blank" rel="noopener">LinkedIn <svg class="ext-arrow" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a href="https://x.com/jazlynnkurni" target="_blank" rel="noopener">X <svg class="ext-arrow" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div></div>
 </div></main><script>(function(){{
   document.querySelectorAll('.keep').forEach(k=>{{
     const ims=[...k.querySelectorAll('img')], t=k.querySelector('.foot .t'), n=k.querySelector('.foot .n b'); let i=0, busy=false;
