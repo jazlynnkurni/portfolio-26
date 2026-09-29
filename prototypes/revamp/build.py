@@ -1345,17 +1345,20 @@ GALLERY_JS = """<script>
     for(let i=0;i<px.length;i+=4){ const l=(0.299*px[i]+0.587*px[i+1]+0.114*px[i+2]); const a=Math.max(0,Math.min(255,(120-l)*3)); px[i]=r; px[i+1]=g; px[i+2]=b; px[i+3]=a; }
     x.putImageData(d,0,0); img.src=c.toDataURL(); }catch(e){} }
   const esc=(s)=>String(s||'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+  let cardsAhead=null;
+  function fetchCards(){ cardsAhead=fetch('/api/gallery/cards',{cache:'no-store'}).then(r=>r.json()).then(j=>Array.isArray(j.cards)?j.cards:[]).catch(()=>[]); return cardsAhead; }
+  fetchCards();
   async function hang(mine){
     grid.innerHTML=''; grid.appendChild(card(mine,true));
     let others=[];
-    try{ const r=await fetch('/api/gallery/cards',{cache:'no-store'}); const j=await r.json(); others=(Array.isArray(j.cards)?j.cards:[]).filter(c=>c&&c.id!==mine.id).slice(0,GRID-1); }catch(e){}
+    try{ const list=await (cardsAhead||fetchCards()); others=list.filter(c=>c&&c.id!==mine.id).slice(0,GRID-1); }catch(e){}
     let hung=0;
     others.forEach((c,i)=>{ try{ const el=card(c,false); el.classList.add('in'); el.style.animationDelay=(250+i*40)+'ms'; grid.appendChild(el); hung++; }catch(e){} });
     for(let i=1+hung;i<GRID;i++){ const e=document.createElement('div'); e.className='slot empty'; grid.appendChild(e); }
   }
   function showWall(mine, from){
-    intro.hidden=true; wallSec.hidden=false;
     hang(mine).then(()=>{
+      intro.hidden=true; wallSec.hidden=false;
       /* FLIP: your card travels from the desk to its slot, then the slot takes over */
       const to=$('.slot .card',grid); if(!from||!to) return;
       const t=to.getBoundingClientRect();
@@ -1374,7 +1377,7 @@ GALLERY_JS = """<script>
 
   go.addEventListener('click', async ()=>{
     if(go.disabled) return; go.disabled=true; go.textContent='Hanging your art\\u2026'; err.textContent='';
-    const from=$('#padPlate').getBoundingClientRect();
+    const from=$('#padPlate').getBoundingClientRect(); fetchCards();
     try{
       const r=await fetch('/api/gallery/cards',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name.value.trim(),color,drawing:cv.toDataURL('image/png')})});
       if(!r.ok){ const j=await r.json().catch(()=>({})); throw new Error(j.error||'Couldn\\u2019t save your card. Try again?'); }
