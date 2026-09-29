@@ -1,0 +1,7 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent;height:100%}.t{position:absolute;inset:0;border-radius:22%;background:#FAF9F7;overflow:hidden}#sheets{position:absolute;inset:0;width:100%;height:100%;display:block}</style></head>
+<body><div class="t"><canvas id="sheets"></canvas></div>
+<script type="module">
+import { mountSheets } from '/sheets-gl.js';
+const r=.30, ov=.5, half=r*(1-ov);
+mountSheets(document.getElementById('sheets'), [{x:.5-half,y:.5,r},{x:.5+half,y:.5,r}], ['#9ba69c','#827a85'], { paper:'#FAF9F7', ground:'#1C1A17', bleed:0, clear:()=>0 });
+</script></body></html>
