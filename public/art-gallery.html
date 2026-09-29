@@ -333,7 +333,7 @@ html.sheet body{background:transparent}
 .gal .skip{display:block;margin-top:16px;font:500 12px var(--jak);letter-spacing:.01em;color:var(--ink3);text-decoration:none;width:fit-content;border-bottom:1px solid var(--hair);padding-bottom:1px;transition:color .16s ease}
 .gal .skip:hover{color:var(--ink);border-color:var(--ink3)}
 /* ---- the wall: the grid's own cells, three across ---- */
-.wall{margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr)}
+.wall{margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr);will-change:transform}
 .wall .slot{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);border-left:1px solid var(--hair);padding:20px;min-width:0;position:relative}
 .wall .slot:nth-child(3n){border-right:1px solid var(--hair)}
 .wall .slot:nth-child(n+4){border-top:0}
@@ -634,16 +634,24 @@ document.querySelectorAll('video[data-io]').forEach(v=>io.observe(v));})();
   function showWall(mine, from){
     intro.hidden=true; wallSec.hidden=false;
     hang(mine).then(()=>{
-      /* FLIP: your card travels from the desk to its slot, then the slot takes over */
-      const to=$('.slot .card',grid); if(!from||!to) return;
-      const t=to.getBoundingClientRect();
-      const g=document.createElement('div'); g.id='ghost'; g.innerHTML=`<img src="${mine.drawing}" alt="">`;
-      g.style.left=from.left+'px'; g.style.top=from.top+'px'; g.style.width=from.width+'px'; g.style.height=from.height+'px'; g.style.background=STOCK[tone(mine.color)];
-      document.body.appendChild(g); to.style.visibility='hidden';
-      requestAnimationFrame(()=>{ g.style.transform=`translate(${t.left-from.left}px,${t.top-from.top}px) scale(${t.width/from.width},${t.height/from.height})`; g.style.opacity='0'; });
-      setTimeout(()=>{ to.style.visibility=''; g.remove(); }, 720);
+      /* THE ZOOM OUT. The wall arrives as your card: the whole grid starts scaled up around your
+         slot so your piece fills the middle of the screen, then it pulls back to the wall over a
+         second and the other cards come in as it settles. The head fades in once there is room. */
+      const slot=$('.slot',grid); if(!slot) return;
+      const head=$('#wall .head'); if(head){ head.style.opacity='0'; head.style.transition='none'; }
+      const g=grid.getBoundingClientRect(), r=slot.getBoundingClientRect();
+      const cx=r.left-g.left+r.width/2, cy=r.top-g.top+r.height/2;           /* your card's centre, in the grid */
+      const k=Math.min(3.4, Math.max(1.6, (innerWidth*0.72)/r.width));
+      const vx=innerWidth/2-g.left, vy=innerHeight/2-g.top;                   /* the viewport's centre, in the grid */
+      grid.style.transition='none'; grid.style.transformOrigin=`${cx}px ${cy}px`;
+      grid.style.transform=`translate(${vx-cx}px,${vy-cy}px) scale(${k})`;
+      grid.querySelectorAll('.slot.in').forEach((el,i)=>{ el.style.animationDelay=(520+i*40)+'ms'; });
+      grid.getBoundingClientRect();
+      requestAnimationFrame(()=>{ grid.style.transition='transform 1.15s cubic-bezier(.2,.7,.2,1)'; grid.style.transform='none';
+        if(head){ setTimeout(()=>{ head.style.transition='opacity .5s ease'; head.style.opacity='1'; },600); } });
+      setTimeout(()=>{ grid.style.transition=''; grid.style.transformOrigin=''; },1300);
     });
-    if(from) setTimeout(()=>scrollTo({top:0,behavior:'smooth'}), 80);
+    if(from) scrollTo({top:0,behavior:'auto'});
   }
 
   /* ---------- the memory layer ---------- */
