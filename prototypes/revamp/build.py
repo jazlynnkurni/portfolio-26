@@ -1311,7 +1311,7 @@ GALLERY_JS = """<script>
   let color='gold', strokes=[], cur=null, down=false;
   const mono=$('#mono');
   function repaint(){
-    ctx.fillStyle=STOCK[tone(color)]; ctx.fillRect(0,0,W,H);
+    ctx.clearRect(0,0,W,H); $('#padPlate').style.background=STOCK[tone(color)];
     ctx.strokeStyle=INK(color); ctx.fillStyle=INK(color); ctx.lineWidth=BRUSH; ctx.lineCap='round'; ctx.lineJoin='round';
     for(const s of strokes){
       if(s.length===1){ ctx.beginPath(); ctx.arc(s[0].x,s[0].y,BRUSH/2,0,6.2832); ctx.fill(); continue; }
@@ -1341,7 +1341,9 @@ GALLERY_JS = """<script>
   /* A DRAWING FROM THE OLD SITE has its ground baked in. It is read as ink on paper: the dark
      marks become the stroke, the rest goes clear, and the stroke takes the card's ink. */
   function reink(img){ try{ const w=img.naturalWidth,h=img.naturalHeight; if(!w) return; const c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d'); x.drawImage(img,0,0);
-    const d=x.getImageData(0,0,w,h), px=d.data; if(px[3]<250) return;   /* already transparent strokes */
+    const d=x.getImageData(0,0,w,h), px=d.data;
+    /* a drawing with a clear ground is already strokes: leave it exactly as drawn */
+    if(px[3]<250||px[(w-1)*4+3]<250||px[(h-1)*w*4+3]<250||px[(w*h-1)*4+3]<250) return;
     const ink=img.dataset.ink||'#14171B', r=parseInt(ink.slice(1,3),16), g=parseInt(ink.slice(3,5),16), b=parseInt(ink.slice(5,7),16);
     for(let i=0;i<px.length;i+=4){ const l=(0.299*px[i]+0.587*px[i+1]+0.114*px[i+2]); const a=Math.max(0,Math.min(255,(120-l)*3)); px[i]=r; px[i+1]=g; px[i+2]=b; px[i+3]=a; }
     x.putImageData(d,0,0); img.src=c.toDataURL(); }catch(e){} }
