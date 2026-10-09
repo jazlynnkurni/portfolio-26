@@ -481,11 +481,11 @@ html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
 
     <!-- Sandbox is the experiments app, a separate Next build. Absolute in dev because it
          runs on its own port; this is the one line that changes when the two ship together. -->
+    <a href="#work">Projects</a><a href="https://portfolio-experiments.vercel.app/sandbox">Sandbox</a><a href="/art-gallery.html">Art Gallery</a><a href="/about.html">About</a>
     <button id="theme" aria-label="Switch colour mode" title="Colour mode">
       <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-    </button>
-    <a href="#work">Projects</a><a href="https://portfolio-experiments.vercel.app/sandbox">Sandbox</a><a href="/art-gallery.html">Art Gallery</a><a href="/about.html">About</a></span>
+    </button></span>
 </div></nav>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -769,7 +769,7 @@ const FLICK = ['var(--flick-a)', 'var(--flick-b)'];
 const LIT_MAX = 4;
 const NEAR = 92;      // NEAR: pointer radius, in px (cursor mode only, retired)
 /* LOCKED 2026-09-03: random. The cursor behaviour was tried and dropped. */
-const mode = 'random'; let litNow = 0, t0 = 0;
+const mode = 'random'; let litNow = 0, t0 = 0, calm = 0;
 let px = -9999, py = -9999;
 
 /* the pointer in the stack's own coordinates. Read once per move rather than per
@@ -799,6 +799,10 @@ function ink(c, on) {
   /* THE ARRIVAL. A wave that crosses the wall once and is never seen again. */
   const arriving = age < 2.6;
   const front = age * 46;                // px per second, down and to the right
+  /* THE WALL SETTLES. After the arrival the breath eases to rest and the random ink stops,
+     so the headline can be read; it comes alive again while the pointer is over it. */
+  const hovering = px > -9000;
+  calm += (((age > 3.4 && !hovering) ? 1 : 0) - calm) * 0.035;
 
   for(const L of lines){
     let x = 0;                           // walk the row, accumulating the widths we set
@@ -808,7 +812,7 @@ function ink(c, on) {
          long its letters make it: the varying line lengths ARE the composition. The
          justified version (every row the container's width) was tried and dropped. */
       const k=.5+.5*Math.sin(t*SPEED*Math.PI*2 + L.seed*DRIFT + c.ci*DRIFT*1.7);
-      const w = c.base + k*k*STRETCH;
+      const w = c.base + (k*k*(1-calm) + 0.25*calm)*STRETCH;
       c.cell.style.width = w.toFixed(1)+'px';
 
       if(arriving){
@@ -821,6 +825,8 @@ function ink(c, on) {
       if(mode === 'cursor'){
         const dx = (x + w/2) - px, dy = cy - py;
         ink(c, dx*dx + dy*dy < NEAR*NEAR);
+      } else if(calm > 0.6){
+        if(c.lit){ ink(c,false); litNow--; }
       } else {
         if(c.lit && t>c.until){ ink(c,false); litNow--; c.next = t + 6 + Math.random()*26; }
         else if(!c.lit && t>c.next){
@@ -939,9 +945,9 @@ function lead(i,draw){
   const cx=C.left-P.left, top=C.top-P.top, bot=C.bottom-P.top;
   const cy=Math.max(top+26,Math.min(bot-26,y));
   const yrX=cx-14; lyr.textContent=PROJECTS[i].y; lyr.style.left=yrX+'px'; lyr.style.top=cy+'px';
-  const x1=yrX-lyr.offsetWidth-12, gx=cx-56;
+  const x1=Math.min(yrX-lyr.offsetWidth-12, P.width-8);
   if(x1<=x0+12){ lpath.setAttribute('d',''); return; }
-  lpath.setAttribute('d', cy===y ? `M${x0} ${y}H${x1}` : `M${x0} ${y}H${gx}V${cy}H${x1}`);
+  lpath.setAttribute('d', `M${x0} ${y}L${x1} ${cy}`);
   if(draw){ lclip.style.transition='none'; lclip.style.clipPath=`inset(-8px calc(100% - ${x0}px) -8px -8px)`; lclip.getBoundingClientRect();
     lclip.style.transition=''; }
   lclip.style.clipPath='inset(-8px -8px -8px -8px)';
