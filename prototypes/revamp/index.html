@@ -466,10 +466,17 @@ html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
 .marks h2{font:500 clamp(22px,2.6vw,30px)/1.2 var(--jak);letter-spacing:-.012em;margin:12px 0 0;max-width:22ch}
 .marks .go{font:500 13.5px var(--jak);color:var(--ink);text-decoration:none;border:1px solid var(--hair);border-radius:999px;padding:10px 16px;transition:background .16s ease,color .16s ease,border-color .16s ease;white-space:nowrap}
 .marks .go:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.marks .belt{margin-top:28px;overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.marks .belt{margin-top:28px;padding:14px 0;overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
 .marks .row{display:flex;gap:12px;width:max-content;animation:belt var(--belt,40s) linear infinite;will-change:transform}
 .marks .belt:hover .row{animation-play-state:paused}
-.marks .row>div{flex:0 0 220px}
+/* one card forward, the rest a step back: the hovered card lifts and the others recede, on the
+   site's overshoot ease, so picking one out reads as depth rather than a highlight */
+.marks .row>div{transition:transform .5s cubic-bezier(.33,1.18,.37,1),opacity .4s ease}
+.marks .row:hover>div{transform:scale(.94) translateY(6px);opacity:.72}
+.marks .row>div:hover{transform:scale(1.08) translateY(-6px);opacity:1;z-index:2}
+.marks .row>div:hover .card{box-shadow:0 18px 40px -12px rgba(0,0,0,.35)}
+.marks .card{transition:opacity .4s ease,transform .4s ease,box-shadow .5s cubic-bezier(.33,1.18,.37,1)}
+.marks .row>div{flex:0 0 220px;position:relative}
 @keyframes belt{to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){.marks .row{animation:none}}
 .marks .card{position:relative;width:100%;aspect-ratio:680/380;border-radius:8px;overflow:hidden;outline:1px solid var(--outline);outline-offset:-1px;
