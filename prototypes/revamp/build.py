@@ -301,11 +301,11 @@ html.sheet body{background:transparent}
 NAV = """<nav class="grounded"><div class="wrap in">
   <site-mark href="/"></site-mark>
   <span class="links">
+    <a class="l" href="/#work">Projects</a><a class="l" href="https://portfolio-experiments.vercel.app/sandbox">Sandbox</a><a class="l" href="/art-gallery.html">Art Gallery</a><a class="l" href="/about.html">About</a>
     <button id="theme" aria-label="Switch colour mode" title="Colour mode">
       <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-    </button>
-    <a class="l" href="/#work">Projects</a><a class="l" href="https://portfolio-experiments.vercel.app/sandbox">Sandbox</a><a class="l" href="/art-gallery.html">Art Gallery</a><a class="l" href="/about.html">About</a></span>
+    </button></span>
 </div></nav>"""
 THEME_HEAD = """<script>(function(){if(new URLSearchParams(location.search).get('sheet')=='1')document.documentElement.classList.add('sheet');const q=new URLSearchParams(location.search).get('theme');let t=q||localStorage.getItem('theme');
 if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>"""
@@ -783,7 +783,9 @@ somia = case('SomiaCX','08',[
 
 # ------------------------------------------------------------------ 404 / in the making
 FOUR_CSS = """
-.four{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 0 96px}
+/* the figure breathes inside a fixed box; the text under it never moves */
+.four{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 0 96px;overflow-x:hidden}
+.num{overflow:hidden;max-width:100%}
 /* the numerals are three of the hero's cells, at display size. Same rules, same stems,
    same breath, same random ink. Nothing on this page is a new object. */
 .num{display:flex;align-items:stretch}
@@ -806,11 +808,14 @@ FOUR_JS = """<script>
     d.innerHTML=`The ${p} case study is being written up. If you would like to hear about it before it is public, reach out at <a href="mailto:jazkurnz06@gmail.com">jazkurnz06@gmail.com</a>.`;
     document.title=`${p}, in the making — Jazlynn Kurniandra`; }
   /* the hero grid, verbatim, for three glyphs */
-  const FS=Math.min(180,Math.max(100,innerWidth*.18)), STRETCH=FS*2.2, SPEED=.23, DRIFT=.74;
+  const FS=Math.min(180,Math.max(100,innerWidth*.18)), SPEED=.23, DRIFT=.74;
   const gauge=document.createElement('canvas').getContext('2d'); gauge.font=`400 ${FS}px "Helvetica Neue",Helvetica,Arial,sans-serif`;
   const row=document.getElementById('num'); const cells=[...'404'].map((ch,ci)=>{
     const c=document.createElement('span'); c.className='cell'; const s=document.createElement('span'); s.className='ch'; s.textContent=ch; c.appendChild(s); row.appendChild(c);
     return {cell:c,glyph:s,base:Math.ceil(gauge.measureText(ch).width)+12,ci,next:1+Math.random()*4,until:0,lit:false,col:Math.random()<.5?'var(--flick-a)':'var(--flick-b)'}; });
+  /* the three glyphs at full breath fit the row, so the row never overflows and nothing below it shifts */
+  const roomW=()=>row.clientWidth||innerWidth-60; let STRETCH=Math.max(24,Math.min(FS*2.2,(roomW()-cells.reduce((a,c)=>a+c.base,0))/3-2));
+  addEventListener('resize',()=>{ STRETCH=Math.max(24,Math.min(FS*2.2,(roomW()-cells.reduce((a,c)=>a+c.base,0))/3-2)); });
   let lit=0; const ink=(c,on)=>{ if(c.lit===on) return; c.lit=on; c.cell.style.background=on?c.col:'transparent'; c.glyph.style.color=on?'var(--paper)':''; };
   (function tick(now){ const t=(now||0)/1000;
     for(const c of cells){ const k=.5+.5*Math.sin(t*SPEED*Math.PI*2+c.ci*DRIFT*1.7); c.cell.style.width=(c.base+k*k*STRETCH).toFixed(1)+'px';
