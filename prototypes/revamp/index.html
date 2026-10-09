@@ -829,7 +829,8 @@ function ink(c, on) {
   /* THE WALL SETTLES. After the arrival the breath eases to rest and the random ink stops,
      so the headline can be read; it comes alive again while the pointer is over it. */
   const hovering = px > -9000;
-  calm += (((age > 3.4 && !hovering) ? 1 : 0) - calm) * 0.035;
+  /* five seconds of life after the page is up, then a slow glide to rest over about three more */
+  calm += (((age > 5 && !hovering) ? 1 : 0) - calm) * 0.008;
 
   for(const L of lines){
     let x = 0;                           // walk the row, accumulating the widths we set
