@@ -460,6 +460,25 @@ html.sheet-open .sheet{transform:none}
 html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
 @media (max-width:760px){.sheet{left:12px;right:12px;top:64px;bottom:12px;border-radius:18px}.sheet-tabs{top:14px}}
 
+/* ---------- the wall, at the foot of the home: the latest marks, and the way to leave one ---------- */
+.marks{position:relative;z-index:2;background:var(--paper);padding:40px 0 72px}
+.marks .head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.marks h2{font:500 clamp(22px,2.6vw,30px)/1.2 var(--jak);letter-spacing:-.012em;margin:12px 0 0;max-width:22ch}
+.marks .go{font:500 13.5px var(--jak);color:var(--ink);text-decoration:none;border:1px solid var(--hair);border-radius:999px;padding:10px 16px;transition:background .16s ease,color .16s ease,border-color .16s ease;white-space:nowrap}
+.marks .go:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.marks .row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:28px}
+.marks .card{position:relative;width:100%;aspect-ratio:680/380;border-radius:8px;overflow:hidden;outline:1px solid var(--outline);outline-offset:-1px;
+  opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+.marks .card.in{opacity:1;transform:none}
+.marks .card img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
+.marks .card .mono{position:absolute;top:6px;left:7px;font:600 8px var(--jak);letter-spacing:.08em;pointer-events:none;opacity:.9}
+.marks .card::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;background-image:var(--stock);background-size:190px 190px;mix-blend-mode:overlay;opacity:.5}
+.marks .card.empty{outline:1px dashed var(--hair);background:transparent}
+.marks .card.empty::after{display:none}
+.marks .who{display:block;font:300 11.5px var(--hel);color:var(--ink3);margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:900px){.marks .row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:640px){.marks .row{grid-template-columns:repeat(2,1fr)}}
+
 </style></head><body>
 
 <script>
@@ -535,6 +554,14 @@ html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
     <svg class="leader" id="leader" aria-hidden="true"><g class="leader-clip" id="leader-clip"><path id="leader-path" d=""/></g></svg>
     <span class="leader-yr" id="leader-yr" aria-hidden="true"></span>
   </div>
+</div></section>
+
+<!-- THE WALL, AT THE FOOT. The gallery is the site's best interaction and it was behind a tab; the
+     latest six marks are shown here, live, with the door to leave one. -->
+<section class="marks" id="marks"><div class="wrap">
+  <div class="head"><div><div class="label">Art gallery</div><h2>Everyone has an artist inside of them.</h2></div>
+    <a class="go" href="/art-gallery.html" data-cur="leave your mark">Leave your mark &rarr;</a></div>
+  <div class="row" id="marks-row"></div>
 </div></section>
 
 <footer><div class="wrap">
@@ -978,6 +1005,53 @@ show(0);
   f(); setInterval(f,1000);})();
 </script>
 
+<script>
+/* ---------- the latest marks: fetched when the strip comes into view ---------- */
+(function(){
+  const row=document.getElementById('marks-row'); if(!row) return;
+  const STOCK={gold:'#A99939',oxblood:'#340414',charcoal:'#1C1A17',paper:'#FAF9F7'};
+  const OLD={orange:'gold',blue:'charcoal',clay:'oxblood',green:'gold',purple:'oxblood'};
+  const tone=c=>STOCK[c]?c:(OLD[c]||['gold','oxblood','charcoal','paper'][(String(c||'').length+3)%4]);
+  const INK=c=>tone(c)==='paper'?'#14171B':'#FAF9F7';
+  const esc=s=>String(s||'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+  /* a drawing from the old site has its ground baked in; it is read as strokes in the card's ink */
+  function reink(img){ try{ const w=img.naturalWidth,h=img.naturalHeight; if(!w) return; const c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d'); x.drawImage(img,0,0);
+    const d=x.getImageData(0,0,w,h), px=d.data; if(px[3]<250||px[(w-1)*4+3]<250||px[(h-1)*w*4+3]<250||px[(w*h-1)*4+3]<250) return;
+    const ink=img.dataset.ink, r=parseInt(ink.slice(1,3),16), g=parseInt(ink.slice(3,5),16), b=parseInt(ink.slice(5,7),16);
+    for(let i=0;i<px.length;i+=4){ const l=(0.299*px[i]+0.587*px[i+1]+0.114*px[i+2]); const a=Math.max(0,Math.min(255,(120-l)*3)); px[i]=r; px[i+1]=g; px[i+2]=b; px[i+3]=a; }
+    x.putImageData(d,0,0); img.src=c.toDataURL(); }catch(e){} }
+  const N=6; for(let i=0;i<N;i++){ const e=document.createElement('div'); e.innerHTML='<div class="card empty"></div><span class="who">&nbsp;</span>'; row.appendChild(e); }
+  (function stock(){
+    const N=256, cv=document.createElement('canvas'); cv.width=cv.height=N; const c=cv.getContext('2d');
+    const hash=(x,y,s)=>{ const n=Math.sin((x%N)*127.1+(y%N)*311.7+s*74.7)*43758.5453; return n-Math.floor(n); };
+    const swell=(x,y,f,ph)=>Math.sin((x/N)*6.2832*f+ph)*Math.sin((y/N)*6.2832*f+ph*1.7);
+    const h=new Float32Array(N*N);
+    for(let y=0;y<N;y++) for(let x=0;x<N;x++) h[y*N+x]=(hash(x,y,6)-.5)*.2+(hash(x>>1,y>>1,12)-.5)*.26+swell(x,y,3,.2)*.08;
+    const L=[-0.58,-0.66,0.48], m=Math.hypot(...L); L[0]/=m; L[1]/=m; L[2]/=m;
+    const at=(x,y)=>h[((y+N)%N)*N+((x+N)%N)];
+    const img=c.createImageData(N,N), d=img.data;
+    for(let y=0;y<N;y++) for(let x=0;x<N;x++){
+      const dx=(at(x+1,y)-at(x-1,y))*46, dy=(at(x,y+1)-at(x,y-1))*46, nz=1, nm=Math.hypot(dx,dy,nz);
+      const diff=Math.max(0,(-dx/nm)*L[0]+(-dy/nm)*L[1]+(nz/nm)*L[2]);
+      /* a breath of relief, not a rasp: the lab's postcard sits at about a third of this gain's first cut */
+      const v=Math.max(0,Math.min(255,128+(diff-0.74)*110));
+      const o=(y*N+x)*4; d[o]=d[o+1]=d[o+2]=v; d[o+3]=255;
+    }
+    c.putImageData(img,0,0);
+    document.documentElement.style.setProperty('--stock',`url(${cv.toDataURL()})`);
+  })();
+  let done=false;
+  async function fill(){ if(done) return; done=true;
+    let cards=[]; try{ const r=await fetch('/api/gallery/cards',{cache:'no-store'}); const j=await r.json(); cards=(Array.isArray(j.cards)?j.cards:[]).slice(0,N); }catch(e){}
+    cards.forEach((c,i)=>{ const cell=row.children[i]; if(!cell) return;
+      cell.innerHTML=`<div class="card" style="background:${STOCK[tone(c.color)]}"><img src="${c.drawing}" alt="" data-ink="${INK(c.color)}"><span class="mono" style="color:${INK(c.color)}">JK</span></div><span class="who" title="${esc(c.name)}">${esc(c.name)}</span>`;
+      const img=cell.querySelector('img'); img.addEventListener('load',e=>reink(e.target),{once:true});
+      setTimeout(()=>cell.querySelector('.card').classList.add('in'),80+i*60); });
+  }
+  window.__fillMarks=fill;
+  if('IntersectionObserver' in window){ const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ fill(); io.disconnect(); } },{rootMargin:'400px'}); io.observe(row); } else fill();
+})();
+</script>
 <script>
 /* ---------- the sheet: a case study over the home ---------- */
 (function(){
