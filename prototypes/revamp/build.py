@@ -785,13 +785,14 @@ somia = case('SomiaCX','08',[
 FOUR_CSS = """
 /* the figure breathes inside a fixed box; the text under it never moves */
 .four{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 0 96px;overflow-x:hidden}
-.num{overflow:hidden;max-width:100%}
+.num{overflow:hidden;max-width:100%;padding:1px 0 0 1px}
 /* the numerals are three of the hero's cells, at display size. Same rules, same stems,
    same breath, same random ink. Nothing on this page is a new object. */
 .num{display:flex;align-items:stretch}
-.num .cell{flex:0 0 auto;height:clamp(120px,22vw,220px);border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);border-left:1px solid var(--hair);
+/* the same box as the hero's cells: all four sides, seams overlapping, nothing clipped */
+.num .cell{flex:0 0 auto;height:clamp(120px,22vw,220px);border:1px solid var(--hair);margin:-1px 0 0 -1px;
   display:flex;align-items:center;overflow:hidden;will-change:width;transition:background 140ms ease;padding:0}
-.num .cell:last-child{border-right:1px solid var(--hair)}
+
 .num .ch{font:400 clamp(100px,18vw,180px)/1 var(--hel);letter-spacing:-.02em;color:var(--ink);padding-left:6px;transition:color 140ms ease}
 .four h1{font-size:clamp(22px,2.6vw,30px);line-height:1.2;margin-top:48px;max-width:26ch}
 .four p{font-size:17px;line-height:1.6;color:var(--ink2);margin-top:16px;max-width:52ch}
