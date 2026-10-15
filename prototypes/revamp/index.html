@@ -324,9 +324,6 @@ footer .in a{font-size:13px}
    that is not 16:9 loses a sliver at its edges rather than leaving a gap. */
 .preview video,.preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
 .preview video.on,.preview img.on{display:block}
-/* STEALTH. Clover is under wraps, so its clip plays behind frosted glass: the motion reads, the
-   interface does not. Scaled a hair so the blur's soft edge never shows the stage's corners. */
-.preview .stealth{filter:blur(16px) saturate(.9);transform:scale(1.1)}
 /* THE CLIPS WERE SHOT FOR ANOTHER SITE. They carry that site's beige ground baked in, so
    laid flat they would read as pasted cards. Multiplied into the plate the beige becomes
    this paper, the white of a phone screen becomes the plate, and only the pigment of the
@@ -932,14 +929,13 @@ document.querySelectorAll('canvas[data-lazy]').forEach(cv=>mount(cv,cv.dataset.l
 
 /* ---------- projects: rows, tags, hover preview ---------- */
 const PROJECTS=[
-  {n:'01',t:'Clover',          y:'2026',cur:'contact jazkurnz06@gmail.com for info, still in stealth',tags:['0 → 1','AI','Mobile'], role:'Founding design engineer', st:'0 to 1, in development',   s:'Designing the HUD interface and shipping the iOS companion app',        href:'/soon.html?p=Clover',           v:'/videos/trim/work-clover.mp4',  img:'/videos/trim/work-clover.jpg', stealth:true},
-  {n:'02',t:'Fostr',           y:'2026',cur:'internal platform and branding',tags:['0 → 1','Web'], role:'Founding design engineer', st:'Live',   s:'Building the brand, landing site and internal platform from 0 to 1',    href:'https://fostr.page/', ext:true, v:'/videos/work-fostr.mp4',   img:'/videos/work-fostr.jpg'},
-  {n:'03',t:'Halodoc',         y:'2026',cur:'product-centric internship and agentic prompting',tags:['AI','Mobile'], role:'Product designer', st:'Shipped to 20M+ users',                 s:'Designing the onboarding journey for AI Prescription on mobile',         href:'/soon.html?p=Halodoc',          v:'/videos/trim/work-halodoc.mp4', img:'/videos/trim/work-halodoc.jpg'},
-  {n:'04',t:'Conduit Commerce',y:'2026',cur:'project lead for B2B SaaS redesign',tags:['AI','Web'], role:'Product design lead', st:'Shipped',                 s:'Designing and shipping a B2B SaaS website for an AI-feature launch',     href:'/work/conduit-commerce.html',  v:'/videos/trim/work-conduit.mp4', img:'/videos/trim/work-conduit.jpg'},
-  {n:'05',t:'Second Self',     y:'2026',cur:'YHacks #1 winner for Personal AI Agent',tags:['Personal projects','AI'], role:'Design engineer', st:'YHacks \u201926, 1st place',                            s:'Building an AI agent that lives on your own Mac',                        href:'https://devpost.com/software/second-self-giwmxh', ext:true, v:'/videos/second-self.mp4', img:'/videos/second-self.jpg'},
-  {n:'06',t:'Manus AI',        y:'2025',cur:'we got acquired by meta during the process lol',tags:['AI','Web'], role:'Product designer', st:'Approved, in development',       s:'Designing an AI community platform to drive adoption',                   href:'/work/manus-ai.html',          v:'/videos/work-manus.mp4',   img:'/videos/work-manus.jpg'},
-  {n:'07',t:'Olive',           y:'2025',cur:'NYU Designathon winner',tags:['Personal projects','AI','Mobile'], role:'Product designer', st:'NYU UX Design-a-thon \u201925, 2nd place',                            s:'Designing an AI-powered carbon tracking app',                            href:'https://drive.google.com/file/d/15-mX_sIkPU_Ww4R1UueWG10Wv9CQbhEy/view', ext:true, v:'/videos/trim/work-olive.mp4', img:'/videos/trim/work-olive.jpg'},
-  {n:'08',t:'SomiaCX',         y:'2024',cur:'my first product design internship!!!',tags:['0 → 1','Mobile'], role:'Product designer', st:'0 to 1',                  s:'Architecting a unified UVP system for three financial subsidiaries',     href:'/work/somia-cx.html',          img:'/images/trim/work-somiacx.png'},
+  {n:'01',t:'Fostr',           y:'2026',cur:'internal platform and branding',tags:['0 → 1','Web'], role:'Founding design engineer', st:'Live',   s:'Building the brand, landing site and internal platform from 0 to 1',    href:'https://fostr.page/', ext:true, v:'/videos/work-fostr.mp4',   img:'/videos/work-fostr.jpg'},
+  {n:'02',t:'Halodoc',         y:'2026',cur:'product-centric internship and agentic prompting',tags:['AI','Mobile'], role:'Product designer', st:'Shipped to 20M+ users',                 s:'Designing the onboarding journey for AI Prescription on mobile',         href:'/soon.html?p=Halodoc',          v:'/videos/trim/work-halodoc.mp4', img:'/videos/trim/work-halodoc.jpg'},
+  {n:'03',t:'Conduit Commerce',y:'2026',cur:'project lead for B2B SaaS redesign',tags:['AI','Web'], role:'Product design lead', st:'Shipped',                 s:'Designing and shipping a B2B SaaS website for an AI-feature launch',     href:'/work/conduit-commerce.html',  v:'/videos/trim/work-conduit.mp4', img:'/videos/trim/work-conduit.jpg'},
+  {n:'04',t:'Second Self',     y:'2026',cur:'YHacks #1 winner for Personal AI Agent',tags:['Personal projects','AI'], role:'Design engineer', st:'YHacks \u201926, 1st place',                            s:'Building an AI agent that lives on your own Mac',                        href:'https://devpost.com/software/second-self-giwmxh', ext:true, v:'/videos/second-self.mp4', img:'/videos/second-self.jpg'},
+  {n:'05',t:'Manus AI',        y:'2025',cur:'we got acquired by meta during the process lol',tags:['AI','Web'], role:'Product designer', st:'Approved, in development',       s:'Designing an AI community platform to drive adoption',                   href:'/work/manus-ai.html',          v:'/videos/work-manus.mp4',   img:'/videos/work-manus.jpg'},
+  {n:'06',t:'Olive',           y:'2025',cur:'NYU Designathon winner',tags:['Personal projects','AI','Mobile'], role:'Product designer', st:'NYU UX Design-a-thon \u201925, 2nd place',                            s:'Designing an AI-powered carbon tracking app',                            href:'https://drive.google.com/file/d/15-mX_sIkPU_Ww4R1UueWG10Wv9CQbhEy/view', ext:true, v:'/videos/trim/work-olive.mp4', img:'/videos/trim/work-olive.jpg'},
+  {n:'07',t:'SomiaCX',         y:'2024',cur:'my first product design internship!!!',tags:['0 → 1','Mobile'], role:'Product designer', st:'0 to 1',                  s:'Architecting a unified UVP system for three financial subsidiaries',     href:'/work/somia-cx.html',          img:'/images/trim/work-somiacx.png'},
 ];
 const rows=document.getElementById('rows'), tags=document.getElementById('tags');
 const pvT=document.getElementById('pv-t'), pvS=document.getElementById('pv-s'), pvR=document.getElementById('pv-r');
@@ -959,7 +955,6 @@ function player(i){
   if(players[i]) return players[i]; const p=PROJECTS[i]; let el;
   if(p.v){ el=document.createElement('video'); el.muted=true; el.loop=true; el.playsInline=true; el.preload='auto'; el.poster=p.img||''; el.src=p.v; }
   else { el=document.createElement('img'); el.src=p.img; el.alt=''; }
-  if(p.stealth) el.classList.add('stealth');
   stage.appendChild(el); players[i]=el; return el;
 }
 const pvV={pause(){players.forEach(e=>e.tagName==='VIDEO'&&e.pause());},classList:{contains(){return players.some(e=>e.classList.contains('on')&&e.tagName==='VIDEO');}},play(){const e=players[pvCur]; if(e&&e.tagName==='VIDEO') return e.play(); return Promise.resolve();}};

@@ -550,14 +550,13 @@ def THANKS():
             '<p>I design better than I summarize. Let\'s fix that over a call or interview. Reach out <a href="mailto:jazkurnz06@gmail.com">here</a>.</p></div></div>')
 
 PROJECTS = [
-  dict(n='01', t='Clover',           y='2026', href='/soon.html?p=Clover',            s='Designing the HUD interface and shipping the iOS companion app'),
-  dict(n='02', t='Fostr',            y='2026', href='https://fostr.page/', ext=True, s='Building the brand, landing site and internal platform from 0 to 1'),
-  dict(n='03', t='Halodoc',          y='2026', href='/soon.html?p=Halodoc',           s='Designing the onboarding journey for AI Prescription on mobile'),
-  dict(n='04', t='Conduit Commerce', y='2026', href='/work/conduit-commerce.html',  s='Designing and shipping a B2B SaaS website for an AI-feature launch'),
-  dict(n='05', t='Second Self',      y='2026', href='https://devpost.com/software/second-self-giwmxh', ext=True, s='Building an AI agent that lives on your own Mac'),
-  dict(n='06', t='Manus AI',         y='2025', href='/work/manus-ai.html',          s='Designing an AI community platform to drive adoption'),
-  dict(n='07', t='Olive',            y='2025', href='https://drive.google.com/file/d/15-mX_sIkPU_Ww4R1UueWG10Wv9CQbhEy/view', ext=True, s='Designing an AI-powered carbon tracking app'),
-  dict(n='08', t='SomiaCX',          y='2024', href='/work/somia-cx.html',          s='Architecting a unified UVP system for three financial subsidiaries'),
+  dict(n='01', t='Fostr',            y='2026', href='https://fostr.page/', ext=True, s='Building the brand, landing site and internal platform from 0 to 1'),
+  dict(n='02', t='Halodoc',          y='2026', href='/soon.html?p=Halodoc',           s='Designing the onboarding journey for AI Prescription on mobile'),
+  dict(n='03', t='Conduit Commerce', y='2026', href='/work/conduit-commerce.html',  s='Designing and shipping a B2B SaaS website for an AI-feature launch'),
+  dict(n='04', t='Second Self',      y='2026', href='https://devpost.com/software/second-self-giwmxh', ext=True, s='Building an AI agent that lives on your own Mac'),
+  dict(n='05', t='Manus AI',         y='2025', href='/work/manus-ai.html',          s='Designing an AI community platform to drive adoption'),
+  dict(n='06', t='Olive',            y='2025', href='https://drive.google.com/file/d/15-mX_sIkPU_Ww4R1UueWG10Wv9CQbhEy/view', ext=True, s='Designing an AI-powered carbon tracking app'),
+  dict(n='07', t='SomiaCX',          y='2024', href='/work/somia-cx.html',          s='Architecting a unified UVP system for three financial subsidiaries'),
 ]
 def MORE(current):
     others=[p for p in PROJECTS if p['href'].startswith('/work/') and p['t']!=current][:2]
@@ -972,7 +971,7 @@ DIE_JS = """<script>
 FACES = ['bagels','camera','dog-beach','mun','snowboarding','teaching']
 FOCUS = ['Design engineering','Product design','Product management','HCI research','Brand and identity','Illustration and motion']
 WORKED = [  # dates from the resume (and the confirmed Eden / Halodoc dates); newest first
-  ('2026','Eden','Founding design engineer','Designing the HUD interface and shipping the iOS companion app for Clover, the smartglasses.'),
+  ('2026','Eden','Founding design engineer','Designing the HUD interface and shipping the iOS companion app for a smartglasses company in stealth.'),
   ('2026','Fostr','Founding design engineer','Building the brand, landing site and internal platform from 0 to 1.'),
   ('2026','Halodoc','Product intern','Designing the onboarding journey for AI Prescription on mobile, for 20M+ users.'),
   ('2026','Conduit Commerce','Product design lead','Designing and shipping a B2B SaaS website for an AI feature launch.'),
