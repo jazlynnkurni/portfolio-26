@@ -324,6 +324,9 @@ footer .in a{font-size:13px}
    that is not 16:9 loses a sliver at its edges rather than leaving a gap. */
 .preview video,.preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
 .preview video.on,.preview img.on{display:block}
+/* STEALTH. Clover is under wraps, so its clip plays behind frosted glass: the motion reads, the
+   interface does not. Scaled a hair so the blur's soft edge never shows the stage's corners. */
+.preview .stealth{filter:blur(16px) saturate(.9);transform:scale(1.1)}
 /* THE CLIPS WERE SHOT FOR ANOTHER SITE. They carry that site's beige ground baked in, so
    laid flat they would read as pasted cards. Multiplied into the plate the beige becomes
    this paper, the white of a phone screen becomes the plate, and only the pigment of the
@@ -929,7 +932,7 @@ document.querySelectorAll('canvas[data-lazy]').forEach(cv=>mount(cv,cv.dataset.l
 
 /* ---------- projects: rows, tags, hover preview ---------- */
 const PROJECTS=[
-  {n:'01',t:'Clover',          y:'2026',cur:'smartglasses and dictation rings, super fun stuff',tags:['0 → 1','AI','Mobile'], role:'Founding design engineer', st:'0 to 1, in development',   s:'Designing the HUD interface and shipping the iOS companion app',        href:'/soon.html?p=Clover',           v:'/videos/trim/work-clover.mp4',  img:'/videos/trim/work-clover.jpg'},
+  {n:'01',t:'Clover',          y:'2026',cur:'contact jazkurnz06@gmail.com for info, still in stealth',tags:['0 → 1','AI','Mobile'], role:'Founding design engineer', st:'0 to 1, in development',   s:'Designing the HUD interface and shipping the iOS companion app',        href:'/soon.html?p=Clover',           v:'/videos/trim/work-clover.mp4',  img:'/videos/trim/work-clover.jpg', stealth:true},
   {n:'02',t:'Fostr',           y:'2026',cur:'internal platform and branding',tags:['0 → 1','Web'], role:'Founding design engineer', st:'Live',   s:'Building the brand, landing site and internal platform from 0 to 1',    href:'https://fostr.page/', ext:true, v:'/videos/work-fostr.mp4',   img:'/videos/work-fostr.jpg'},
   {n:'03',t:'Halodoc',         y:'2026',cur:'product-centric internship and agentic prompting',tags:['AI','Mobile'], role:'Product designer', st:'Shipped to 20M+ users',                 s:'Designing the onboarding journey for AI Prescription on mobile',         href:'/soon.html?p=Halodoc',          v:'/videos/trim/work-halodoc.mp4', img:'/videos/trim/work-halodoc.jpg'},
   {n:'04',t:'Conduit Commerce',y:'2026',cur:'project lead for B2B SaaS redesign',tags:['AI','Web'], role:'Product design lead', st:'Shipped',                 s:'Designing and shipping a B2B SaaS website for an AI-feature launch',     href:'/work/conduit-commerce.html',  v:'/videos/trim/work-conduit.mp4', img:'/videos/trim/work-conduit.jpg'},
@@ -956,6 +959,7 @@ function player(i){
   if(players[i]) return players[i]; const p=PROJECTS[i]; let el;
   if(p.v){ el=document.createElement('video'); el.muted=true; el.loop=true; el.playsInline=true; el.preload='auto'; el.poster=p.img||''; el.src=p.v; }
   else { el=document.createElement('img'); el.src=p.img; el.alt=''; }
+  if(p.stealth) el.classList.add('stealth');
   stage.appendChild(el); players[i]=el; return el;
 }
 const pvV={pause(){players.forEach(e=>e.tagName==='VIDEO'&&e.pause());},classList:{contains(){return players.some(e=>e.classList.contains('on')&&e.tagName==='VIDEO');}},play(){const e=players[pvCur]; if(e&&e.tagName==='VIDEO') return e.play(); return Promise.resolve();}};
