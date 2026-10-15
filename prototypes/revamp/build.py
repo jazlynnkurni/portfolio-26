@@ -971,7 +971,7 @@ DIE_JS = """<script>
 FACES = ['bagels','camera','dog-beach','mun','snowboarding','teaching']
 FOCUS = ['Design engineering','Product design','Product management','HCI research','Brand and identity','Illustration and motion']
 WORKED = [  # dates from the resume (and the confirmed Eden / Halodoc dates); newest first
-  ('2026','Eden','Founding design engineer','Designing the HUD interface and shipping the iOS companion app for a smartglasses company in stealth.'),
+  ('2026','Eden','Design engineer','Designing the HUD interface and shipping the iOS companion app for a smartglasses company in stealth.'),
   ('2026','Fostr','Founding design engineer','Building the brand, landing site and internal platform from 0 to 1.'),
   ('2026','Halodoc','Product intern','Designing the onboarding journey for AI Prescription on mobile, for 20M+ users.'),
   ('2026','Conduit Commerce','Product design lead','Designing and shipping a B2B SaaS website for an AI feature launch.'),
