@@ -149,7 +149,7 @@ nav a:active{transform:scale(.96)}
 [data-theme="dark"] #theme .sun{display:none}
 :root:not([data-theme="dark"]) #theme .moon{display:none}
 @media(max-width:640px){nav .in{padding-top:16px} nav a{padding:9px 10px;font-size:12.5px}}
-@media(max-width:480px){nav .in{flex-direction:column;align-items:flex-start;gap:10px} nav a{padding:8px 9px;font-size:12px}}
+@media(max-width:480px){nav .wrap{padding:0 20px} nav .in{padding-top:14px} nav::before{height:84px} nav .links{gap:2px;padding:3px 8px 3px 4px} nav a{padding:8px 9px;font-size:12.5px} #theme{width:34px;height:34px}}
 
 /* ---------------- hero: the locked letter grid ---------------- */
 .hero{padding:0}
@@ -339,7 +339,20 @@ footer .in a{font-size:13px}
 .pv-cap b{font:500 15px var(--jak);color:var(--ink)}
 .pv-cap i{font:500 11.5px var(--jak);font-style:normal;letter-spacing:.02em;color:var(--ink3);margin:1px 0 3px}
 .pv-cap span{font:300 12.5px/1.5 var(--hel);color:var(--ink2);max-width:36ch}
-@media(max-width:900px){.panel{grid-template-columns:1fr}.preview{position:static}}
+@media(max-width:900px){.panel{grid-template-columns:1fr}.preview,.leader,.leader-yr{display:none}}
+/* PHONES HAVE NO HOVER. The preview card only ever appears under a pointer, so below 900px each
+   title carries its own poster card instead: the same plate, the same 12px inset on all four sides. */
+.m-card{display:none}
+@media(max-width:900px){
+  .m-card{display:block;margin:10px 0 28px;padding:12px;border-radius:20px;background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px;text-decoration:none;color:inherit}
+  .m-card .st{display:block;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:var(--plate)}
+  .m-card img{width:100%;height:100%;object-fit:cover;display:block}
+  [data-theme="dark"] .m-card .st{outline:1px solid var(--outline);outline-offset:-1px}
+  .m-card .cap{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:12px 4px 2px;font:500 12px var(--jak);letter-spacing:.01em;color:var(--ink3)}
+  .m-card .cap b{font-weight:500;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .m-card .cap i{font-style:normal;white-space:nowrap}
+  .rows li:last-child .m-card{margin-bottom:0}
+}
 /* Concentric: outer = inner + padding. 14 + 18 = 32. */
 .card{border:1px solid var(--hair);border-radius:32px;padding:18px;background:var(--paper);
       text-decoration:none;color:inherit;display:flex;flex-direction:column;
@@ -458,7 +471,7 @@ html.sheet-full .sheet-act .i-in{display:block}
 html.sheet-open .sheet-bg,html.sheet-open .sheet{opacity:1;pointer-events:auto}
 html.sheet-open .sheet{transform:none}
 html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
-@media (max-width:760px){.sheet{left:12px;right:12px;top:64px;bottom:12px;border-radius:18px}.sheet-tabs{top:14px}}
+@media (max-width:760px){.sheet{left:12px;right:12px;top:64px;bottom:12px;border-radius:18px}.sheet-tabs{top:14px;justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;padding:0 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.sheet-tabs::-webkit-scrollbar{display:none}.sheet-tabs button{flex:0 0 auto;padding:8px 14px}}
 
 /* ---------- the wall, at the foot of the home: the latest marks, and the way to leave one ---------- */
 .marks{position:relative;z-index:2;background:var(--paper);padding:40px 0 72px}
@@ -940,7 +953,7 @@ const PROJECTS=[
 const rows=document.getElementById('rows'), tags=document.getElementById('tags');
 const pvT=document.getElementById('pv-t'), pvS=document.getElementById('pv-s'), pvR=document.getElementById('pv-r');
 rows.innerHTML=PROJECTS.map((p,i)=>`<li data-i="${i}" data-tags="${p.tags.join('|')}">
-  <a href="${p.href}"${p.ext?' target="_blank" rel="noopener"':''}${p.cur?` data-cur="${p.cur}"`:''}>${p.t}${p.ext?' <span class="ext"><svg class="ext-arrow" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>':''}</a></li>`).join('');
+  <a href="${p.href}"${p.ext?' target="_blank" rel="noopener"':''}${p.cur?` data-cur="${p.cur}"`:''}>${p.t}${p.ext?' <span class="ext"><svg class="ext-arrow" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>':''}</a><a class="m-card" href="${p.href}"${p.ext?' target="_blank" rel="noopener"':''} tabindex="-1" aria-hidden="true"><span class="st"><img src="${p.img||''}" alt="" loading="lazy" decoding="async"></span><span class="cap"><b>${p.role}</b><i>${p.st}</i></span></a></li>`).join('');
 /* one axis a recruiter actually filters on: the role, the surface, the proof */
 const ALL=['0 → 1','Personal projects','AI','Mobile','Web'];
 tags.innerHTML=['All',...ALL].map((t,i)=>`<button aria-pressed="${i===0}">${t}</button>`).join('');

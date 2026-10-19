@@ -109,4 +109,5 @@ Cursor: the native pointer is never shown on a fine-pointer device. The bead is 
 - **Sheet**: case studies open over the home, floating 36px off the bottom, tabs across the top, expand in place, close returns to the list.
 - **Case study**: eyebrow / h2 / lede head, then rows; three or more images are a deck or a row of three, never a grid; flow strip of four equal 1920:1042 plates; personas as filled green and purple discs; results as cells; thanks block with the signature.
 - **Gallery**: desk first (680×380 pad, four stocks), then the wall of 12 closed slots with your card first; the home carries a belt of the latest marks.
+- **Phones** (under 900px): the nav stays one row on a 20px gutter; the project list loses the hover preview and each title carries its own poster card (same plate, 12px inset); the sheet's tabs become one scrolling row; About's shelf boxes stay equal.
 - **About**: the flip phone (dithered screen, keys change the photo), focus areas, years-only timeline, the shelf of things kept close (one box each, hover lifts and colours, click for the next).
