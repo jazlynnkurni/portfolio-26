@@ -235,6 +235,17 @@ footer .in a{font-size:13px}
 @media(max-width:900px){
   .hero-grid{grid-template-columns:1fr;row-gap:36px}
 }
+/* THE DRUM. A phone has no room for ten rows at once, so the wall pins to the screen and the
+   scroll turns it: one row sits in the centre, each flick of the thumb slides it up and out
+   while the next fades in from below. The discs are off here and the ground is plain paper. */
+@media(max-width:640px){
+  :root{--step:55vh}
+  .hero{position:relative;height:calc(100vh + 9*var(--step));background:var(--paper)}
+  #sheets{display:none}
+  .hero-grid{position:sticky;top:0;height:100vh;min-height:0;padding:0 30px;box-sizing:border-box;display:grid;grid-template-rows:1fr;place-items:center;row-gap:0}
+  .hero-grid .stack{grid-row:1;position:relative;width:100%;height:calc(var(--row) * 1.4);gap:0}
+  .hero-grid .line{position:absolute;left:0;top:50%;opacity:0;visibility:hidden;will-change:transform,opacity}
+}
 .stack{display:flex;flex-direction:column;gap:calc(var(--row) * .2)}
 /* what she does, in one line, above the fold: the wall says who, this says what */
 .stack .who{font:400 15px/1.5 var(--hel);color:var(--ink2);margin:0 0 10px;max-width:52ch}
@@ -745,15 +756,16 @@ function measure(){
   const N=WORDS.length, free=innerHeight-72-96-120;         /* hero min-height minus its paddings */
   /* on a narrow screen the longest word decides the row: its letters must fit the width at rest */
   const longest=Math.max(...WORDS.map(w=>w.length)), wide=(stack.getBoundingClientRect().width||innerWidth-60);
-  const narrow=innerWidth<640; const per=narrow?1.25:0.62;   /* a letter's share of the row at full breath, so a phone row never spills */
+  const narrow=innerWidth<640; const per=narrow?0.93:0.62;   /* a letter's share of the row at full breath, so a phone row never spills */
   const fitPx=(wide-4*longest)/(longest*per)/0.9;
-  const rowPx=Math.max(narrow?18:22,Math.min(72, (free*.88)/(N+(N-1)*.2), fitPx));
+  /* the drum shows one row at a time, so on a phone only the width decides the row */
+  const rowPx=narrow?Math.max(18,Math.min(64,fitPx)):Math.max(22,Math.min(72, (free*.88)/(N+(N-1)*.2), fitPx));
   document.documentElement.style.setProperty('--row',rowPx.toFixed(2)+'px');
   /* a custom property reads back as its declared text ("clamp(...)"), never as pixels,
      so the row is measured off a real cell */
   const probe=document.createElement('span'); probe.className='cell'; probe.style.cssText='position:absolute;visibility:hidden;width:1px';
   stack.appendChild(probe); const row=probe.getBoundingClientRect().height||40; probe.remove();
-  FS=row*.9; STRETCH=FS*(innerWidth<640?0.9:2.47); gauge.font=`400 ${FS}px "Helvetica Neue",Helvetica,Arial,sans-serif`;
+  FS=row*.9; STRETCH=FS*(innerWidth<640?0.55:2.47); gauge.font=`400 ${FS}px "Helvetica Neue",Helvetica,Arial,sans-serif`;
 }
 measure();
 /* EVERY LETTER STANDS THE SAME DISTANCE FROM ITS LEFT WALL. The glyph is measured for
@@ -1161,7 +1173,21 @@ show(0);
   let raf=0;
   function apply(){
     raf=0;
-    const h=hero.offsetHeight||innerHeight;
+    const H=hero.offsetHeight||innerHeight, vh=innerHeight, drum=innerWidth<640;
+    /* on a phone the hero is a tall track and the wall is pinned inside it, so the engulf
+       is measured from where the track ends, and the scroll before that turns the drum */
+    const h=drum?vh:H, scrollY=drum?Math.max(0,window.scrollY-(H-vh)):window.scrollY;
+    if(drum){
+      const step=vh*.55, N=lines.length, prog=Math.max(0,Math.min(N-1,window.scrollY/step));
+      const row=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--row'))||40;
+      lines.forEach((L,i)=>{
+        const d=i-prog, a=Math.abs(d); const el=L.cells[0].cell.parentElement;
+        if(a>=1){ el.style.opacity='0'; el.style.visibility='hidden'; return; }
+        const o=(1-a)*(1-a)*(3-2*(1-a));                       /* smoothstep in, smoothstep out */
+        el.style.visibility='visible'; el.style.opacity=o.toFixed(3);
+        el.style.transform=`translateY(calc(-50% + ${(d*row*1.6).toFixed(1)}px))`;
+      });
+    }
     /* THE HERO STAYS UNTIL IT IS COVERED. It used to be gone by two thirds of the scroll,
        so the projects always rose over blank paper. Now nothing fades until the projects
        have climbed past the hero's midpoint, and the last of it goes only as they cover
