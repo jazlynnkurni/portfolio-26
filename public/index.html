@@ -244,7 +244,7 @@ footer .in a{font-size:13px}
   /* the discs stay for the arrival only: fixed over the first screen, gone once she has signed */
   #sheets{position:fixed;top:0;left:0;right:0;height:100vh;z-index:0;touch-action:auto}
   html.intro-done #sheets{display:none}
-  .hero-grid .line.sig{width:74%;color:#340414}
+  .hero-grid .line.sig{width:74%;left:50%;color:#340414}
   [data-theme="dark"] .hero-grid .line.sig{color:#FAF9F7}
   @media(prefers-color-scheme:dark){html:not([data-theme="light"]) .hero-grid .line.sig{color:#FAF9F7}}
   .line.sig svg{width:100%;height:auto;display:block;overflow:visible}
@@ -1195,7 +1195,7 @@ show(0);
         if(a>=1){ el.style.opacity='0'; el.style.visibility='hidden'; return; }
         const o=(1-a)*(1-a)*(3-2*(1-a));                       /* smoothstep in, smoothstep out */
         el.style.visibility='visible'; el.style.opacity=o.toFixed(3);
-        el.style.transform=`translateY(calc(-50% + ${(d*row*1.6).toFixed(1)}px))`;
+        el.style.transform=`translate(${el.classList.contains('sig')?'-50%':'0'}, calc(-50% + ${(d*row*1.6).toFixed(1)}px))`;
       });
     }
     /* THE HERO STAYS UNTIL IT IS COVERED. It used to be gone by two thirds of the scroll,
