@@ -51,6 +51,7 @@ nav a.l:hover{color:var(--ink)}
 [data-theme="dark"] #theme .sun{display:none}
 :root:not([data-theme="dark"]) #theme .moon{display:none}
 @media(max-width:640px){nav .in{padding-top:16px} nav a.l{padding:9px 10px;font-size:12.5px}}
+@media(max-width:640px){nav{display:none}}
 @media(max-width:480px){nav .wrap{padding:0 20px} nav .in{padding-top:14px} nav::before{height:84px} nav .links{gap:2px;padding:3px 8px 3px 4px} nav a.l{padding:8px 9px;font-size:12.5px} #theme{width:34px;height:34px}}
 footer{padding:64px 0 46px}
 body>.pushing{transition:transform .5s cubic-bezier(.22,1,.36,1)}
@@ -268,9 +269,9 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
   .cs-hero{padding-top:104px}.cs-hero h1{font-size:26px}.toc a{height:36px;padding:0 12px;font-size:12.5px}
   .cs-hero .plate{margin-top:32px}section.cs{padding-top:64px}.row{gap:20px;margin-top:32px}
   .three,.pair,.pair.trio{grid-template-columns:1fr}.deck{max-width:100%!important}
-  .flow .cell p{min-height:0}.ab{padding-top:104px}.ab .keeps{grid-template-columns:1fr 1fr;gap:10px}
+  .flow .cell p{min-height:0}.ab{padding-top:56px}.ab .keeps{grid-template-columns:1fr 1fr;gap:10px}
   .ab .keep .box{padding:18px}.thanks{flex-direction:column;align-items:flex-start;gap:12px}.more .cells{grid-template-columns:1fr}
-  .gal{padding-top:104px}.wall{grid-template-columns:1fr}.wall .slot{border-right:1px solid var(--hair)}
+  .gal{padding-top:56px}.wall{grid-template-columns:1fr}.wall .slot{border-right:1px solid var(--hair)}
   footer .in{flex-wrap:wrap;gap:10px}
 }
 
