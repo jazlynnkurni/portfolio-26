@@ -1271,18 +1271,14 @@ show(0);
     if(matchMedia('(prefers-reduced-motion:reduce)').matches){ write(1); html.classList.add('intro-done'); return; }
     const place=(d,ux,uy,ur)=>{ const W=cv.clientWidth,Hh=cv.clientHeight; d.x=d.tx=(ux-.5)*W/UNIT; d.y=d.ty=(.5-uy)*Hh/UNIT; d.r=ur*W/UNIT; };
     const D=H.discs, WRITE=1.5;
-    const floor=[.86,.9,.92,.8,.84,.9], px=[.2,.6,.85,.35,.7,.1], pr=[.16,.13,.11,.14,.15,.12];
-    /* the phone's own composition for the scatter: the desktop's side clusters are uneven on a
-       narrow screen, so here the sheets sit on a staggered lattice, three-two-three-two-three,
-       all the same size, and the push from the centre sends each straight out along its spoke */
-    const EVEN=[[.15,.12],[.5,.12],[.85,.12],[.32,.32],[.68,.32],[.15,.52],[.5,.52],[.85,.52],[.32,.72],[.68,.72],[.15,.92],[.5,.92],[.85,.92]];
-    if(INTRO==='scatter') D.forEach((d,i)=>{ const e=EVEN[i]; if(!e){ d.alive=0; return; } d.ux0=e[0]; d.uy=e[1]; d.ur=.125; });
+    /* the pile is even: four sheets land on the floor, three settle into the gaps above them, all one size */
+    const floor=[.905,.905,.905,.905,.79,.79,.79], px=[.14,.38,.62,.86,.26,.5,.74], pr=[.13,.13,.13,.13,.13,.13,.13], order=[1,4,0,5,2,6,3];
     const run={
       scatter(t){ const br=Math.sin(clamp(t/1.1,0,1)*Math.PI)*.16, push=inC(seg(t,1.15,2.05));
-        D.forEach((d,i)=>{ let dx=d.ux0-.5, dy=d.uy-.5; if(Math.abs(dx)<.01&&Math.abs(dy)<.05){ dx=0; dy=1; } const l=Math.hypot(dx,dy)||1;
+        D.forEach((d,i)=>{ const dx=d.ux0-.5, dy=d.uy-.5, l=Math.hypot(dx,dy)||1;
           place(d, d.ux0+dx/l*push*1.1, d.uy+dy/l*push*1.1, d.ur*(1+br)); d.rot=push*(i%2?1:-1)*1.2; });
         return {sig:seg(t,2.0,2.0+WRITE), done:t>3.9}; },
-      pour(t){ D.forEach((d,i)=>{ if(i>=6){ d.alive=0; return; } const s=i*.14, p=seg(t,s,s+.9), y=-.25+(floor[i]+.25)*bounce(p), leave=seg(t,2.0+i*.05,2.6);
+      pour(t){ D.forEach((d,i)=>{ if(i>=7){ d.alive=0; return; } const s=order[i]*.13, p=seg(t,s,s+.9), y=-.25+(floor[i]+.25)*bounce(p), leave=seg(t,2.1+order[i]*.04,2.7);
           place(d, px[i], y+leave*leave*.9, pr[i]); d.rot=(i%2?1:-1)*p*.8; });
         return {sig:seg(t,2.5,2.5+WRITE), done:t>4.4}; }
     }[INTRO]||null;
