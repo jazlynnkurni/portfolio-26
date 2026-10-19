@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Intro lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#FAF9F7;--ink:#14171B;--ink2:rgba(20,23,27,.66);--ink3:rgba(20,23,27,.42);--hair:rgba(20,23,27,.16);--sig:#340414;--jak:"Plus Jakarta Sans",sans-serif;--hel:"Helvetica Neue",Helvetica,Arial,sans-serif}
+html[data-theme="dark"]{--paper:#1C1A17;--ink:#FAF9F7;--ink2:rgba(250,249,247,.66);--ink3:rgba(250,249,247,.42);--hair:rgba(250,249,247,.16);--sig:#FAF9F7}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:300 14px/1.5 var(--hel);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1640px;margin:0 auto;padding:48px 30px 80px}
+.label{font:600 10.5px/1.5 var(--jak);letter-spacing:.15em;text-transform:uppercase;color:var(--ink3)}
+h1{font:500 clamp(28px,4vw,44px)/1.12 var(--jak);letter-spacing:-.012em;margin:12px 0 0;max-width:22ch}
+p.lede{font-size:17px;line-height:1.62;color:var(--ink2);margin:16px 0 0;max-width:56ch}
+.row{display:flex;gap:20px;margin-top:40px;flex-wrap:wrap;align-items:flex-start}
+.cell{border:1px solid var(--hair);padding:16px;display:grid;gap:12px;width:300px}
+.phone{position:relative;width:300px;height:650px;border-radius:34px;overflow:hidden;background:var(--paper);outline:1px solid var(--hair);outline-offset:-1px}
+.phone canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.phone .sig{position:absolute;left:12%;right:12%;top:50%;transform:translateY(-50%);color:var(--sig)}
+.phone .sig svg{width:100%;height:auto;display:block;overflow:visible}
+.phone .sig line{visibility:hidden}
+.phone .dot{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--sig);transform:translate(-50%,-50%);opacity:0;pointer-events:none}
+.cell h3{font:500 15px var(--jak);margin:0}
+.cell p{margin:0;font-size:13px;line-height:1.55;color:var(--ink2)}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:12px}
+button{font:500 12.5px var(--jak);color:var(--ink);background:transparent;border:1px solid var(--hair);border-radius:999px;padding:7px 13px;cursor:pointer}
+button:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+label.chk{display:flex;gap:10px;align-items:center;font:500 12.5px var(--jak);margin-top:24px}
+.tools{display:flex;gap:12px;align-items:center;margin-top:24px}
+</style></head><body>
+<div class="wrap">
+  <div class="label">Intro lab · five ways in</div>
+  <h1>The discs do something, then she signs.</h1>
+  <p class="lede">Each phone plays a short motion with the riso sheets, about two seconds, and hands off to the signature writing itself stroke by stroke, in the order the pen actually went. Replay any of them; the whole row replays together with the button below.</p>
+  <div class="row" id="row"></div>
+  <div class="tools"><button id="all">replay all</button><label class="chk" style="margin:0"><input id="dark" type="checkbox"> dark mode</label></div>
+</div>
+<script type="module">
+import { mountSheets } from '/sheets-gl.js';
+const SWATCH=['#dfddc8','#c7c7c7','#827a85','#9ba69c','#c4c1c8','#dfddc8','#c2beb3','#dfdac8'];
+const UNIT=650;                                                   /* the engine's composition unit, CSS px */
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const outC=t=>1-Math.pow(1-t,3), inC=t=>t*t*t, inOutQ=t=>t<.5?16*t*t*t*t*t:1-Math.pow(-2*t+2,5)/2, outQ=t=>1-Math.pow(1-t,5), inQ=t=>t*t*t*t;
+const bounce=t=>{const n=7.5625,d=2.75; if(t<1/d) return n*t*t; if(t<2/d) return n*(t-=1.5/d)*t+.75; if(t<2.5/d) return n*(t-=2.25/d)*t+.9375; return n*(t-=2.625/d)*t+.984375;};
+const seg=(t,a,b)=>clamp((t-a)/(b-a),0,1);
+
+/* ---- the signature, as the pen went: 320 segments in 8 strokes ---- */
+const svgText=await (await fetch('/jaz-signature.svg')).text();
+function sigInto(host){
+  host.innerHTML=svgText.replace('stroke="#340414"','stroke="currentColor"');
+  const L=[...host.querySelectorAll('line')];
+  const len=L.map(l=>Math.hypot(l.x2.baseVal.value-l.x1.baseVal.value,l.y2.baseVal.value-l.y1.baseVal.value));
+  /* a pen lift is a jump between the end of one segment and the start of the next; the clock pauses there */
+  const cue=[]; let T=0;
+  for(let i=0;i<L.length;i++){
+    if(i>0&&(L[i].x1.baseVal.value!==L[i-1].x2.baseVal.value||L[i].y1.baseVal.value!==L[i-1].y2.baseVal.value)) T+=22;   /* lift */
+    T+=len[i]; cue.push(T);
+  }
+  const total=T;
+  return {
+    reset(){ for(const l of L) l.style.visibility='hidden'; },
+    /* p in 0..1 of the writing; returns the pen tip in SVG units for a dot that leads the ink */
+    at(p){ const u=p*total; let tip=null; for(let i=0;i<L.length;i++){ const on=cue[i]<=u; L[i].style.visibility=on?'visible':'hidden'; if(on) tip=[L[i].x2.baseVal.value,L[i].y2.baseVal.value]; } return tip; },
+    box:host.querySelector('svg').viewBox.baseVal
+  };
+}
+
+/* ---- the stage: a phone with discs under, the signature over ---- */
+function stage(v){
+  const cell=document.createElement('div'); cell.className='cell';
+  cell.innerHTML=`<div class="phone"><canvas></canvas><div class="sig"></div><div class="dot"></div></div><div class="foot"><h3>${v.name}</h3><button>replay</button></div><p>${v.why}</p>`;
+  document.getElementById('row').appendChild(cell);
+  const phone=cell.querySelector('.phone'), cv=cell.querySelector('canvas'), sigHost=cell.querySelector('.sig'), dot=cell.querySelector('.dot');
+  const sig=sigInto(sigHost); sig.reset();
+  const H=mountSheets(cv, v.discs.map(d=>({...d})), v.sw||SWATCH, { paper:'#FAF9F7', ground:'#1C1A17', bleed:0, clear:()=>0 });
+  /* place a disc in unit stage coords (x,y across and down, r across), straight into composition space */
+  const place=(d,ux,uy,ur)=>{ const W=cv.clientWidth,Hh=cv.clientHeight; d.x=d.tx=(ux-.5)*W/UNIT; d.y=d.ty=(.5-uy)*Hh/UNIT; d.r=ur*W/UNIT; };
+  let raf=0, t0=0;
+  function tipDot(tip,on){ if(!tip||!on){ dot.style.opacity='0'; return; } const r=sigHost.getBoundingClientRect(), p=phone.getBoundingClientRect(), b=sig.box;
+    dot.style.left=(r.left-p.left+(tip[0]-b.x)/b.width*r.width)+'px'; dot.style.top=(r.top-p.top+(tip[1]-b.y)/b.height*r.height)+'px'; dot.style.opacity='1'; }
+  function frame(ms){
+    if(!t0) t0=ms; const t=(ms-t0)/1000;
+    const r=v.run(t, H.discs, place);          /* r: {sig:0..1 progress of the writing, done:bool} */
+    H.draw();
+    const tip=sig.at(clamp(r.sig,0,1)); tipDot(tip, r.sig>0&&r.sig<1);
+    if(!r.done) raf=requestAnimationFrame(frame); else raf=0;
+  }
+  function play(){ cancelAnimationFrame(raf); t0=0; sig.reset(); for(const d of H.discs){ d.alive=1; d.rot=0; } v.reset&&v.reset(H.discs,place); raf=requestAnimationFrame(frame); }
+  cell.querySelector('button').addEventListener('click',play);
+  setTimeout(play, 300+v.delay);
+  return play;
+}
+
+/* writing takes 1.5s once it starts at T0 */
+const WRITE=1.5;
+const sigAt=(t,T0)=>clamp((t-T0)/WRITE,0,1);
+
+const VARIANTS=[
+  { id:'pour', name:'01 · Pour', delay:0, why:'Six sheets drop in from above, one after another, bounce once on the floor and pile up. The pile sinks away through the bottom and the pen starts as the last one leaves.',
+    discs:[{x:.2,y:-.3,r:.16},{x:.6,y:-.3,r:.13},{x:.85,y:-.3,r:.11},{x:.35,y:-.3,r:.14},{x:.7,y:-.3,r:.15},{x:.1,y:-.3,r:.12}],
+    run(t,D,place){
+      const floor=[.86,.9,.92,.8,.84,.9];
+      D.forEach((d,i)=>{ const s=i*.14, p=seg(t,s,s+.9); const y=-.25+(floor[i]+.25)*bounce(p);
+        const leave=seg(t,2.0+i*.05,2.6); place(d, d.ux0, y+leave*leave*.9, d.ur); d.rot=(i%2?1:-1)*p*.8; });
+      return {sig:sigAt(t,2.5), done:t>4.4};
+    } },
+  { id:'orbit', name:'02 · Orbit', delay:400, why:'Eight sheets circle the centre on a tightening spiral, faster as they close, until they are one disc. It pops, the paper is clear, and the pen takes the point where it was.',
+    discs:Array.from({length:8},(_,i)=>({x:.5,y:.5,r:.09})),
+    run(t,D,place){
+      const n=D.length, p=seg(t,0,2.1), e=inOutQ(p);
+      const R=.42*(1-e)+.0*e, ang=t*t*2.2;
+      D.forEach((d,i)=>{ const a=ang+i/n*Math.PI*2; const pop=seg(t,2.1,2.5);
+        /* as they close, seven of the eight thin out, so they meet as one sheet and not as eight tints multiplied to ink */
+        place(d, .5+Math.cos(a)*R, .5+Math.sin(a)*R*1.6, (i%2?.09:.11)+pop*.5); d.alive=(i?1-seg(e,.55,1):1)*(1-outC(pop)); });
+      return {sig:sigAt(t,2.45), done:t>4.3};
+    } },
+  { id:'pass', name:'03 · Pass', delay:800, why:'Riso prints one colour at a time. Each sheet rolls across the screen at its own height, left to right, overlapping the one before; where they cross the tints multiply. The last pass leaves and the name is what got printed.',
+    discs:[{x:-.3,y:.2,r:.22},{x:-.3,y:.5,r:.26},{x:-.3,y:.8,r:.22},{x:-.3,y:.35,r:.2},{x:-.3,y:.65,r:.24}],
+    sw:['#9ba69c','#827a85','#dfddc8','#c4c1c8','#c2beb3'],
+    run(t,D,place){
+      D.forEach((d,i)=>{ const s=i*.26, p=seg(t,s,s+1.1); const x=-.35+1.7*inOutQ(p); place(d,x,d.uy,d.ur); d.rot=p*1.4; });
+      return {sig:sigAt(t,1.55), done:t>3.6};
+    } },
+  { id:'bloom', name:'04 · Bloom', delay:1200, why:'One sheet grows from nothing in the centre, then a second and a third open over it, the venn from the icon. All three shrink into a single dot, and that dot is the pen: it starts the first stroke.',
+    discs:[{x:.5,y:.5,r:0},{x:.5,y:.5,r:0},{x:.5,y:.5,r:0}],
+    sw:['#9ba69c','#827a85','#dfddc8'],
+    run(t,D,place){
+      const off=[[0,0],[.16,.1],[-.14,.12]];
+      D.forEach((d,i)=>{ const s=i*.3, g=outQ(seg(t,s,s+.9)), c=inQ(seg(t,1.7,2.35));
+        /* grow out, then collapse toward the pen's first point (the j, up-left of centre) */
+        const px=.5+off[i][0]*g*(1-c)+( .29-.5)*c, py=.5+off[i][1]*g*(1-c)+(.57-.5)*c;
+        place(d, px, py, (.3*g)*(1-c)+.012*(1-c)); d.alive=1-seg(t,2.3,2.4); });
+      return {sig:sigAt(t,2.35), done:t>4.2};
+    } },
+  { id:'scatter', name:'05 · Scatter', delay:1600, why:'Starts as the desktop hero does, the twelve sheets scattered on both sides. They take one breath together, then a push from the centre blows them off every edge and the pen signs on the cleared paper.',
+    discs:[{x:.05,y:.19,r:.115},{x:.84,y:.72,r:.12},{x:.07,y:.71,r:.072},{x:.18,y:.83,r:.115},{x:.02,y:.5,r:.09},{x:.04,y:.88,r:.07},{x:.82,y:.24,r:.078},{x:.94,y:.13,r:.097},{x:.93,y:.37,r:.085},{x:.91,y:.55,r:.1},{x:.2,y:.29,r:.078},{x:.95,y:.9,r:.074}],
+    run(t,D,place){
+      const br=Math.sin(clamp(t/1.1,0,1)*Math.PI)*.16;             /* one breath */
+      const push=inC(seg(t,1.15,2.05));
+      D.forEach((d,i)=>{ const dx=d.ux0-.5, dy=d.uy-.5, L=Math.hypot(dx,dy)||1;
+        place(d, d.ux0+dx/L*push*1.1, d.uy+dy/L*push*1.1, d.ur*(1+br)); d.rot=push*(i%2?1:-1)*1.2; });
+      return {sig:sigAt(t,2.0), done:t>3.9};
+    } },
+];
+const plays=VARIANTS.map(stage);
+document.getElementById('all').addEventListener('click',()=>plays.forEach((p,i)=>setTimeout(p,i*200)));
+document.getElementById('dark').addEventListener('change',e=>document.documentElement.setAttribute('data-theme',e.target.checked?'dark':'light'));
+</script>
+</body></html>

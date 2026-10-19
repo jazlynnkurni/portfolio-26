@@ -241,7 +241,14 @@ footer .in a{font-size:13px}
 @media(max-width:640px){
   :root{--step:55vh}
   .hero{position:relative;height:calc(100vh + 9*var(--step));background:var(--paper)}
-  #sheets{display:none}
+  /* the discs stay for the arrival only: fixed over the first screen, gone once she has signed */
+  #sheets{position:fixed;top:0;left:0;right:0;height:100vh;z-index:0;touch-action:auto}
+  html.intro-done #sheets{display:none}
+  .hero-grid .line.sig{width:74%;color:#340414}
+  [data-theme="dark"] .hero-grid .line.sig{color:#FAF9F7}
+  @media(prefers-color-scheme:dark){html:not([data-theme="light"]) .hero-grid .line.sig{color:#FAF9F7}}
+  .line.sig svg{width:100%;height:auto;display:block;overflow:visible}
+  .line.sig line{visibility:hidden}
   .hero-grid{position:sticky;top:0;height:100vh;min-height:0;padding:0 30px;box-sizing:border-box;display:grid;grid-template-rows:1fr;place-items:center;row-gap:0}
   .hero-grid .stack{grid-row:1;position:relative;width:100%;height:calc(var(--row) * 1.4);gap:0}
   .hero-grid .line{position:absolute;left:0;top:50%;opacity:0;visibility:hidden;will-change:transform,opacity}
@@ -707,6 +714,8 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{ if(loc
      least two of each so the bar never comes out one colour */
   let deal; do{ deal=cells.map(()=>Math.random()<.5); }while(deal.filter(Boolean).length<2||deal.filter(x=>!x).length<2);
   deal.forEach((g,i)=>{ if(g) cells[i].classList.add('g'); });
+  /* a phone has its own arrival (the discs, then the signature), so the bar never shows there */
+  if(innerWidth<640){ host.remove(); return; }
   const t0=performance.now(); let raf=0, inked=-1;
   function frame(now){
     const t=(now-t0)/1000;
@@ -1178,10 +1187,11 @@ show(0);
        is measured from where the track ends, and the scroll before that turns the drum */
     const h=drum?vh:H, scrollY=drum?Math.max(0,window.scrollY-(H-vh)):window.scrollY;
     if(drum){
-      const step=vh*.55, N=lines.length, prog=Math.max(0,Math.min(N-1,window.scrollY/step));
+      const step=vh*.55, N=(window.__drumEls||lines).length, prog=Math.max(0,Math.min(N-1,window.scrollY/step));
       const row=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--row'))||40;
-      lines.forEach((L,i)=>{
-        const d=i-prog, a=Math.abs(d); const el=L.cells[0].cell.parentElement;
+      const els=window.__drumEls||lines.map(L=>L.cells[0].cell.parentElement);
+      els.forEach((el,i)=>{
+        const d=i-prog, a=Math.abs(d);
         if(a>=1){ el.style.opacity='0'; el.style.visibility='hidden'; return; }
         const o=(1-a)*(1-a)*(3-2*(1-a));                       /* smoothstep in, smoothstep out */
         el.style.visibility='visible'; el.style.opacity=o.toFixed(3);
@@ -1227,6 +1237,53 @@ show(0);
   /* LOCKED 2026-09-23. Her eight, picked in the riso lab against frosted glass: two
      creams, two greys, a dusky mauve, a grey green, a lilac grey, a sage. */
   const SWATCH=['#dfddc8','#c7c7c7','#827a85','#9ba69c','#c4c1c8','#dfddc8','#c2beb3','#dfdac8'];
-  mountSheets(document.getElementById('sheets'), SHEETS, SWATCH, { paper: '#FAF9F7', ground: '#1C1A17', bleed: 220, clear: () => 0 });
+  const cvS=document.getElementById('sheets'), phone=innerWidth<640;
+  const HS=mountSheets(cvS, SHEETS, SWATCH, { paper: '#FAF9F7', ground: '#1C1A17', bleed: phone?0:220, clear: () => 0 });
+  if(phone) phoneIntro(HS, cvS);
+
+  /* THE PHONE'S ARRIVAL. No loading bar: the twelve sheets open as the desktop hero does, take one
+     breath together, and a push from the centre blows them off every edge (Scatter, from the intro
+     lab). On the cleared paper her signature writes itself, 320 pen segments in 8 strokes in the
+     order the pen went, and that signature is row one of the drum in place of the JAZLYNN letters.
+     ?intro=pour plays the other finalist: six sheets dropped in from above, piled, sunk away. */
+  async function phoneIntro(H, cv){
+    const INTRO=new URLSearchParams(location.search).get('intro')||'scatter';
+    const UNIT=650, html=document.documentElement;
+    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), seg=(t,a,b)=>clamp((t-a)/(b-a),0,1), inC=t=>t*t*t;
+    const bounce=t=>{const n=7.5625,d=2.75; if(t<1/d) return n*t*t; if(t<2/d) return n*(t-=1.5/d)*t+.75; if(t<2.5/d) return n*(t-=2.25/d)*t+.9375; return n*(t-=2.625/d)*t+.984375;};
+    /* the signature takes the first row */
+    const sigEl=document.createElement('div'); sigEl.className='line sig';
+    const first=lines[0].cells[0].cell.parentElement; stack.insertBefore(sigEl, first); first.remove();
+    window.__drumEls=[sigEl, ...lines.slice(1).map(L=>L.cells[0].cell.parentElement)];
+    let L=[], cue=[], total=1;
+    try{
+      const txt=await (await fetch('/jaz-signature.svg?v=ox1')).text();
+      sigEl.innerHTML=txt.replace('stroke="#340414"','stroke="currentColor"');
+      L=[...sigEl.querySelectorAll('line')]; let T=0;
+      for(let i=0;i<L.length;i++){ const a=L[i], b=L[i-1];
+        if(b&&(a.x1.baseVal.value!==b.x2.baseVal.value||a.y1.baseVal.value!==b.y2.baseVal.value)) T+=22;     /* the pen lifts */
+        T+=Math.hypot(a.x2.baseVal.value-a.x1.baseVal.value,a.y2.baseVal.value-a.y1.baseVal.value); cue.push(T); }
+      total=T;
+    }catch(e){}
+    const write=p=>{ const u=p*total; for(let i=0;i<L.length;i++) L[i].style.visibility=cue[i]<=u?'visible':'hidden'; };
+    if(window.__heroApply) window.__heroApply();
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches){ write(1); html.classList.add('intro-done'); return; }
+    const place=(d,ux,uy,ur)=>{ const W=cv.clientWidth,Hh=cv.clientHeight; d.x=d.tx=(ux-.5)*W/UNIT; d.y=d.ty=(.5-uy)*Hh/UNIT; d.r=ur*W/UNIT; };
+    const D=H.discs, WRITE=1.5;
+    const floor=[.86,.9,.92,.8,.84,.9], px=[.2,.6,.85,.35,.7,.1], pr=[.16,.13,.11,.14,.15,.12];
+    const run={
+      scatter(t){ const br=Math.sin(clamp(t/1.1,0,1)*Math.PI)*.16, push=inC(seg(t,1.15,2.05));
+        D.forEach((d,i)=>{ const dx=d.ux0-.5, dy=d.uy-.5, l=Math.hypot(dx,dy)||1;
+          place(d, d.ux0+dx/l*push*1.1, d.uy+dy/l*push*1.1, d.ur*(1+br)); d.rot=push*(i%2?1:-1)*1.2; });
+        return {sig:seg(t,2.0,2.0+WRITE), done:t>3.9}; },
+      pour(t){ D.forEach((d,i)=>{ if(i>=6){ d.alive=0; return; } const s=i*.14, p=seg(t,s,s+.9), y=-.25+(floor[i]+.25)*bounce(p), leave=seg(t,2.0+i*.05,2.6);
+          place(d, px[i], y+leave*leave*.9, pr[i]); d.rot=(i%2?1:-1)*p*.8; });
+        return {sig:seg(t,2.5,2.5+WRITE), done:t>4.4}; }
+    }[INTRO]||null;
+    if(!run){ write(1); html.classList.add('intro-done'); return; }
+    let t0=0;
+    (function frame(ms){ if(!t0) t0=ms; const t=(ms-t0)/1000; const r=run(t); H.draw(); write(r.sig);
+      if(!r.done) requestAnimationFrame(frame); else html.classList.add('intro-done'); })(performance.now());
+  }
 </script>
 </body></html>
