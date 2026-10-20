@@ -246,9 +246,8 @@ footer .in a{font-size:13px}
   #sheets{position:fixed;top:0;left:0;right:0;height:100vh;z-index:0;touch-action:auto}
   html.intro-done #sheets{display:none}
   .hero-grid .line.sig{width:74%;left:0;transform-origin:left 50%;color:#340414}
-  /* the box the signature grows as it shrinks to row size: a hair rule like the cells', its
-     width counter-scaled so it stays one pixel on screen */
-  .hero-grid .line.sig::after{content:"";position:absolute;inset:0 -4%;border:var(--bw,1px) solid var(--hair);opacity:var(--box,0);pointer-events:none}
+  /* the words beside the shrunken signature: "is a", "studies", "lives in", one per row */
+  .hero-grid .conn{position:absolute;top:50%;left:0;font:300 17px/1 var(--hel);color:var(--ink2);white-space:nowrap;opacity:0;pointer-events:none;will-change:transform,opacity}
   [data-theme="dark"] .hero-grid .line.sig{color:#FAF9F7}
   @media(prefers-color-scheme:dark){html:not([data-theme="light"]) .hero-grid .line.sig{color:#FAF9F7}}
   .line.sig svg{width:100%;height:auto;display:block;overflow:visible}
@@ -1196,22 +1195,30 @@ show(0);
       const els=window.__drumEls||lines.map(L=>L.cells[0].cell.parentElement);
       els.forEach((el,i)=>{
         const d=i-prog, a=Math.abs(d);
-        if(a>=1){ el.style.opacity='0'; el.style.visibility='hidden'; return; }
+        if(a>=1&&!el.classList.contains('sig')){ el.style.opacity='0'; el.style.visibility='hidden'; return; }
         const sm=x=>x*x*(3-2*x);
         let o=sm(1-a), tx=0, sc=1;                                  /* smoothstep in, smoothstep out */
         /* the row after the signature waits until the signature has become a row itself */
         if(i===1&&els[0].classList.contains('sig')&&d>0) o=sm(Math.max(0,Math.min(1,(prog-.5)/.5)));
+        let dy=d*row*1.6;
         if(el.classList.contains('sig')){
-          /* THE SIGNATURE JOINS THE ROWS. Over the first part of the scroll it shrinks from the
-             centrepiece to the row height, slides to the left edge where the words sit, and grows
-             a hair box; only then does it leave the way every row leaves, as DESIGNER arrives. */
+          /* THE SIGNATURE BECOMES THE SUBJECT. Over the first part of the scroll it shrinks from the
+             centrepiece to the row height and slides up and left, where it stays for every row; a
+             verb rises in beside it and the words cycle on the line beneath, so each row reads as
+             a sentence: jazlynn is a DESIGNER, studies COGNITION, lives in NEW YORK. */
           const k=sm(Math.max(0,Math.min(1,prog/.6))), sw=el.parentElement.clientWidth, ew=el.offsetWidth, eh=el.offsetHeight||1;
-          sc=1+(row/eh-1)*k; tx=(sw-ew)/2*(1-k);
-          o=1-sm(Math.max(0,Math.min(1,(prog-.55)/.45)));
-          el.style.setProperty('--box',k.toFixed(3)); el.style.setProperty('--bw',(1/sc).toFixed(2)+'px');
+          sc=1+(row/eh-1)*k; tx=(sw-ew)/2*(1-k); dy=-row*1.3*k; o=1;
+          const conn=window.__drumConn;
+          if(conn){
+            const k2=sm(Math.max(0,Math.min(1,(prog-.35)/.4)));
+            conn.style.opacity=k2.toFixed(3);
+            conn.style.transform=`translate(${(ew*sc+10).toFixed(1)}px, calc(-50% + ${(-row*1.3+(1-k2)*22).toFixed(1)}px))`;
+            const want=window.__drumConnWords[Math.max(1,Math.round(prog))]||'';
+            if(conn.textContent!==want){ conn.textContent=want; conn.animate([{opacity:0,transform:conn.style.transform+' translateY(8px)'},{opacity:1}],{duration:260,easing:'cubic-bezier(.22,1,.36,1)'}); }
+          }
         }
         el.style.visibility='visible'; el.style.opacity=o.toFixed(3);
-        el.style.transform=`translate(${tx.toFixed(1)}px, calc(-50% + ${(d*row*1.6).toFixed(1)}px)) scale(${sc.toFixed(4)})`;
+        el.style.transform=`translate(${tx.toFixed(1)}px, calc(-50% + ${dy.toFixed(1)}px)) scale(${sc.toFixed(4)})`;
       });
     }
     /* THE HERO STAYS UNTIL IT IS COVERED. It used to be gone by two thirds of the scroll,
@@ -1271,6 +1278,8 @@ show(0);
     const sigEl=document.createElement('div'); sigEl.className='line sig';
     const first=lines[0].cells[0].cell.parentElement; stack.insertBefore(sigEl, first); first.remove();
     window.__drumEls=[sigEl, ...lines.slice(1).map(L=>L.cells[0].cell.parentElement)];
+    const conn=document.createElement('span'); conn.className='conn'; stack.appendChild(conn); window.__drumConn=conn;
+    window.__drumConnWords=['', 'is a', 'is', 'is', 'is', 'is', 'designs', 'studies', 'does', 'lives in'];
     let L=[], cue=[], total=1;
     try{
       const txt=await (await fetch('/jaz-signature.svg?v=ox1')).text();
