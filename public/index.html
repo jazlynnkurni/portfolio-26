@@ -929,14 +929,13 @@ document.querySelectorAll('canvas[data-lazy]').forEach(cv=>mount(cv,cv.dataset.l
 
 /* ---------- projects: rows, tags, hover preview ---------- */
 const PROJECTS=[
-  {n:'01',t:'Clover',          y:'2026',cur:'smartglasses and dictation rings, super fun stuff',tags:['0 → 1','AI','Mobile'], role:'Founding design engineer', st:'0 to 1, in development',   s:'Designing the HUD interface and shipping the iOS companion app',        href:'/soon.html?p=Clover',           v:'/videos/trim/work-clover.mp4',  img:'/videos/trim/work-clover.jpg'},
-  {n:'02',t:'Fostr',           y:'2026',cur:'internal platform and branding',tags:['0 → 1','Web'], role:'Founding design engineer', st:'Live',   s:'Building the brand, landing site and internal platform from 0 to 1',    href:'https://fostr.page/', ext:true, v:'/videos/work-fostr.mp4',   img:'/videos/work-fostr.jpg'},
-  {n:'03',t:'Halodoc',         y:'2026',cur:'product-centric internship and agentic prompting',tags:['AI','Mobile'], role:'Product designer', st:'Shipped to 20M+ users',                 s:'Designing the onboarding journey for AI Prescription on mobile',         href:'/soon.html?p=Halodoc',          v:'/videos/trim/work-halodoc.mp4', img:'/videos/trim/work-halodoc.jpg'},
-  {n:'04',t:'Conduit Commerce',y:'2026',cur:'project lead for B2B SaaS redesign',tags:['AI','Web'], role:'Product design lead', st:'Shipped',                 s:'Designing and shipping a B2B SaaS website for an AI-feature launch',     href:'/work/conduit-commerce.html',  v:'/videos/trim/work-conduit.mp4', img:'/videos/trim/work-conduit.jpg'},
-  {n:'05',t:'Second Self',     y:'2026',cur:'YHacks #1 winner for Personal AI Agent',tags:['Personal projects','AI'], role:'Design engineer', st:'YHacks \u201926, 1st place',                            s:'Building an AI agent that lives on your own Mac',                        href:'https://devpost.com/software/second-self-giwmxh', ext:true, v:'/videos/second-self.mp4', img:'/videos/second-self.jpg'},
-  {n:'06',t:'Manus AI',        y:'2025',cur:'we got acquired by meta during the process lol',tags:['AI','Web'], role:'Product designer', st:'Approved, in development',       s:'Designing an AI community platform to drive adoption',                   href:'/work/manus-ai.html',          v:'/videos/work-manus.mp4',   img:'/videos/work-manus.jpg'},
-  {n:'07',t:'Olive',           y:'2025',cur:'NYU Designathon winner',tags:['Personal projects','AI','Mobile'], role:'Product designer', st:'NYU UX Design-a-thon \u201925, 2nd place',                            s:'Designing an AI-powered carbon tracking app',                            href:'https://drive.google.com/file/d/15-mX_sIkPU_Ww4R1UueWG10Wv9CQbhEy/view', ext:true, v:'/videos/trim/work-olive.mp4', img:'/videos/trim/work-olive.jpg'},
-  {n:'08',t:'SomiaCX',         y:'2024',cur:'my first product design internship!!!',tags:['0 → 1','Mobile'], role:'Product designer', st:'0 to 1',                  s:'Architecting a unified UVP system for three financial subsidiaries',     href:'/work/somia-cx.html',          img:'/images/trim/work-somiacx.png'},
+  {n:'01',t:'Fostr',           y:'2026',cur:'internal platform and branding',tags:['0 → 1','Web'], role:'Founding design engineer', st:'Live',   s:'Building the brand, landing site and internal platform from 0 to 1',    href:'https://fostr.page/', ext:true, v:'/videos/work-fostr.mp4',   img:'/videos/work-fostr.jpg'},
+  {n:'02',t:'Halodoc',         y:'2026',cur:'product-centric internship and agentic prompting',tags:['AI','Mobile'], role:'Product designer', st:'Shipped to 20M+ users',                 s:'Designing the onboarding journey for AI Prescription on mobile',         href:'/soon.html?p=Halodoc',          v:'/videos/trim/work-halodoc.mp4', img:'/videos/trim/work-halodoc.jpg'},
+  {n:'03',t:'Conduit Commerce',y:'2026',cur:'project lead for B2B SaaS redesign',tags:['AI','Web'], role:'Product design lead', st:'Shipped',                 s:'Designing and shipping a B2B SaaS website for an AI-feature launch',     href:'/work/conduit-commerce.html',  v:'/videos/trim/work-conduit.mp4', img:'/videos/trim/work-conduit.jpg'},
+  {n:'04',t:'Second Self',     y:'2026',cur:'YHacks #1 winner for Personal AI Agent',tags:['Personal projects','AI'], role:'Design engineer', st:'YHacks \u201926, 1st place',                            s:'Building an AI agent that lives on your own Mac',                        href:'https://devpost.com/software/second-self-giwmxh', ext:true, v:'/videos/second-self.mp4', img:'/videos/second-self.jpg'},
+  {n:'05',t:'Manus AI',        y:'2025',cur:'we got acquired by meta during the process lol',tags:['AI','Web'], role:'Product designer', st:'Approved, in development',       s:'Designing an AI community platform to drive adoption',                   href:'/work/manus-ai.html',          v:'/videos/work-manus.mp4',   img:'/videos/work-manus.jpg'},
+  {n:'06',t:'Olive',           y:'2025',cur:'NYU Designathon winner',tags:['Personal projects','AI','Mobile'], role:'Product designer', st:'NYU UX Design-a-thon \u201925, 2nd place',                            s:'Designing an AI-powered carbon tracking app',                            href:'https://drive.google.com/file/d/15-mX_sIkPU_Ww4R1UueWG10Wv9CQbhEy/view', ext:true, v:'/videos/trim/work-olive.mp4', img:'/videos/trim/work-olive.jpg'},
+  {n:'07',t:'SomiaCX',         y:'2024',cur:'my first product design internship!!!',tags:['0 → 1','Mobile'], role:'Product designer', st:'0 to 1',                  s:'Architecting a unified UVP system for three financial subsidiaries',     href:'/work/somia-cx.html',          img:'/images/trim/work-somiacx.png'},
 ];
 const rows=document.getElementById('rows'), tags=document.getElementById('tags');
 const pvT=document.getElementById('pv-t'), pvS=document.getElementById('pv-s'), pvR=document.getElementById('pv-r');
@@ -1177,15 +1176,18 @@ show(0);
   /* TWELVE. The leftmost column of the sixteen sat under the wall by design and the wall
      grew into it; those four are gone, and the rest are fitted right of the wall's furthest
      reach at whatever window this is (see sheets-gl.js). */
+  /* THE DISCS, both sides of the wall and larger, overlapping where they meet, the way the
+     Columbia Jokes hero lays them: a loose ring around the centre piece, cut by the edges. */
   const SHEETS=[
-    {x:.63,y:.13,r:.130},{x:.80,y:.22,r:.120},{x:.95,y:.14,r:.105},
-    {x:.72,y:.36,r:.125},{x:.89,y:.40,r:.115},{x:1.02,y:.30,r:.100},
-    {x:.66,y:.58,r:.135},{x:.83,y:.62,r:.115},{x:.98,y:.54,r:.110},
-    {x:.76,y:.82,r:.125},{x:.92,y:.76,r:.105},{x:1.04,y:.86,r:.095}
+    {x:.02,y:.10,r:.150},{x:.12,y:.34,r:.125},{x:.00,y:.60,r:.140},{x:.09,y:.88,r:.120},
+    {x:.24,y:.72,r:.110},{x:.20,y:.05,r:.095},
+    {x:.70,y:.12,r:.135},{x:.86,y:.08,r:.110},{x:.98,y:.26,r:.150},
+    {x:.76,y:.44,r:.120},{x:.94,y:.58,r:.125},{x:.70,y:.78,r:.140},{x:.90,y:.90,r:.115},{x:1.02,y:.80,r:.100}
   ];
+
   /* LOCKED 2026-09-23. Her eight, picked in the riso lab against frosted glass: two
      creams, two greys, a dusky mauve, a grey green, a lilac grey, a sage. */
   const SWATCH=['#dfddc8','#c7c7c7','#827a85','#9ba69c','#c4c1c8','#dfddc8','#c2beb3','#dfdac8'];
-  mountSheets(document.getElementById('sheets'), SHEETS, SWATCH, { paper: '#FAF9F7', ground: '#1C1A17', bleed: 220, clear: () => window.wallClear ? window.wallClear() : 0 });
+  mountSheets(document.getElementById('sheets'), SHEETS, SWATCH, { paper: '#FAF9F7', ground: '#1C1A17', bleed: 220, clear: () => 0 });
 </script>
 </body></html>
