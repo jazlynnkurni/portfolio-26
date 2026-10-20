@@ -9,13 +9,14 @@ button{font:inherit;color:#FAF9F7;background:transparent;border:1px solid rgba(2
 button[aria-pressed=true]{background:#FAF9F7;color:#1C1A17;border-color:#FAF9F7}
 .stage{min-height:100%;display:grid;place-items:center;padding:72px 0 40px;box-sizing:border-box}
 /* iPhone 15: 393x852 logical, 55px corner, island 126x37 */
-.phone{position:relative;width:393px;height:852px;transform:scale(0.8);transform-origin:top center;margin-bottom:-170px;border-radius:55px;background:#000;padding:0;box-shadow:0 0 0 11px #1a1a1a,0 0 0 13px #3b3b3b,0 40px 80px -20px rgba(0,0,0,.8)}
-.phone iframe{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:55px;background:#FAF9F7}
+.phone{position:relative;width:393px;height:852px;background:#FAF9F7;transform:scale(0.8);transform-origin:top center;margin-bottom:-170px;border-radius:55px;padding:0;box-shadow:0 0 0 11px #1a1a1a,0 0 0 13px #3b3b3b,0 40px 80px -20px rgba(0,0,0,.8)}
+.phone iframe{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:55px;background:inherit}
 .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;border-radius:999px;background:#000;z-index:3}
 .btn{position:absolute;background:#2b2b2b;border-radius:2px}
 .btn.l1{left:-16px;top:150px;width:3px;height:30px}.btn.l2{left:-16px;top:210px;width:3px;height:62px}.btn.l3{left:-16px;top:290px;width:3px;height:62px}
 .btn.r{right:-16px;top:240px;width:3px;height:96px}
 .size{font-size:11.5px;color:rgba(250,249,247,.5);margin-left:6px}
+html.dark .phone{background:#1C1A17}
 </style></head><body>
 <div class="top">
   <button data-u="/">Home</button><button data-u="/?p=manus-ai">Manus sheet</button><button data-u="/?p=conduit-commerce">Conduit sheet</button><button data-u="/?p=somia-cx">Somia sheet</button><button data-u="/about.html">About</button><button data-u="/art-gallery.html">Gallery</button>
@@ -28,7 +29,7 @@ button[aria-pressed=true]{background:#FAF9F7;color:#1C1A17;border-color:#FAF9F7}
 <div class="stage"><div class="phone"><div class="island"></div><div class="btn l1"></div><div class="btn l2"></div><div class="btn l3"></div><div class="btn r"></div><iframe id="f" title="site"></iframe></div></div>
 <script>
 const f=document.getElementById('f'); let u='/', t='light', i='scatter';
-function go(){ const q=u.includes('?')?'&':'?'; f.src=u+q+'theme='+t+'&intro='+i+'&r='+Date.now(); for(const b of document.querySelectorAll('button')) b.setAttribute('aria-pressed', b.dataset.u===u||b.dataset.t===t||b.dataset.i===i); }
+function go(){ document.documentElement.classList.toggle('dark',t==='dark'); const q=u.includes('?')?'&':'?'; f.src=u+q+'theme='+t+'&intro='+i+'&r='+Date.now(); for(const b of document.querySelectorAll('button')) b.setAttribute('aria-pressed', b.dataset.u===u||b.dataset.t===t||b.dataset.i===i); }
 document.querySelector('.top').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; if(b.dataset.u) u=b.dataset.u; if(b.dataset.t) t=b.dataset.t; if(b.dataset.i) i=b.dataset.i; go(); });
 go();
 </script>
