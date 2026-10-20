@@ -247,11 +247,13 @@ footer .in a{font-size:13px}
   html.intro-done #sheets{display:none}
   .hero-grid .line.sig{width:74%;left:0;transform-origin:left 50%;color:#340414}
   /* the words beside the shrunken signature: "is a", "studies", "lives in", one per row */
-  .hero-grid .conn{position:absolute;top:50%;left:0;font:300 17px/1 var(--hel);color:var(--ink2);white-space:nowrap;opacity:0;pointer-events:none;will-change:transform,opacity}
+  .hero-grid .conn{position:absolute;top:50%;left:0;font:300 17px/1 var(--hel);color:#A99939;white-space:nowrap;opacity:0;pointer-events:none;will-change:transform,opacity}
   /* THE SUBJECT LINE IS OPAQUE. A leaving row slides up through the line where the signature and
      the verb sit, so both carry a paper fill (a shadow spread, so nothing moves) and stand above the
      rows: the word passes behind them instead of through them. Off during the arrival so the fill
      never covers the discs. */
+  [data-theme="dark"] .hero-grid .conn{color:var(--ink2)}
+  @media(prefers-color-scheme:dark){html:not([data-theme="light"]) .hero-grid .conn{color:var(--ink2)}}
   html.intro-done .hero-grid .line.sig,html.intro-done .hero-grid .conn{z-index:2;background:var(--paper);box-shadow:0 0 0 7px var(--paper)}
   .hero-grid .line{z-index:1}
   [data-theme="dark"] .hero-grid .line.sig{color:#FAF9F7}
