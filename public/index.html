@@ -877,6 +877,8 @@ function ink(c, on) {
   /* THE WALL SETTLES. After the arrival the breath eases to rest and the random ink stops,
      so the headline can be read; it comes alive again while the pointer is over it. */
   const hovering = px > -9000;
+  /* the phone drum is read one line at a time, with a verb beside it: no ink ever lights there */
+  const drumQuiet = innerWidth < 640;
   /* five seconds of life after the page is up, then a slow glide to rest over about three more */
   calm += (((age > 5 && !hovering) ? 1 : 0) - calm) * 0.008;
 
@@ -891,6 +893,7 @@ function ink(c, on) {
       const w = c.base + (k*k*(1-calm) + 0.25*calm)*STRETCH;
       c.cell.style.width = w.toFixed(1)+'px';
 
+      if(drumQuiet){ if(c.lit){ ink(c,false); litNow--; } x += w; continue; }
       if(arriving){
         /* diagonal, so it reads as a sweep across the block rather than as eleven rows
            each doing their own thing */
