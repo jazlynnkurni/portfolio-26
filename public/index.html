@@ -1177,18 +1177,15 @@ show(0);
   /* TWELVE. The leftmost column of the sixteen sat under the wall by design and the wall
      grew into it; those four are gone, and the rest are fitted right of the wall's furthest
      reach at whatever window this is (see sheets-gl.js). */
-  /* THE DISCS, both sides of the wall and larger, overlapping where they meet, the way the
-     Columbia Jokes hero lays them: a loose ring around the centre piece, cut by the edges. */
   const SHEETS=[
-    {x:.02,y:.10,r:.150},{x:.12,y:.34,r:.125},{x:.00,y:.60,r:.140},{x:.09,y:.88,r:.120},
-    {x:.24,y:.72,r:.110},{x:.20,y:.05,r:.095},
-    {x:.70,y:.12,r:.135},{x:.86,y:.08,r:.110},{x:.98,y:.26,r:.150},
-    {x:.76,y:.44,r:.120},{x:.94,y:.58,r:.125},{x:.70,y:.78,r:.140},{x:.90,y:.90,r:.115},{x:1.02,y:.80,r:.100}
+    {x:.63,y:.13,r:.130},{x:.80,y:.22,r:.120},{x:.95,y:.14,r:.105},
+    {x:.72,y:.36,r:.125},{x:.89,y:.40,r:.115},{x:1.02,y:.30,r:.100},
+    {x:.66,y:.58,r:.135},{x:.83,y:.62,r:.115},{x:.98,y:.54,r:.110},
+    {x:.76,y:.82,r:.125},{x:.92,y:.76,r:.105},{x:1.04,y:.86,r:.095}
   ];
-
   /* LOCKED 2026-09-23. Her eight, picked in the riso lab against frosted glass: two
      creams, two greys, a dusky mauve, a grey green, a lilac grey, a sage. */
   const SWATCH=['#dfddc8','#c7c7c7','#827a85','#9ba69c','#c4c1c8','#dfddc8','#c2beb3','#dfdac8'];
-  mountSheets(document.getElementById('sheets'), SHEETS, SWATCH, { paper: '#FAF9F7', ground: '#1C1A17', bleed: 220, clear: () => 0 });
+  mountSheets(document.getElementById('sheets'), SHEETS, SWATCH, { paper: '#FAF9F7', ground: '#1C1A17', bleed: 220, clear: () => window.wallClear ? window.wallClear() : 0 });
 </script>
 </body></html>
