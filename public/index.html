@@ -256,6 +256,11 @@ footer .in a{font-size:13px}
   /* the canvas is opaque and black until its first frame; it stays hidden until the discs have drawn */
   html:not(.sheets-ready) #sheets{visibility:hidden}
   html.intro-done #sheets{display:none}
+  /* JUST THE ANIMATION. Until the arrival is over nothing else on the hero may paint: not the loading
+     bar (its text can show for a frame before its script removes it), not a word row (the letter
+     row is row one for an instant before the signature replaces it), not the verb. */
+  #load{display:none}
+  html:not(.intro-done) .hero-grid .line:not(.sig),html:not(.intro-done) .hero-grid .conn{visibility:hidden!important;opacity:0!important}
   .hero-grid .line.sig{width:74%;left:0;transform-origin:left 50%;color:#340414}
   /* the words beside the shrunken signature: "is a", "studies", "lives in", one per row */
   .hero-grid .conn{position:absolute;top:50%;left:0;font:300 17px/1 var(--hel);color:#A99939;white-space:nowrap;opacity:0;pointer-events:none;will-change:transform,opacity}
