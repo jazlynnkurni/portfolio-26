@@ -4,7 +4,7 @@
 <link rel="icon" href="/favicon.png" type="image/png"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta property="og:image" content="https://jazlynnwashere.com/og.png"><meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="/site-mark.js?v=sig12"></script>
+<script src="/site-mark.js?v=sig11"></script>
 <style>
 :root{--jak:"Plus Jakarta Sans",sans-serif;--hel:"Helvetica Neue",Helvetica,Arial,sans-serif;
   --gold:#A99939;--oxblood:#340414;--charcoal:#1C1A17}
@@ -50,10 +50,7 @@ nav a.l:hover{color:var(--ink)}
 [data-theme="dark"] #theme .sun{display:none}
 :root:not([data-theme="dark"]) #theme .moon{display:none}
 @media(max-width:640px){nav .in{padding-top:16px} nav a.l{padding:9px 10px;font-size:12.5px}}
-@media(max-width:640px){nav{display:none}
-  /* body copy reads thin on a phone at Light: Regular there */
-  body,p,li,.lede,.cs p,.cs li,.ab p,.row.text p,.cell p,.pv-cap span,footer a{font-weight:400}}
-@media(max-width:480px){nav .wrap{padding:0 20px} nav .in{padding-top:14px} nav::before{height:84px} nav .links{gap:2px;padding:3px 8px 3px 4px} nav a.l{padding:8px 9px;font-size:12.5px} #theme{width:34px;height:34px}}
+@media(max-width:480px){nav .in{flex-direction:column;align-items:flex-start;gap:10px} nav a.l{padding:8px 9px;font-size:12px}}
 footer{padding:64px 0 46px}
 body>.pushing{transition:transform .5s cubic-bezier(.22,1,.36,1)}
 footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
@@ -120,9 +117,6 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
 .cs-hero{padding:136px 0 0}
 .cs-hero .eyebrow{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
 .cs-hero .eyebrow .logo{height:22px;width:auto;opacity:.9}
-/* the way back from a case study on a phone: a label beside the project number, inside the sheet only */
-.cs-hero .eyebrow .back-cs{display:none;text-decoration:none;color:var(--ink);margin-right:4px}
-@media(max-width:640px){html.sheet .cs-hero .eyebrow .back-cs{display:inline}}
 [data-theme="dark"] .cs-hero .eyebrow .logo{filter:invert(1) hue-rotate(180deg)}
 .cs-hero h1{font-size:clamp(28px,4vw,44px);line-height:1.12;max-width:22ch;margin-top:12px}
 .cs-hero .facts{display:grid;grid-template-columns:repeat(12,1fr);gap:24px;margin-top:48px;border-top:1px solid var(--hair);padding-top:24px}
@@ -272,19 +266,9 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
   .cs-hero{padding-top:104px}.cs-hero h1{font-size:26px}.toc a{height:36px;padding:0 12px;font-size:12.5px}
   .cs-hero .plate{margin-top:32px}section.cs{padding-top:64px}.row{gap:20px;margin-top:32px}
   .three,.pair,.pair.trio{grid-template-columns:1fr}.deck{max-width:100%!important}
-  .flow .cell p{min-height:0}.ab.ab{padding-top:56px}.ab .keeps{grid-template-columns:1fr 1fr;gap:10px}
-  .ab .thesis{display:none}.ab .back{display:none!important}.ab .hello{margin-top:24px}html.ab-arrive{overflow:hidden}
-  .ab h2{font-weight:600}.ab .cells h3{font-weight:600}.ab .rows .row .o{font-weight:500;color:var(--ink)}
-  /* the ledger: focus areas, experience rows and the shelf fill in one after another as they come into view */
-  .ab .cells .cell,.ab .rows .row{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .62s cubic-bezier(.22,1,.36,1)}
-  .ab .keep .box{transition:none}   /* the shelf is in colour from the first frame: no reveal, no fade */
-  .ab .cells .cell.seen,.ab .rows .row.seen,.ab .keep.seen{opacity:1;transform:none}
-  /* no hover on a phone: the shelf boxes carry their colour and their grain all the time, the item lifted */
-  .ab .keep.green .box{background:#9ba69c;outline-color:transparent}.ab .keep.purple .box{background:#827a85;outline-color:transparent}
-  .ab .keep .box img.on{transform:translateY(-10px);filter:drop-shadow(0 22px 30px rgba(0,0,0,.24))}
-  .ab .keep .box::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;mix-blend-mode:overlay;opacity:.55;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}.ab .flip-stage,.ab .bio{will-change:transform,opacity}@media(hover:none){#cur{display:none!important}}
+  .flow .cell p{min-height:0}.ab{padding-top:104px}.ab .keeps{grid-template-columns:1fr 1fr;gap:10px}
   .ab .keep .box{padding:18px}.thanks{flex-direction:column;align-items:flex-start;gap:12px}.more .cells{grid-template-columns:1fr}
-  .gal.gal{padding-top:56px}.wall{grid-template-columns:1fr}.wall .slot{border-right:1px solid var(--hair)}
+  .gal{padding-top:104px}.wall{grid-template-columns:1fr}.wall .slot{border-right:1px solid var(--hair)}
   footer .in{flex-wrap:wrap;gap:10px}
 }
 
@@ -332,8 +316,6 @@ html.sheet body{background:transparent}
 </style><script>(function(){if(new URLSearchParams(location.search).get('sheet')=='1')document.documentElement.classList.add('sheet');const q=new URLSearchParams(location.search).get('theme');let t=q||localStorage.getItem('theme');
 if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script><script defer src="/_vercel/insights/script.js"></script>
 </head><body>
-<script src="/tabbar.js?v=5"></script>
-
 <nav class="grounded"><div class="wrap in">
   <site-mark href="/"></site-mark>
   <span class="links">
