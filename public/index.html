@@ -442,9 +442,9 @@ footer .in a{font-size:13px}
   .crate .hint{position:absolute;left:30px;right:30px;bottom:28px;opacity:0;transition:opacity .3s ease;font:300 12px var(--hel);color:var(--ink3);text-align:center;pointer-events:none}
   .crate .open{position:absolute;left:50%;bottom:36px;transform:translateX(-50%);opacity:0;transition:opacity .3s ease;font:500 13px var(--jak);color:var(--paper);background:var(--ink);border-radius:999px;padding:10px 16px;text-decoration:none;white-space:nowrap}
 }
-.m-card{display:none}
+.rows .m-card{display:none}   /* .rows .m-card, not .m-card: the ".rows a" rule outranks a bare class and would show it on desktop */
 @media(max-width:900px){
-  .m-card{display:block;margin:10px 0 28px;padding:12px;border-radius:20px;background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px;text-decoration:none;color:inherit}
+  .rows .m-card{display:block;margin:10px 0 28px;padding:12px;border-radius:20px;background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px;text-decoration:none;color:inherit}
   .m-card .st{display:block;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:var(--plate)}
   .m-card img{width:100%;height:100%;object-fit:cover;display:block}
   [data-theme="dark"] .m-card .st{outline:1px solid var(--outline);outline-offset:-1px}

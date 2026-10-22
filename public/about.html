@@ -405,8 +405,10 @@ html.sheet body{background:transparent}
 .ab .keep{cursor:pointer;outline:0;user-select:none}
 .ab .keep .box{position:relative;margin-top:12px;aspect-ratio:1/1.15;border-radius:16px;background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px;
   padding:28px;display:grid;place-items:center;transition:background .28s ease,outline-color .28s ease}
-.ab .keep .box img{position:absolute;inset:28px;margin:auto;max-width:calc(100% - 56px);max-height:calc(100% - 56px);width:auto;height:auto;object-fit:contain;display:block;opacity:0;
+.ab .keep .box img{grid-area:1/1;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;opacity:0;
   transform:translateY(6px) scale(.98);transition:opacity .32s ease,transform .5s cubic-bezier(.33,1.18,.37,1);filter:drop-shadow(0 8px 18px rgba(0,0,0,.12));pointer-events:none}
+/* phones: the item is pinned inside the box so every box is the same size; desktop keeps the grid placement above */
+@media(max-width:640px){.ab .keep .box img{position:absolute;inset:28px;margin:auto;max-width:calc(100% - 56px);max-height:calc(100% - 56px)}}
 .ab .keep .box img.on{opacity:1;transform:none}
 .ab .keep .box img.out{opacity:0;transform:translateY(-14px) scale(1.02);transition:opacity .22s ease,transform .3s ease}
 /* hover: the item floats, the box takes the signature colour */
