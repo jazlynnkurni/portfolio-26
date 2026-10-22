@@ -616,7 +616,6 @@ html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
   const q=new URLSearchParams(location.search).get('theme');
   let t=q||localStorage.getItem('theme');
   if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
-  if((matchMedia('(max-width:640px)').matches||matchMedia('(hover:none)').matches)) t='light';   /* phones are always light */
   document.documentElement.setAttribute('data-theme',t);
 })();
 </script>
@@ -783,7 +782,7 @@ a.addEventListener('click',()=>{a.href=base+'?theme='+(document.documentElement.
   },{capture:true});
 })();
 /* follow the OS only while the visitor has not chosen for themselves */
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{ if((matchMedia('(max-width:640px)').matches||matchMedia('(hover:none)').matches)) return; if(localStorage.getItem('theme')) return;
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{ if(localStorage.getItem('theme')) return;
   document.documentElement.setAttribute('data-theme',e.matches?'dark':'light'); dispatchEvent(new CustomEvent('themechange')); });
 
 /* ---------- the loader: rules, stems, breath, sweep ---------- */
