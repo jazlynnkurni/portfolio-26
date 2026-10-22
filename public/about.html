@@ -4,7 +4,7 @@
 <link rel="icon" href="/favicon.png" type="image/png"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta property="og:image" content="https://jazlynnwashere.com/og.png"><meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="/site-mark.js?v=sig11"></script>
+<script src="/site-mark.js?v=sig12"></script>
 <style>
 :root{--jak:"Plus Jakarta Sans",sans-serif;--hel:"Helvetica Neue",Helvetica,Arial,sans-serif;
   --gold:#A99939;--oxblood:#340414;--charcoal:#1C1A17}
@@ -50,7 +50,10 @@ nav a.l:hover{color:var(--ink)}
 [data-theme="dark"] #theme .sun{display:none}
 :root:not([data-theme="dark"]) #theme .moon{display:none}
 @media(max-width:640px){nav .in{padding-top:16px} nav a.l{padding:9px 10px;font-size:12.5px}}
-@media(max-width:480px){nav .in{flex-direction:column;align-items:flex-start;gap:10px} nav a.l{padding:8px 9px;font-size:12px}}
+@media(max-width:640px){nav{display:none}
+  /* body copy reads thin on a phone at Light: Regular there */
+  body,p,li,.lede,.cs p,.cs li,.ab p,.row.text p,.cell p,.pv-cap span,footer a{font-weight:400}}
+@media(max-width:480px){nav .wrap{padding:0 20px} nav .in{padding-top:14px} nav::before{height:84px} nav .links{gap:2px;padding:3px 8px 3px 4px} nav a.l{padding:8px 9px;font-size:12.5px} #theme{width:34px;height:34px}}
 footer{padding:64px 0 46px}
 body>.pushing{transition:transform .5s cubic-bezier(.22,1,.36,1)}
 footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
@@ -117,6 +120,9 @@ html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,
 .cs-hero{padding:136px 0 0}
 .cs-hero .eyebrow{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
 .cs-hero .eyebrow .logo{height:22px;width:auto;opacity:.9}
+/* the way back from a case study on a phone: a label beside the project number, inside the sheet only */
+.cs-hero .eyebrow .back-cs{display:none;text-decoration:none;color:var(--ink);margin-right:4px}
+@media(max-width:640px){html.sheet .cs-hero .eyebrow .back-cs{display:inline}}
 [data-theme="dark"] .cs-hero .eyebrow .logo{filter:invert(1) hue-rotate(180deg)}
 .cs-hero h1{font-size:clamp(28px,4vw,44px);line-height:1.12;max-width:22ch;margin-top:12px}
 .cs-hero .facts{display:grid;grid-template-columns:repeat(12,1fr);gap:24px;margin-top:48px;border-top:1px solid var(--hair);padding-top:24px}
@@ -266,9 +272,19 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
   .cs-hero{padding-top:104px}.cs-hero h1{font-size:26px}.toc a{height:36px;padding:0 12px;font-size:12.5px}
   .cs-hero .plate{margin-top:32px}section.cs{padding-top:64px}.row{gap:20px;margin-top:32px}
   .three,.pair,.pair.trio{grid-template-columns:1fr}.deck{max-width:100%!important}
-  .flow .cell p{min-height:0}.ab{padding-top:104px}.ab .keeps{grid-template-columns:1fr 1fr;gap:10px}
+  .flow .cell p{min-height:0}.ab.ab{padding-top:56px}.ab .keeps{grid-template-columns:1fr 1fr;gap:10px}
+  .ab .thesis{display:none}.ab .back{display:none!important}.ab .hello{margin-top:24px}html.ab-arrive{overflow:hidden}
+  .ab h2{font-weight:600}.ab .cells h3{font-weight:600}.ab .rows .row .o{font-weight:500;color:var(--ink)}
+  /* the ledger: focus areas, experience rows and the shelf fill in one after another as they come into view */
+  .ab .cells .cell,.ab .rows .row{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .62s cubic-bezier(.22,1,.36,1)}
+  .ab .keep .box{transition:none}   /* the shelf is in colour from the first frame: no reveal, no fade */
+  .ab .cells .cell.seen,.ab .rows .row.seen,.ab .keep.seen{opacity:1;transform:none}
+  /* no hover on a phone: the shelf boxes carry their colour and their grain all the time, the item lifted */
+  .ab .keep.green .box{background:#9ba69c;outline-color:transparent}.ab .keep.purple .box{background:#827a85;outline-color:transparent}
+  .ab .keep .box img.on{transform:translateY(-10px);filter:drop-shadow(0 22px 30px rgba(0,0,0,.24))}
+  .ab .keep .box::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;mix-blend-mode:overlay;opacity:.55;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}.ab .flip-stage,.ab .bio{will-change:transform,opacity}@media(hover:none){#cur{display:none!important}}
   .ab .keep .box{padding:18px}.thanks{flex-direction:column;align-items:flex-start;gap:12px}.more .cells{grid-template-columns:1fr}
-  .gal{padding-top:104px}.wall{grid-template-columns:1fr}.wall .slot{border-right:1px solid var(--hair)}
+  .gal.gal{padding-top:56px}.wall{grid-template-columns:1fr}.wall .slot{border-right:1px solid var(--hair)}
   footer .in{flex-wrap:wrap;gap:10px}
 }
 
@@ -384,10 +400,12 @@ html.sheet body{background:transparent}
 
 /* ---- what I keep close: four identical boxes, one item each ---- */
 .ab .keeps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
+.ab .back{display:none;font:500 13px var(--jak);color:var(--ink2);text-decoration:none;margin-bottom:22px;padding:8px 0}
+.ab .back:hover{color:var(--ink)}
 .ab .keep{cursor:pointer;outline:0;user-select:none}
 .ab .keep .box{position:relative;margin-top:12px;aspect-ratio:1/1.15;border-radius:16px;background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px;
   padding:28px;display:grid;place-items:center;transition:background .28s ease,outline-color .28s ease}
-.ab .keep .box img{grid-area:1/1;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;opacity:0;
+.ab .keep .box img{position:absolute;inset:28px;margin:auto;max-width:calc(100% - 56px);max-height:calc(100% - 56px);width:auto;height:auto;object-fit:contain;display:block;opacity:0;
   transform:translateY(6px) scale(.98);transition:opacity .32s ease,transform .5s cubic-bezier(.33,1.18,.37,1);filter:drop-shadow(0 8px 18px rgba(0,0,0,.12));pointer-events:none}
 .ab .keep .box img.on{opacity:1;transform:none}
 .ab .keep .box img.out{opacity:0;transform:translateY(-14px) scale(1.02);transition:opacity .22s ease,transform .3s ease}
@@ -408,6 +426,8 @@ html.sheet body{background:transparent}
 </style><script>(function(){if(new URLSearchParams(location.search).get('sheet')=='1')document.documentElement.classList.add('sheet');const q=new URLSearchParams(location.search).get('theme');let t=q||localStorage.getItem('theme');
 if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script><script defer src="/_vercel/insights/script.js"></script>
 </head><body>
+<script src="/tabbar.js?v=5"></script>
+
 <nav class="grounded"><div class="wrap in">
   <site-mark href="/"></site-mark>
   <span class="links">
@@ -440,6 +460,7 @@ if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches
   </filter>
 </defs></svg>
 <main class="ab"><div class="wrap">
+  <a class="back" href="/">&larr; Back</a>
   <div class="thesis"><div class="label">About</div>
     <h1>My interests lie in what people overlook.</h1>
     <p>In my designs, I try to build quiet details made with care.</p></div>
@@ -518,7 +539,7 @@ if(gl){
 const VS='attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
 const FS=`precision highp float;
 uniform vec2 uRes; uniform float uDot,uTones,uFade,uSeed,uTime,uRain,uReveal,uRad; uniform vec2 uMouse;
-uniform sampler2D uA,uB,uMask; uniform float uAspA,uAspB; uniform vec3 uInk,uPaper;
+uniform sampler2D uA,uB,uMask; uniform float uAspA,uAspB,uColor; uniform vec3 uInk,uPaper;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float b2(vec2 a){a=floor(a);return fract(a.x*.5+a.y*a.y*.75);}
 float b8(vec2 a){return b2(.25*a)*.0625+b2(.5*a)*.25+b2(a);}
@@ -539,13 +560,20 @@ void main(){
   float rev=clamp(circ+texture2D(uMask,uv).a,0.,1.);
   float tear=clamp(rev*1.45-hash(cell*2.17+9.13)*.45,0.,1.);
   vec3 photo=mix(texture2D(uA,cover(uv,uAspA)).rgb,texture2D(uB,cover(uv,uAspB)).rgb,uFade);
-  gl_FragColor=vec4(mix(mix(uInk,uPaper,on),photo,tear),1.);
+  /* phones have no hover to reveal the colour, so there the dither prints in the photo's own colours:
+     each channel cut to the same steps on the same Bayer grid, so the pixel texture stays */
+  vec3 C=mix(texture2D(uA,cover(cuv,uAspA)).rgb,texture2D(uB,cover(cuv,uAspB)).rgb,pickB);
+  C=clamp((C-.5)*1.08+.5,0.,1.);
+  float st=uTones+2.; vec3 cq=clamp(floor(C*st+b8(cell))/st,0.,1.);
+  cq*=mix(1.,.82,pickRain*(1.-onRain));
+  vec3 mono=mix(uInk,uPaper,on);
+  gl_FragColor=vec4(mix(mix(mono,cq,uColor),photo,tear),1.);
 }`;
 const mk=(t,s)=>{const x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(x));return x;};
 const pg=gl.createProgram();gl.attachShader(pg,mk(gl.VERTEX_SHADER,VS));gl.attachShader(pg,mk(gl.FRAGMENT_SHADER,FS));gl.linkProgram(pg);gl.useProgram(pg);
 const q=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,q);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
 const aL=gl.getAttribLocation(pg,'a');gl.enableVertexAttribArray(aL);gl.vertexAttribPointer(aL,2,gl.FLOAT,false,0,0);
-const U={};['uRes','uDot','uTones','uFade','uSeed','uTime','uRain','uReveal','uRad','uMouse','uA','uB','uMask','uAspA','uAspB','uInk','uPaper'].forEach(n=>U[n]=gl.getUniformLocation(pg,n));
+const U={};['uRes','uDot','uTones','uFade','uSeed','uTime','uRain','uReveal','uRad','uMouse','uA','uB','uMask','uAspA','uAspB','uInk','uPaper','uColor'].forEach(n=>U[n]=gl.getUniformLocation(pg,n));
 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
 const tex=src=>{const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);['TEXTURE_MIN_FILTER','TEXTURE_MAG_FILTER'].forEach(k=>gl.texParameteri(gl.TEXTURE_2D,gl[k],gl.LINEAR));['TEXTURE_WRAP_S','TEXTURE_WRAP_T'].forEach(k=>gl.texParameteri(gl.TEXTURE_2D,gl[k],gl.CLAMP_TO_EDGE));gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,src);return t;};
 const imgs=PHOTOS.map(s=>{const im=new Image();im.src=s;return im;}); const T=[]; const asp=i=>imgs[i].naturalWidth?imgs[i].naturalWidth/imgs[i].naturalHeight:1;
@@ -571,7 +599,7 @@ function frame(now){const dt=Math.min(.05,(now-prev)/1000);prev=now;simT=(simT+d
   if(W&&T[idx]){const tB=(fading&&T[nextIdx])?T[nextIdx]:T[idx];if(maskDirty){gl.bindTexture(gl.TEXTURE_2D,maskT);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,mc);maskDirty=false;}
     gl.viewport(0,0,W,H);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,T[idx]);gl.uniform1i(U.uA,0);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,tB);gl.uniform1i(U.uB,1);gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,maskT);gl.uniform1i(U.uMask,2);
     const [I,Pp]=ink();gl.uniform3fv(U.uInk,I);gl.uniform3fv(U.uPaper,Pp);
-    gl.uniform2f(U.uRes,W,H);gl.uniform1f(U.uDot,dot);gl.uniform1f(U.uTones,P.tones);gl.uniform1f(U.uFade,fading?Math.min(1,fadeT/850):0);gl.uniform1f(U.uSeed,seed);gl.uniform1f(U.uTime,simT);gl.uniform1f(U.uRain,P.rain);gl.uniform1f(U.uReveal,reveal);gl.uniform1f(U.uRad,P.rad);gl.uniform2f(U.uMouse,mX,mY);gl.uniform1f(U.uAspA,asp(idx));gl.uniform1f(U.uAspB,asp(fading?nextIdx:idx));
+    gl.uniform2f(U.uRes,W,H);gl.uniform1f(U.uColor,matchMedia('(hover:none),(max-width:640px)').matches?1:0);gl.uniform1f(U.uDot,dot);gl.uniform1f(U.uTones,P.tones);gl.uniform1f(U.uFade,fading?Math.min(1,fadeT/850):0);gl.uniform1f(U.uSeed,seed);gl.uniform1f(U.uTime,simT);gl.uniform1f(U.uRain,P.rain);gl.uniform1f(U.uReveal,reveal);gl.uniform1f(U.uRad,P.rad);gl.uniform2f(U.uMouse,mX,mY);gl.uniform1f(U.uAspA,asp(idx));gl.uniform1f(U.uAspB,asp(fading?nextIdx:idx));
     gl.drawArrays(gl.TRIANGLES,0,3); if(!live){live=true;cv.style.visibility='';fallback.style.visibility='hidden';}}
   requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
@@ -736,4 +764,45 @@ document.querySelectorAll('video[data-io]').forEach(v=>io.observe(v));})();
     requestAnimationFrame(tick);
   })();
 })();
-</script></body></html>
+</script>
+<script>
+/* THE PHONE ARRIVES (phones). It peeks half in at the bottom of the screen, rings twice, shaking with the ring,
+   pulls up to its place, and the words are pulled in under it. The ring is two tones from WebAudio, no file;
+   a page that loads without a touch is not allowed to make sound on a phone, so it rings on arrival where the
+   browser permits and otherwise on the first touch. */
+(function(){
+  if(innerWidth>=640) return;
+  const stage=document.getElementById('stage'), bio=document.querySelector('.ab .bio'); if(!stage||!bio) return;
+  const html=document.documentElement; html.classList.add('ab-arrive'); scrollTo(0,0);
+  const r=stage.getBoundingClientRect(); const peek=Math.round(innerHeight-(r.top+r.height*.5));
+  stage.style.transform=`translateY(${peek}px)`; bio.style.opacity='0'; bio.style.transform='translateY(70px)';
+  const EASE='cubic-bezier(.22,1,.36,1)';
+  let ctx=null, rang=false;
+  function tones(){ const t0=ctx.currentTime; [0,1.05].forEach(off=>{ for(let i=0;i<16;i++){ const t=t0+off+i*.05; const o=ctx.createOscillator(), g=ctx.createGain(); o.type='sine'; o.frequency.value=i%2?1209:941; g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.07,t+.005); g.gain.exponentialRampToValueAtTime(.0001,t+.046); o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t+.05); } }); rang=true; }
+  function ring(){ if(rang) return; try{ ctx=ctx||new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==='suspended'){ ctx.resume().then(()=>{ if(ctx.state==='running') tones(); }); } else tones(); }catch(e){} }
+  setTimeout(ring,350);
+  const once=()=>{ ring(); }; addEventListener('touchstart',once,{once:true,passive:true}); addEventListener('pointerdown',once,{once:true});
+  /* the shake runs with the two rings: a burst, a pause, a burst */
+  const kf=[{transform:`translateY(${peek}px) rotate(0deg)`}];
+  for(let i=0;i<40;i++){ const on=(i<16)||(i>=21&&i<37); const a=on?(i%2?1:-1)*2.2:0; kf.push({transform:`translateY(${peek}px) rotate(${a}deg) translateX(${on?(i%2?1:-1)*2:0}px)`}); }
+  kf.push({transform:`translateY(${peek}px) rotate(0deg)`});
+  stage.animate(kf,{duration:2000,delay:350,easing:'linear',fill:'forwards'});
+  setTimeout(()=>{ stage.animate([{transform:`translateY(${peek}px)`},{transform:'translateY(0)'}],{duration:760,easing:EASE,fill:'forwards'}).finished.then(()=>{ stage.getAnimations().forEach(a=>a.cancel()); stage.style.transform=''; }); },2400);
+  setTimeout(()=>{ bio.animate([{opacity:0,transform:'translateY(70px)'},{opacity:1,transform:'none'}],{duration:640,easing:EASE,fill:'forwards'}).finished.then(()=>{ bio.getAnimations().forEach(a=>a.cancel()); bio.style.opacity=''; bio.style.transform=''; html.classList.remove('ab-arrive'); }); },2800);
+  /* the ledger reveal: each group fills top to bottom, 70ms apart, as it scrolls into view */
+  /* FOCUS AREAS UNROLL. The first ledger (What I do) is tied to the scroll, not to a moment: each cell unrolls
+     downward from its top rule as it comes up the screen, the row lines drawing with it, and rolls back up if
+     you scroll back. Pure clip and transform, so it stays smooth on a phone. */
+  const focus=document.querySelector('.ab .cells');
+  if(focus){ const fc=[...focus.querySelectorAll('.cell')]; fc.forEach(c=>{ c.classList.add('seen'); c.style.transition='none'; c.style.willChange='clip-path,transform'; });
+    const sm=x=>x*x*(3-2*x), cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+    let raf=0; const roll=()=>{ raf=0; const vh=innerHeight; fc.forEach(c=>{ const r=c.getBoundingClientRect(); const p=sm(cl((vh*.94-r.top)/(r.height*1.6),0,1));
+        c.style.clipPath=`inset(0 0 ${((1-p)*100).toFixed(2)}% 0)`; c.style.opacity=(.25+.75*p).toFixed(3);
+        const kids=c.children; for(const k of kids){ k.style.transform=`translateY(${((1-p)*-14).toFixed(1)}px)`; } }); };
+    addEventListener('scroll',()=>{ if(!raf) raf=requestAnimationFrame(roll); },{passive:true}); addEventListener('resize',roll); roll(); }
+  const groups=[...document.querySelectorAll('.ab .cells, .ab .rows')].filter(g=>g!==focus);
+  const io=new IntersectionObserver(es=>{ es.forEach(en=>{ if(!en.isIntersecting) return; const items=[...en.target.querySelectorAll('.cell, .row, .keep')]; items.forEach((it,i)=>{ it.style.transitionDelay=(i*70)+'ms'; it.classList.add('seen'); }); io.unobserve(en.target); }); },{threshold:.15});
+  groups.forEach(g=>io.observe(g));
+})();
+</script>
+</body></html>

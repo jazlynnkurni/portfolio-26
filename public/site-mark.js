@@ -44,6 +44,7 @@
       'site-mark .sm-blurb span{margin-top:3px}' +
       'site-mark .sm-blurb b{font-weight:400;color:var(--ink,#14171B);margin-bottom:6px}' +
       'html[data-theme="dark"] site-mark .sm-blurb{outline:1px solid var(--outline,rgba(255,255,255,.1));outline-offset:-1px}' +
+      '@media(hover:none),(max-width:640px){site-mark .sm-blurb{display:none!important}site-mark:hover img{transform:none}}' +
       'site-mark .sm-paper{display:none}' +
       'html[data-theme="dark"] site-mark .sm-ink{display:none}' +
       'html[data-theme="dark"] site-mark .sm-paper{display:block}';
