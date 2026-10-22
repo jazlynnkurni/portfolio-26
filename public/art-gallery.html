@@ -271,7 +271,7 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 @media(max-width:640px){
   .cs-hero{padding-top:104px}.cs-hero h1{font-size:26px}.toc a{height:36px;padding:0 12px;font-size:12.5px}
   .cs-hero .plate{margin-top:32px}section.cs{padding-top:64px}.row{gap:20px;margin-top:32px}
-  .three,.pair,.pair.trio{grid-template-columns:1fr}.deck{max-width:100%!important}
+  .three,.pair.trio{grid-template-columns:1fr}.pair:not(.trio){grid-template-columns:repeat(2,minmax(0,1fr));max-width:340px}.deck{max-width:100%!important}
   .flow .cell p{min-height:0}.ab.ab{padding-top:56px}.ab .keeps{grid-template-columns:1fr 1fr;gap:10px}
   .ab .thesis{display:none}.ab .back{display:none!important}.ab .hello{margin-top:24px}html.ab-arrive{overflow:hidden}
   .ab h2{font-weight:600}.ab .cells h3{font-weight:600}.ab .rows .row .o{font-weight:500;color:var(--ink)}
@@ -465,7 +465,11 @@ if(t!=='light'&&t!=='dark') t=matchMedia('(prefers-color-scheme: dark)').matches
 /* ---------- alpha recordings: Safari takes the HEVC, everyone else the WebM ---------- */
 (function(){
   const safari=/^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent);
+  const phone=matchMedia('(max-width:640px)').matches||matchMedia('(hover:none)').matches;
   document.querySelectorAll('video[data-alpha]').forEach(v=>{
+    /* phones are always light: the flat recording multiplied into the paper drops its white ground on every
+       iPhone, where the HEVC alpha twin is heavy and not always honoured */
+    if(phone){ v.src=v.dataset.flat; v.style.mixBlendMode='multiply'; return; }
     v.src=v.dataset.alpha+(safari?'.mov':'.webm');
     v.addEventListener('error',()=>{ if(v.src.indexOf('-alpha')>-1){ v.src=v.dataset.flat; v.load(); } },{once:true});
   });

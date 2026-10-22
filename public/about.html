@@ -271,7 +271,7 @@ figcaption{font-size:12.5px;line-height:1.5;color:var(--ink3);margin-top:12px;ma
 @media(max-width:640px){
   .cs-hero{padding-top:104px}.cs-hero h1{font-size:26px}.toc a{height:36px;padding:0 12px;font-size:12.5px}
   .cs-hero .plate{margin-top:32px}section.cs{padding-top:64px}.row{gap:20px;margin-top:32px}
-  .three,.pair,.pair.trio{grid-template-columns:1fr}.deck{max-width:100%!important}
+  .three,.pair.trio{grid-template-columns:1fr}.pair:not(.trio){grid-template-columns:repeat(2,minmax(0,1fr));max-width:340px}.deck{max-width:100%!important}
   .flow .cell p{min-height:0}.ab.ab{padding-top:56px}.ab .keeps{grid-template-columns:1fr 1fr;gap:10px}
   .ab .thesis{display:none}.ab .back{display:none!important}.ab .hello{margin-top:24px}html.ab-arrive{overflow:hidden}
   .ab h2{font-weight:600}.ab .cells h3{font-weight:600}.ab .rows .row .o{font-weight:500;color:var(--ink)}
@@ -366,6 +366,8 @@ html.sheet body{background:transparent}
 .ab .base .shell{position:absolute;inset:0;border-radius:18px 18px 30px 30px;transform:translateZ(14px)}
 .ab .base .slab{position:absolute;inset:0;border-radius:18px 18px 30px 30px;background:var(--shell-c);transform:translateZ(0)}
 .ab .base .keys,.base .hinge{transform:translateZ(14px)}
+/* phones: above the shell (14px), since at the same depth Safari can paint the shell over the keys; desktop stays at 14px */
+@media(max-width:640px),(hover:none){.ab .base .keys,.base .hinge{transform:translateZ(15.5px)}}
 .ab .keys{position:absolute;left:22px;right:22px;top:26px;bottom:22px;display:grid;grid-template-rows:auto 1fr;gap:12px}
 .ab .nav{display:grid;grid-template-columns:44px 1fr 44px;gap:8px;align-items:center;justify-items:center}
 .ab .nav .ring{width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#3b3936,#1b1a19 70%);box-shadow:inset 0 1px 1px rgba(255,255,255,.12),inset 0 -2px 3px rgba(0,0,0,.6),0 2px 3px rgba(0,0,0,.5);display:grid;place-items:center;position:relative}
@@ -653,7 +655,11 @@ const ext=document.getElementById('ext');
 /* ---------- alpha recordings: Safari takes the HEVC, everyone else the WebM ---------- */
 (function(){
   const safari=/^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent);
+  const phone=matchMedia('(max-width:640px)').matches||matchMedia('(hover:none)').matches;
   document.querySelectorAll('video[data-alpha]').forEach(v=>{
+    /* phones are always light: the flat recording multiplied into the paper drops its white ground on every
+       iPhone, where the HEVC alpha twin is heavy and not always honoured */
+    if(phone){ v.src=v.dataset.flat; v.style.mixBlendMode='multiply'; return; }
     v.src=v.dataset.alpha+(safari?'.mov':'.webm');
     v.addEventListener('error',()=>{ if(v.src.indexOf('-alpha')>-1){ v.src=v.dataset.flat; v.load(); } },{once:true});
   });
