@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Cache-Control" content="no-cache">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-cache">
 <title>Jazlynn Kurniandra</title>
 <link rel="icon" href="/favicon.png" type="image/png"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta property="og:image" content="https://jazlynnwashere.com/og.png"><meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="/site-mark.js?v=sig12"></script>
+<script src="/site-mark.js?v=sig11"></script>
 <style>
 :root{
   --jak:"Plus Jakarta Sans",sans-serif; --hel:"Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -149,10 +149,7 @@ nav a:active{transform:scale(.96)}
 [data-theme="dark"] #theme .sun{display:none}
 :root:not([data-theme="dark"]) #theme .moon{display:none}
 @media(max-width:640px){nav .in{padding-top:16px} nav a{padding:9px 10px;font-size:12.5px}}
-@media(max-width:640px){nav{display:none}
-  /* body copy reads thin on a phone at Light: Regular there */
-  body,p,li,.lede,.cs p,.cs li,.ab p,.row.text p,.cell p,.pv-cap span,footer a{font-weight:400}}
-@media(max-width:480px){nav .wrap{padding:0 20px} nav .in{padding-top:14px} nav::before{height:84px} nav .links{gap:2px;padding:3px 8px 3px 4px} nav a{padding:8px 9px;font-size:12.5px} #theme{width:34px;height:34px}}
+@media(max-width:480px){nav .in{flex-direction:column;align-items:flex-start;gap:10px} nav a{padding:8px 9px;font-size:12px}}
 
 /* ---------------- hero: the locked letter grid ---------------- */
 .hero{padding:0}
@@ -238,41 +235,6 @@ footer .in a{font-size:13px}
 @media(max-width:900px){
   .hero-grid{grid-template-columns:1fr;row-gap:36px}
 }
-/* THE DRUM. A phone has no room for ten rows at once, so the wall pins to the screen and the
-   scroll turns it: one row sits in the centre, each flick of the thumb slides it up and out
-   while the next fades in from below. The discs are off here and the ground is plain paper. */
-@media(max-width:640px){
-  :root{--step:55vh}
-  .hero{position:relative;height:calc(100vh + 16*var(--step));background:var(--paper)}
-  /* the discs stay for the arrival only: fixed over the first screen, gone once she has signed */
-  #sheets{position:fixed;top:0;left:0;right:0;height:100vh;z-index:0;touch-action:auto}
-  /* the canvas is opaque and black until its first frame; it stays hidden until the discs have drawn */
-  html:not(.sheets-ready) #sheets{visibility:hidden}
-  html.intro-done #sheets{display:none}
-  /* JUST THE ANIMATION. Until the arrival is over nothing else on the hero may paint: not the loading
-     bar (its text can show for a frame before its script removes it), not a word row (the letter
-     row is row one for an instant before the signature replaces it), not the verb. */
-  #load:not(.go){display:none}
-  html:not(.intro-done) .hero-grid .line:not(.sig),html:not(.intro-done) .hero-grid .conn{visibility:hidden!important;opacity:0!important}
-  .hero-grid .line.sig{width:74%;left:0;transform-origin:left 50%;color:#340414}
-  /* the words beside the shrunken signature: "is a", "studies", "lives in", one per row */
-  .hero-grid .conn{position:absolute;top:50%;left:0;font:500 17px/1 var(--hel);color:#A99939;white-space:nowrap;opacity:0;pointer-events:none;will-change:transform,opacity}
-  /* THE SUBJECT LINE IS OPAQUE. A leaving row slides up through the line where the signature and
-     the verb sit, so both carry a paper fill (a shadow spread, so nothing moves) and stand above the
-     rows: the word passes behind them instead of through them. Off during the arrival so the fill
-     never covers the discs. */
-  [data-theme="dark"] .hero-grid .conn{color:var(--ink2)}
-  @media(prefers-color-scheme:dark){html:not([data-theme="light"]) .hero-grid .conn{color:var(--ink2)}}
-  html.intro-done .hero-grid .line.sig,html.intro-done .hero-grid .conn{z-index:2;background:var(--paper);box-shadow:0 0 0 7px var(--paper)}
-  .hero-grid .line{z-index:1}
-  [data-theme="dark"] .hero-grid .line.sig{color:#FAF9F7}
-  @media(prefers-color-scheme:dark){html:not([data-theme="light"]) .hero-grid .line.sig{color:#FAF9F7}}
-  .line.sig svg{width:100%;height:auto;display:block;overflow:visible}
-  .line.sig line{visibility:hidden}
-  .hero-grid{position:sticky;top:0;height:100vh;min-height:0;padding:0 30px;box-sizing:border-box;display:grid;grid-template-rows:1fr;place-items:center;row-gap:0}
-  .hero-grid .stack{grid-row:1;position:relative;width:100%;height:calc(var(--row) * 1.4);gap:0}
-  .hero-grid .line{position:absolute;left:0;top:50%;opacity:0;visibility:hidden;will-change:transform,opacity}
-}
 .stack{display:flex;flex-direction:column;gap:calc(var(--row) * .2)}
 /* what she does, in one line, above the fold: the wall says who, this says what */
 .stack .who{font:400 15px/1.5 var(--hel);color:var(--ink2);margin:0 0 10px;max-width:52ch}
@@ -356,7 +318,7 @@ footer .in a{font-size:13px}
 [data-theme="dark"] .preview .stage{outline:1px solid var(--outline);outline-offset:-1px}
 .preview.show{opacity:1;transform:none}
 @media(max-width:900px){.rows a{font-size:32px}}
-@media(max-width:640px){.rows a{font-size:26px}.tags{display:none}.tags button{padding:7px 11px;font-size:12px}.pv-cap{padding:12px 4px 4px}.hero-foot{display:none}.work{padding-top:40px}}
+@media(max-width:640px){.rows a{font-size:26px}.tags{gap:6px;margin:16px 0 28px}.tags button{padding:7px 11px;font-size:12px}.pv-cap{padding:12px 4px 4px}.hero-foot{display:none}.work{padding-top:40px}}
 /* THE GOLDEN RULE: every card has the same padding on all four sides, so the recording is
    fitted to the stage, never the stage to the recording. Cover, not contain: a recording
    that is not 16:9 loses a sliver at its edges rather than leaving a gap. */
@@ -377,82 +339,7 @@ footer .in a{font-size:13px}
 .pv-cap b{font:500 15px var(--jak);color:var(--ink)}
 .pv-cap i{font:500 11.5px var(--jak);font-style:normal;letter-spacing:.02em;color:var(--ink3);margin:1px 0 3px}
 .pv-cap span{font:300 12.5px/1.5 var(--hel);color:var(--ink2);max-width:36ch}
-@media(max-width:900px){.panel{grid-template-columns:1fr}.preview,.leader,.leader-yr{display:none}}
-/* PHONES HAVE NO HOVER. The preview card only ever appears under a pointer, so below 900px each
-   title carries its own poster card instead: the same plate, the same 12px inset on all four sides. */
-
-/* the Sandbox and About rows exist on phones only */
-.more{display:none}
-/* THE CRATE. On a phone the project list is a shelf of records: one sleeve in front, square-on, the rest
-   turned away to either side. Swipe to move along the shelf; the record in front has its disc out and
-   spinning and its vellum window clear; tap it to open. Built from the labs on :6320 / :6340 / :6360. */
-.crate{display:none}
-@media(max-width:640px){
-  .rows,.leader,.leader-yr{display:none!important}
-  .crate{display:block;position:absolute;left:0;right:0;top:0;height:100vh;margin:0;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;opacity:0;pointer-events:none;z-index:3}
-  .crate .rec .disc{transition:none}
-  .work>.wrap{display:none}
-  .more{display:none}
-  /* a real phone has no pointer; the bead is kept only for a mouse (her Mac preview) */
-  @media(hover:none){#cur{display:none!important}}
-  .marks{display:none}   /* no gallery section on phones: the shelf is followed by the footer */
-  /* THE PRESS. The chosen record rises a little above the rest, the neighbours slide off to either side to make
-     room, and the case study blurs in over it. The press is a 0..1 value the layout reads (see __cratePress). */
-  /* THE BALL AND THE SHEET. On a tap the sleeve folds into a ball in the label's colour, the ball slides up, and the
-     case study follows it up from the bottom of the screen, lands in its frame, then expands to the whole screen. */
-  /* THE OPEN. The cover is tossed off, the record sits in the middle of the screen and rolls, a line beneath it says
-     loading, and the case study blurs in over the record, full screen. Close: the case study blurs out, the record
-     is still there rolling, the cover comes back and the record slides into it. */
-  .sheet{transform:none;opacity:0;filter:blur(16px);transition:opacity .5s ease,filter .6s ease,top .46s cubic-bezier(.2,.7,.2,1),left .46s cubic-bezier(.2,.7,.2,1),right .46s cubic-bezier(.2,.7,.2,1),bottom .46s cubic-bezier(.2,.7,.2,1),border-radius .46s ease}
-  html.sheet-open .sheet{opacity:1;filter:blur(0)}
-  /* no chrome on the phone case study: no bar, no expand or close, no tab pills; the page fills the frame and the
-     browser's back returns to the shelf (popstate runs hide) */
-  .sheet-bar,.sheet-act,.sheet-tabs{display:none!important}
-  /* the head over the shelf, in the drum's boxed letters; the Sandbox and About rows after it; the footer's reveal */
-  .crate .chead{position:absolute;left:30px;top:0;opacity:0;pointer-events:none;display:flex;align-items:stretch;visibility:visible}
-  .crate .chead .cell{width:auto;display:grid;place-items:center;padding:0 .34em;font:400 calc(var(--row) * .78)/1 var(--hel);color:var(--ink)}
-  .crate .chead .ch{font:inherit;padding:0}
-  .more{display:none!important;padding:40px 0 8px;margin-top:-38vh;position:relative;z-index:4;background:var(--paper)}   /* rides up under the last record instead of leaving half a screen of air */
-  .more .label{margin-bottom:6px}
-  .more .mrow{display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:inherit;padding:18px 0;border-top:1px solid var(--hair)}
-  .more .mrow:last-child{border-bottom:1px solid var(--hair)}
-  .more .mrow .line .cell{width:auto;display:grid;place-items:center;padding:0 .34em;font:400 calc(var(--row) * .78)/1 var(--hel);color:var(--ink)}
-  .more .mrow .line .ch{font:inherit;padding:0}   /* same letter as PROJECTS, not the drum's */
-  .more .mrow .arr{font:300 22px/1 var(--hel);color:var(--ink2);transition:transform .3s cubic-bezier(.22,1,.36,1)}
-  .more .mrow:active .arr{transform:translateX(4px)}
-  footer .rule{transform:scaleX(0);transform-origin:left center;transition:transform .8s cubic-bezier(.22,1,.36,1)}
-  footer .in{opacity:0;transform:translateY(-10px);transition:opacity .5s ease .4s,transform .6s cubic-bezier(.22,1,.36,1) .4s}
-  footer.seen .rule{transform:none}footer.seen .in{opacity:1;transform:none}
-  .sheet iframe{top:0!important;height:100%!important}
-  #loading{position:fixed;left:0;right:0;top:calc(50% + 150px);text-align:center;font:300 13px/1.5 var(--hel);letter-spacing:.04em;color:var(--ink3);opacity:0;pointer-events:none;z-index:69;transition:opacity .3s ease}
-  #loading i{font-style:normal;display:inline-block;width:1.2em;text-align:left}
-  .crate .rec.going{z-index:200!important}
-  .crate .rec{position:absolute;left:0;top:0;width:220px;height:220px;will-change:transform;--out:0px}
-  .crate .rec .disc{position:absolute;top:7px;left:24px;width:206px;height:206px;border-radius:50%;transform:translateX(var(--out));transition:transform .6s cubic-bezier(.22,1,.36,1)}
-  .crate .rec .disc canvas{position:absolute;inset:-30%;width:160%;height:160%;display:block}   /* room for the whole shadow, so a shrunk disc never shows the canvas as a square */
-  .crate .rec .sl{position:absolute;inset:0;border-radius:6px;overflow:hidden;background:#FAF9F7;color:#14171B;box-shadow:0 0 0 .5px rgba(20,23,27,.10),0 1px 2px rgba(20,23,27,.06),0 10px 24px -8px rgba(20,23,27,.18),0 26px 50px -20px rgba(20,23,27,.26)}
-  .crate .rec .sl::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");mix-blend-mode:multiply;opacity:.55}
-  .crate .rec .t{position:absolute;left:0;right:0;bottom:0;padding:10px 16px 12px;font:500 12.5px var(--jak);display:flex;justify-content:space-between;align-items:baseline}
-  .crate .rec .t small{font:500 10px var(--jak);letter-spacing:.12em;color:rgba(20,23,27,.42)}
-  .crate .rec .win{position:absolute;left:15%;top:48%;width:70%;aspect-ratio:1;transform:translateY(-50%);border-radius:50%;overflow:hidden;background:rgba(255,255,255,.55);transition:background .45s ease;box-shadow:inset 0 0 0 1px rgba(20,23,27,.10),inset 14px 4px 26px -8px rgba(20,23,27,.22),inset -6px -8px 18px -10px rgba(255,255,255,.9),inset 0 10px 30px rgba(255,255,255,.5)}
-  .crate .rec .win .tint{position:absolute;inset:0;background:var(--lab);opacity:.22;mix-blend-mode:multiply;z-index:1;pointer-events:none;transition:opacity .45s ease}
-  .crate .rec .win img{position:absolute;left:50%;top:50%;width:70%;height:70%;object-fit:contain;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(var(--s));filter:blur(2.6px) saturate(.7) contrast(.9);opacity:.78;transition:filter .5s ease,opacity .5s ease;pointer-events:none}
-  .crate .rec .win::after{content:"";position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");mix-blend-mode:screen;opacity:.98;pointer-events:none;transition:opacity .5s ease;z-index:2}
-  .crate .rec.front .win{background:#fff}.crate .rec.front .win .tint{opacity:0}.crate .rec.front .win img{filter:none;opacity:1}.crate .rec.front .win::after{opacity:0}
-  .crate .hint{position:absolute;left:30px;right:30px;bottom:28px;opacity:0;transition:opacity .3s ease;font:300 12px var(--hel);color:var(--ink3);text-align:center;pointer-events:none}
-  .crate .open{position:absolute;left:50%;bottom:36px;transform:translateX(-50%);opacity:0;transition:opacity .3s ease;font:500 13px var(--jak);color:var(--paper);background:var(--ink);border-radius:999px;padding:10px 16px;text-decoration:none;white-space:nowrap}
-}
-.m-card{display:none}
-@media(max-width:900px){
-  .m-card{display:block;margin:10px 0 28px;padding:12px;border-radius:20px;background:var(--plate);outline:1px solid var(--outline);outline-offset:-1px;text-decoration:none;color:inherit}
-  .m-card .st{display:block;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:var(--plate)}
-  .m-card img{width:100%;height:100%;object-fit:cover;display:block}
-  [data-theme="dark"] .m-card .st{outline:1px solid var(--outline);outline-offset:-1px}
-  .m-card .cap{display:none;justify-content:space-between;align-items:baseline;gap:12px;padding:12px 4px 2px;font:500 12px var(--jak);letter-spacing:.01em;color:var(--ink3)}
-  .m-card .cap b{font-weight:500;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .m-card .cap i{font-style:normal;white-space:nowrap}
-  .rows li:last-child .m-card{margin-bottom:0}
-}
+@media(max-width:900px){.panel{grid-template-columns:1fr}.preview{position:static}}
 /* Concentric: outer = inner + padding. 14 + 18 = 32. */
 .card{border:1px solid var(--hair);border-radius:32px;padding:18px;background:var(--paper);
       text-decoration:none;color:inherit;display:flex;flex-direction:column;
@@ -571,7 +458,7 @@ html.sheet-full .sheet-act .i-in{display:block}
 html.sheet-open .sheet-bg,html.sheet-open .sheet{opacity:1;pointer-events:auto}
 html.sheet-open .sheet{transform:none}
 html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
-@media (max-width:760px){.sheet{left:12px;right:12px;top:64px;bottom:12px;border-radius:18px}.sheet-tabs{top:14px;justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;padding:0 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.sheet-tabs::-webkit-scrollbar{display:none}.sheet-tabs button{flex:0 0 auto;padding:8px 14px}}
+@media (max-width:760px){.sheet{left:12px;right:12px;top:64px;bottom:12px;border-radius:18px}.sheet-tabs{top:14px}}
 
 /* ---------- the wall, at the foot of the home: the latest marks, and the way to leave one ---------- */
 .marks{position:relative;z-index:2;background:var(--paper);padding:40px 0 72px}
@@ -605,7 +492,6 @@ html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
 
 </style><script defer src="/_vercel/insights/script.js"></script>
 </head><body>
-<script src="/tabbar.js?v=5"></script>
 
 <script>
 /* THEME, resolved before first paint so there is no flash of the wrong ground.
@@ -673,7 +559,6 @@ html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
   <div class="label">Projects</div>
   <div class="tags" id="tags"></div>
   <div class="panel">
-    <div class="crate" id="crate"></div>
     <ol class="rows" id="rows"></ol>
     <div class="preview" id="preview">
       <div class="stage"><video muted loop playsinline preload="none"></video><img alt=""></div>
@@ -799,8 +684,6 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{ if(loc
      least two of each so the bar never comes out one colour */
   let deal; do{ deal=cells.map(()=>Math.random()<.5); }while(deal.filter(Boolean).length<2||deal.filter(x=>!x).length<2);
   deal.forEach((g,i)=>{ if(g) cells[i].classList.add('g'); });
-  /* a phone has its own arrival (the discs, then the signature), so the bar never shows there */
-  if(innerWidth<640){ host.remove(); return; }
   const t0=performance.now(); let raf=0, inked=-1;
   function frame(now){
     const t=(now-t0)/1000;
@@ -850,16 +733,15 @@ function measure(){
   const N=WORDS.length, free=innerHeight-72-96-120;         /* hero min-height minus its paddings */
   /* on a narrow screen the longest word decides the row: its letters must fit the width at rest */
   const longest=Math.max(...WORDS.map(w=>w.length)), wide=(stack.getBoundingClientRect().width||innerWidth-60);
-  const narrow=innerWidth<640; const per=narrow?0.93:0.62;   /* a letter's share of the row at full breath, so a phone row never spills */
+  const narrow=innerWidth<640; const per=narrow?1.25:0.62;   /* a letter's share of the row at full breath, so a phone row never spills */
   const fitPx=(wide-4*longest)/(longest*per)/0.9;
-  /* the drum shows one row at a time, so on a phone only the width decides the row */
-  const rowPx=narrow?Math.max(18,Math.min(64,fitPx)):Math.max(22,Math.min(72, (free*.88)/(N+(N-1)*.2), fitPx));
+  const rowPx=Math.max(narrow?18:22,Math.min(72, (free*.88)/(N+(N-1)*.2), fitPx));
   document.documentElement.style.setProperty('--row',rowPx.toFixed(2)+'px');
   /* a custom property reads back as its declared text ("clamp(...)"), never as pixels,
      so the row is measured off a real cell */
   const probe=document.createElement('span'); probe.className='cell'; probe.style.cssText='position:absolute;visibility:hidden;width:1px';
   stack.appendChild(probe); const row=probe.getBoundingClientRect().height||40; probe.remove();
-  FS=row*.9; STRETCH=FS*(innerWidth<640?0.55:2.47); gauge.font=`400 ${FS}px "Helvetica Neue",Helvetica,Arial,sans-serif`;
+  FS=row*.9; STRETCH=FS*(innerWidth<640?0.9:2.47); gauge.font=`400 ${FS}px "Helvetica Neue",Helvetica,Arial,sans-serif`;
 }
 measure();
 /* EVERY LETTER STANDS THE SAME DISTANCE FROM ITS LEFT WALL. The glyph is measured for
@@ -959,8 +841,6 @@ function ink(c, on) {
   /* THE WALL SETTLES. After the arrival the breath eases to rest and the random ink stops,
      so the headline can be read; it comes alive again while the pointer is over it. */
   const hovering = px > -9000;
-  /* the phone drum is read one line at a time, with a verb beside it: no ink ever lights there */
-  const drumQuiet = innerWidth < 640;
   /* five seconds of life after the page is up, then a slow glide to rest over about three more */
   calm += (((age > 5 && !hovering) ? 1 : 0) - calm) * 0.008;
 
@@ -975,7 +855,6 @@ function ink(c, on) {
       const w = c.base + (k*k*(1-calm) + 0.25*calm)*STRETCH;
       c.cell.style.width = w.toFixed(1)+'px';
 
-      if(drumQuiet){ if(c.lit){ ink(c,false); litNow--; } x += w; continue; }
       if(arriving){
         /* diagonal, so it reads as a sweep across the block rather than as eleven rows
            each doing their own thing */
@@ -1062,7 +941,7 @@ const PROJECTS=[
 const rows=document.getElementById('rows'), tags=document.getElementById('tags');
 const pvT=document.getElementById('pv-t'), pvS=document.getElementById('pv-s'), pvR=document.getElementById('pv-r');
 rows.innerHTML=PROJECTS.map((p,i)=>`<li data-i="${i}" data-tags="${p.tags.join('|')}">
-  <a href="${p.href}"${p.ext?' target="_blank" rel="noopener"':''}${p.cur?` data-cur="${p.cur}"`:''}>${p.t}${p.ext?' <span class="ext"><svg class="ext-arrow" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>':''}</a><a class="m-card" href="${p.href}"${p.ext?' target="_blank" rel="noopener"':''} tabindex="-1" aria-hidden="true"><span class="st"><img src="${p.img||''}" alt="" loading="lazy" decoding="async"></span><span class="cap"><b>${p.role}</b><i>${p.st}</i></span></a></li>`).join('');
+  <a href="${p.href}"${p.ext?' target="_blank" rel="noopener"':''}${p.cur?` data-cur="${p.cur}"`:''}>${p.t}${p.ext?' <span class="ext"><svg class="ext-arrow" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>':''}</a></li>`).join('');
 /* one axis a recruiter actually filters on: the role, the surface, the proof */
 const ALL=['0 → 1','Personal projects','AI','Mobile','Web'];
 tags.innerHTML=['All',...ALL].map((t,i)=>`<button aria-pressed="${i===0}">${t}</button>`).join('');
@@ -1233,18 +1112,13 @@ show(0);
     if(push) history.pushState({sheet:slug},'',`/?p=${slug}`);
     document.title=c.t+' \u00b7 Jazlynn Kurniandra';
   }
-  /* WARM. The phone loads the case study the moment the record is tapped, under the toss and the roll, and
-     the blur-in waits for it: no empty frame behind the blur. */
-  window.__sheetWarm=function(slug){ mount(); const fr=sheet.querySelector('iframe'); const want=`/work/${slug}.html?sheet=1`;
-    if(cur!==slug||!fr.src.endsWith(want)){ cur=slug; fr.dataset.ready='0'; fr.src=want; }
-    return fr.dataset.ready==='1'?Promise.resolve():new Promise(r=>{ const done=()=>{ fr.dataset.ready='1'; r(); }; fr.addEventListener('load',done,{once:true}); setTimeout(done,6000); }); };
   function hide(push){ if(!document.documentElement.classList.contains('sheet-open')) return;
-    if(innerWidth<640&&window.__crateBall){ document.documentElement.classList.remove('sheet-open'); setTimeout(()=>document.documentElement.classList.remove('sheet-full'),600); window.__crateBall(false); } else document.documentElement.classList.remove('sheet-open','sheet-full'); const fb=sheet.querySelector('#sheet-full'); fb.setAttribute('aria-pressed','false'); fb.title=fb.ariaLabel='Expand';
-    /* closing a case study lands on the projects list, never back up at the hero; on a phone, back on the shelf */
-    if(innerWidth<640&&window.__crateBall){ scrollTo({top:restoreY,behavior:'instant'}); } else toWork();
+    document.documentElement.classList.remove('sheet-open','sheet-full'); const fb=sheet.querySelector('#sheet-full'); fb.setAttribute('aria-pressed','false'); fb.title=fb.ariaLabel='Expand';
+    /* closing a case study lands on the projects list, never back up at the hero */
+    toWork();
     [...tabs.children].forEach(b=>b.setAttribute('aria-pressed','false'));
     if(push) history.pushState({},'','/'); document.title='Jazlynn Kurniandra';
-    setTimeout(()=>{ if(!document.documentElement.classList.contains('sheet-open')){ const fr=sheet.querySelector('iframe'); fr.src='about:blank'; fr.dataset.ready='0'; cur=null; } },innerWidth<640?1200:400); }
+    setTimeout(()=>{ if(!document.documentElement.classList.contains('sheet-open')){ sheet.querySelector('iframe').src='about:blank'; cur=null; } },400); }
   /* the rows open the sheet; external work and the placeholders still go where they went */
   rows.addEventListener('click',e=>{ const a=e.target.closest('a'); if(!a) return; const h=a.getAttribute('href')||'';
     if(!h.startsWith('/work/')||e.metaKey||e.ctrlKey||e.shiftKey||e.button) return; e.preventDefault(); show(h.replace('/work/','').replace('.html',''),true); });
@@ -1275,48 +1149,7 @@ show(0);
   let raf=0;
   function apply(){
     raf=0;
-    const H=hero.offsetHeight||innerHeight, vh=innerHeight, drum=innerWidth<640;
-    /* on a phone the hero is a tall track and the wall is pinned inside it, so the engulf
-       is measured from where the track ends, and the scroll before that turns the drum */
-    const h=drum?vh:H, scrollY=drum?Math.max(0,window.scrollY-(H-vh)):window.scrollY;
-    let dprog=-1;
-    if(drum){
-      const step=vh*.55, N=(window.__drumEls||lines).length, prog=Math.max(0,Math.min(N-1+7,window.scrollY/step)); dprog=prog;
-      /* THE RECORD ROLLS IN. Past the last word the subject line fades to white the instant the record peeks (a third of a step), then one record per step. */
-      const gone=Math.max(0,Math.min(1,(prog-(N-1))/.3)); const goneK=gone*gone*(3-2*gone);
-      const row=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--row'))||40;
-      const els=window.__drumEls||lines.map(L=>L.cells[0].cell.parentElement);
-      els.forEach((el,i)=>{
-        const d=i-prog, a=Math.abs(d);
-        if(a>=1&&!el.classList.contains('sig')){ el.style.opacity='0'; el.style.visibility='hidden'; return; }
-        const sm=x=>x*x*(3-2*x);
-        let o=sm(1-a), tx=0, sc=1;                                  /* smoothstep in, smoothstep out */
-        /* the row after the signature waits until the signature has become a row itself */
-        if(i===1&&els[0].classList.contains('sig')&&d>0) o=sm(Math.max(0,Math.min(1,(prog-.5)/.5)));
-        let dy=d*row*1.6;
-        /* a leaving row goes quickly and not far: faded out by half the step, well short of the subject line */
-        if(d<0&&!el.classList.contains('sig')){ o=sm(1-Math.min(1,a/.5)); dy=d*row*1.1; }
-        if(el.classList.contains('sig')){
-          /* THE SIGNATURE BECOMES THE SUBJECT. Over the first part of the scroll it shrinks from the
-             centrepiece to the row height and slides up and left, where it stays for every row; a
-             verb rises in beside it and the words cycle on the line beneath, so each row reads as
-             a sentence: jazlynn is a DESIGNER, studies COGNITION, lives in NEW YORK. */
-          const k=sm(Math.max(0,Math.min(1,prog/.6))), sw=el.parentElement.clientWidth, ew=el.offsetWidth, eh=el.offsetHeight||1;
-          sc=1+(row/eh-1)*k; tx=(sw-ew)/2*(1-k); dy=-row*1.3*k; o=1-goneK;
-          const conn=window.__drumConn;
-          if(conn){
-            const k2=sm(Math.max(0,Math.min(1,(prog-.35)/.4)));
-            conn.style.opacity=(k2*(1-goneK)).toFixed(3);
-            conn.style.transform=`translate(${(ew*sc+10).toFixed(1)}px, calc(-50% + ${(-row*1.3+(1-k2)*22).toFixed(1)}px))`;
-            const want=window.__drumConnWords[Math.max(1,Math.min(N-1,Math.round(prog)))]||'';
-            if(conn.textContent!==want){ conn.textContent=want; conn.animate([{opacity:0,transform:conn.style.transform+' translateY(8px)'},{opacity:1}],{duration:260,easing:'cubic-bezier(.22,1,.36,1)'}); }
-          }
-        }
-        el.style.visibility='visible'; el.style.opacity=o.toFixed(3);
-        el.style.transform=`translate(${tx.toFixed(1)}px, calc(-50% + ${dy.toFixed(1)}px)) scale(${sc.toFixed(4)})`;
-      });
-    }
-    if(drum&&window.__crateApply) window.__crateApply(dprog);
+    const h=hero.offsetHeight||innerHeight;
     /* THE HERO STAYS UNTIL IT IS COVERED. It used to be gone by two thirds of the scroll,
        so the projects always rose over blank paper. Now nothing fades until the projects
        have climbed past the hero's midpoint, and the last of it goes only as they cover
@@ -1335,194 +1168,6 @@ show(0);
   const tick=()=>{ if(!raf) raf=requestAnimationFrame(apply); };
   addEventListener('scroll',tick,{passive:true}); addEventListener('resize',tick); apply();
   window.__heroApply=apply;   /* so a test can drive the scroll engulf without a frame */
-})();
-</script>
-<script>
-/* ============ THE CRATE (phones) ============ the pressed-record renderer from the vinyl labs */
-(function(){
-  const crate=document.getElementById('crate'); if(!crate||innerWidth>=640) return;
-  if('scrollRestoration' in history) history.scrollRestoration='manual';
-  document.querySelector('.hero-grid').appendChild(crate);   /* the crate is the drum's last beat, pinned with it */
-  let TITLE_='',NUM_=''; const TAU=Math.PI*2;
-  const hash=(x,y,s)=>{const n=Math.sin(x*127.1+y*311.7+s*74.7)*43758.5453;return n-Math.floor(n);};
-/* ---- shared pieces ---- */
-function label(c,R,opts={}){ const r=R*.355; c.save(); c.rotate(opts.ang||0); c.translate(R*.004,R*.003);   /* labels are never dead centre: the wobble you see on a turntable */
-  c.fillStyle=opts.col||LAB; c.beginPath(); c.arc(0,0,r,0,TAU); c.fill();
-  /* paper label: a faint tooth and a bright pressed rim where the vinyl meets it */
-  c.save(); c.beginPath(); c.arc(0,0,r,0,TAU); c.clip(); c.globalAlpha=.12; for(let i=0;i<400;i++){ c.fillStyle=hash(i,1,5)>.5?'#fff':'#000'; c.fillRect((hash(i,2,5)-.5)*2*r,(hash(i,3,5)-.5)*2*r,1,1); } c.restore();
-  c.lineWidth=R*.012; c.strokeStyle='rgba(255,255,255,.55)'; c.beginPath(); c.arc(0,0,r-R*.006,0,TAU); c.stroke();
-  c.lineWidth=R*.006; c.strokeStyle='rgba(0,0,0,.35)'; c.beginPath(); c.arc(0,0,r+R*.004,0,TAU); c.stroke();
-  c.fillStyle='rgba(250,249,247,.95)'; c.textAlign='center'; c.textBaseline='middle';
-  c.font=`600 ${Math.round(R*.055)}px "Plus Jakarta Sans"`; c.fillText((TITLE_||'').toUpperCase(),0,-r*.40);
-  c.font=`500 ${Math.round(R*.040)}px "Plus Jakarta Sans"`; c.fillStyle='rgba(250,249,247,.75)'; c.fillText('SIDE A',0,r*.36); c.fillText((NUM_||'')+' · 33⅓',0,r*.56);
-  c.restore();
-  /* the spindle hole is the true centre; it does not move */
-  c.fillStyle='rgba(20,18,22,1)'; c.beginPath(); c.arc(0,0,R*.026,0,TAU); c.fill();
-  c.lineWidth=1; c.strokeStyle='rgba(255,255,255,.5)'; c.beginPath(); c.arc(0,R*.003,R*.026,0.2,Math.PI-.2); c.stroke();
-}
-function edge(c,R){ c.lineWidth=R*.012; c.strokeStyle='rgba(0,0,0,.55)'; c.beginPath(); c.arc(0,0,R-R*.004,0,TAU); c.stroke(); c.lineWidth=1; c.strokeStyle='rgba(255,255,255,.22)'; c.beginPath(); c.arc(0,0,R-R*.013,0,TAU); c.stroke(); }
-function shadow(c,R,dpr,dark){ c.shadowColor=dark?'rgba(0,0,0,.7)':'rgba(20,23,27,.42)'; c.shadowBlur=22*dpr; c.shadowOffsetY=10*dpr; c.fillStyle='#111'; c.beginPath(); c.arc(0,0,R,0,TAU); c.fill(); c.shadowColor='transparent'; }
-/* two light fans opposite each other, the way grooves catch a lamp; they stay fixed to the lamp while the disc turns */
-function fans(c,R,strength,width,lampA){
-  for(const [a,w] of [[lampA,1],[lampA+Math.PI,.72]]){ const g=c.createConicGradient(a-width/2,0,0); const s=strength*w;
-    g.addColorStop(0,'rgba(255,255,255,0)'); g.addColorStop(width/TAU*.35,`rgba(255,255,255,${s*.45})`); g.addColorStop(width/TAU*.5,`rgba(255,255,255,${s})`); g.addColorStop(width/TAU*.65,`rgba(255,255,255,${s*.45})`); g.addColorStop(width/TAU,'rgba(255,255,255,0)'); g.addColorStop(1,'rgba(255,255,255,0)');
-    c.fillStyle=g; c.fillRect(-R,-R,2*R,2*R); }
-}
-function grooveMask(c,R,inner,outer,gaps){
-  /* restricts to the grooved area, with the dead-wax and the gaps left alone */
-  c.beginPath(); c.arc(0,0,outer,0,TAU); c.arc(0,0,inner,0,TAU,true); c.clip('evenodd');
-}
-/* the things on a real disc that are not symmetric, so the turn can be seen: the lead-in and run-out
-   spirals, a few faint radial pressing streaks, a scatter of dust; drawn in the disc's own frame */
-function marks(c,R,ang,light){
-  c.save(); c.rotate(ang);
-  c.strokeStyle=light?'rgba(0,0,0,.14)':'rgba(255,255,255,.16)'; c.lineWidth=.9;
-  c.beginPath(); for(let t=0;t<TAU*2.5;t+=.04){ const r=R*.965-t/(TAU*2.5)*R*.02; c.lineTo(Math.cos(t)*r,Math.sin(t)*r); } c.stroke();            /* lead-in */
-  c.beginPath(); for(let t=0;t<TAU*3;t+=.04){ const r=R*.42-t/(TAU*3)*R*.025; c.lineTo(Math.cos(t)*r,Math.sin(t)*r); } c.stroke();                 /* run-out */
-  c.strokeStyle=light?'rgba(0,0,0,.05)':'rgba(255,255,255,.03)'; c.lineWidth=R*.02;
-  for(const a of [.4,1.9,3.3,4.6,5.7]){ c.beginPath(); c.moveTo(Math.cos(a)*R*.42,Math.sin(a)*R*.42); c.lineTo(Math.cos(a+.05)*R*.95,Math.sin(a+.05)*R*.95); c.stroke(); }   /* pressing streaks */
-  c.fillStyle=light?'rgba(0,0,0,.35)':'rgba(255,255,255,.4)'; for(let i=0;i<34;i++){ const a=hash(i,1,9)*TAU, r=R*(.43+hash(i,2,9)*.5); c.fillRect(Math.cos(a)*r,Math.sin(a)*r,1,1); }
-  c.restore();
-}
-/* ---- a general pressed disc: every groove a V in a height field, shaded by one lamp. opts: body, lab, lamp
-   (angle), pitch (px), spec, trans (0 opaque vinyl .. 1 translucent coloured), streak */
-function pressedDraw(opts){
-  const cache=new Map();
-  return function(c,R,ang,dark){
-    const W=Math.round(R*2);
-    if(!cache.has(W)){ const b=document.createElement('canvas'); b.width=b.height=W; const d=b.getContext('2d').createImageData(W,W), px=d.data;
-      const la=opts.lamp??-2.2, LX=Math.cos(la)*.9, LY=Math.sin(la)*.9, LZ=opts.lz??.36, m=Math.hypot(LX,LY,LZ), lx=LX/m,ly=LY/m,lz=LZ/m;
-      const pitch=opts.pitch??1.25, body=opts.body, lab=opts.lab, trans=opts.trans??0, spec=opts.spec??.9;
-      for(let y=0;y<W;y++) for(let x=0;x<W;x++){ const dx=x-W/2+.5, dy=y-W/2+.5, r=Math.hypot(dx,dy), o=(y*W+x)*4; if(r>R){ px[o+3]=0; continue; }
-        const u=r/R; let dh=0;
-        if(u>.395&&u<.965){ const p=r/pitch; const f=p-Math.floor(p); dh=(f<.5?-1:1)*(opts.depth??1.6); }
-        if(u<=.355&&u>.345) dh=-6; if(u>.965) dh=(u-.965)*-40;
-        const nx=dx/r*dh, ny=dy/r*dh, nl=Math.hypot(nx,ny,1), nnx=-nx/nl, nny=-ny/nl, nnz=1/nl;
-        const diff=Math.max(0,nnx*lx+nny*ly+nnz*lz); const hx=lx,hy=ly,hz=lz+1,hm=Math.hypot(hx,hy,hz); const sp=Math.pow(Math.max(0,nnx*hx/hm+nny*hy/hm+nnz*hz/hm),28);
-        let col=u<=.355?lab:body; let k=.55+.45*diff;
-        if(trans>0&&u>.355){ /* translucent: thinner toward the rim reads lighter, the grooves scatter the light so the fans are softer */ const th=1-(u-.355)/.61; k=.80+.22*diff; col=[col[0]+(255-col[0])*(1-th)*trans*.35,col[1]+(255-col[1])*(1-th)*trans*.35,col[2]+(255-col[2])*(1-th)*trans*.35]; }
-        const s=sp*(u<=.355?.25:spec*(1-trans*.55))*255;
-        px[o]=Math.min(255,col[0]*k+s); px[o+1]=Math.min(255,col[1]*k+s); px[o+2]=Math.min(255,col[2]*k+s); px[o+3]=255; }
-      b.getContext('2d').putImageData(d,0,0); cache.set(W,b); }
-    c.save(); c.rotate(ang); c.drawImage(cache.get(W),-R,-R,2*R,2*R); c.restore();
-    marks(c,R,ang,!!opts.light);
-    c.save(); c.rotate(ang); c.translate(R*.004,R*.003); c.fillStyle=opts.text||'rgba(250,249,247,.95)'; c.textAlign='center'; c.textBaseline='middle'; const r=R*.355; c.font=`600 ${Math.round(R*.055)}px "Plus Jakarta Sans"`; c.fillText((TITLE_||'').toUpperCase(),0,-r*.40); c.font=`500 ${Math.round(R*.040)}px "Plus Jakarta Sans"`; c.globalAlpha=.75; c.fillText('SIDE A',0,r*.36); c.fillText((NUM_||'')+' · 33⅓',0,r*.56); c.globalAlpha=1;
-    c.lineWidth=R*.012; c.strokeStyle='rgba(255,255,255,.5)'; c.beginPath(); c.arc(0,0,r-R*.006,0,TAU); c.stroke(); c.restore();
-    c.fillStyle='#141216'; c.beginPath(); c.arc(0,0,R*.026,0,TAU); c.fill(); edge(c,R);
-  };
-}
-
-
-  const MARKS={"Fostr": {"x": 1.1417282430213465, "y": 6.055008210180624, "s": 0.96}, "Halodoc": {"x": -1.1987977756892234, "y": 7.936018431495406, "s": 0.84}, "Conduit Commerce": {"x": 4.200116175856309, "y": 1.5476516812865497, "s": 0.93}, "Second Self": {"x": 1.092412019632414, "y": 48.66397765246451, "s": 2}, "Manus AI": {"x": 0.6637687969924817, "y": -0.3527699456975781, "s": 1.11}, "Olive": {"x": 21.35139280492899, "y": 1.1960239139515494, "s": 1.04}, "SomiaCX": {"x": 6.520696271929828, "y": -5.412130586883876, "s": 1.24}}, IMG={"Fostr": "/vinyl-lab/marks/fostr.png", "Halodoc": "/vinyl-lab/marks/halodoc-mark.png", "Conduit Commerce": "/vinyl-lab/marks/conduit-mark.png", "Second Self": "/vinyl-lab/marks/second-self.svg", "Manus AI": "/vinyl-lab/marks/manus-mark.svg", "Olive": "/vinyl-lab/marks/olive.png", "SomiaCX": "/vinyl-lab/marks/somiacx-mark.png"}, LAB={"Fostr": "#9ba69c", "Halodoc": "#A99939", "Conduit Commerce": "#340414", "Second Self": "#827a85", "Manus AI": "#1C1A17", "Olive": "#9ba69c", "SomiaCX": "#A99939"};
-  const hexRGB=h=>{const n=parseInt(h.slice(1),16);return [(n>>16)&255,(n>>8)&255,n&255];};
-  const PRESS=[
-    {body:[16,15,18],lamp:-.7,lz:.3,spec:1.1,depth:1.8},{body:[158,172,160],lamp:-.7,lz:.55,spec:.7,trans:.8,light:true},{body:[22,21,25],lamp:-1.2,lz:.9,spec:.35,depth:1.2},
-    {body:[136,126,140],lamp:-.7,lz:.55,spec:.75,trans:.6,light:true},{body:[14,13,16],lamp:-.4,lz:.28,spec:.9,pitch:2.2,depth:2.2},{body:[186,164,84],lamp:-.7,lz:.55,spec:.8,trans:.7,light:true},{body:[16,15,18],lamp:-.7,lz:.3,spec:1.1,depth:1.8}];
-  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), sm=x=>x*x*(3-2*x);
-  /* her order for the shelf: Manus, Conduit, SomiaCX, Second Self, Fostr, then the rest */
-  const ORDER=['Manus AI','Conduit Commerce','SomiaCX','Second Self','Fostr'];
-  const LIST=ORDER.map(t=>PROJECTS.findIndex(p=>p.t===t)).filter(i=>i>=0).concat(PROJECTS.map((p,i)=>i).filter(i=>!ORDER.includes(PROJECTS[i].t)));
-  const R=LIST.map((idx,i)=>{ const p=PROJECTS[idx]; const m=MARKS[p.t]||{x:0,y:0,s:1}, lab=LAB[p.t]||'#9ba69c';
-    const el=document.createElement('div'); el.className='rec'; el.dataset.i=i; el.style.setProperty('--lab',lab);
-    el.innerHTML=`<div class="disc"><canvas></canvas></div><div class="sl"><div class="win"><div class="tint"></div><img src="${IMG[p.t]}" alt="" style="--x:${m.x}%;--y:${m.y}%;--s:${m.s}"></div><div class="t"><span>${p.t}</span><small>${p.n}</small></div></div>`;
-    crate.appendChild(el);
-    const cv=el.querySelector('canvas'), c=cv.getContext('2d'), pr=PRESS[i%PRESS.length], L=hexRGB(lab);
-    const draw=pressedDraw(Object.assign({lab:L,text:(L[0]+L[1]+L[2]<300)?'rgba(250,249,247,.95)':'rgba(20,23,27,.85)'},pr));
-    return {el,cv,c,draw,p,idx,ang:0,vel:0,raf:0,front:false}; });
-  const hint=document.createElement('div'); hint.className='hint'; hint.hidden=true;   /* no hint: the shelf explains itself */
-  const boxed=t=>[...t].map(ch=>`<span class="cell"><span class="ch">${ch===' '?'&nbsp;':ch}</span></span>`).join('');
-  const chead=document.createElement('div'); chead.className='chead'; chead.hidden=true; crate.appendChild(chead);   /* no PROJECTS head over the shelf (her call): the tab bar names the page */
-  const open=document.createElement('a'); open.className='open'; open.hidden=true;   /* no pill: the tap on the front record opens it */
-  function frame(S){ S.raf=0; const dpr=Math.min(2,devicePixelRatio||1), r=S.cv.getBoundingClientRect(), W=Math.round(r.width*dpr); if(!W) return; if(S.cv.width!==W){ S.cv.width=S.cv.height=W; }
-    S.vel+=((S.front?.06:0)-S.vel)*.05; S.ang+=S.vel; const c=S.c, Rr=W/2/1.6, dark=document.documentElement.getAttribute('data-theme')==='dark';
-    c.setTransform(1,0,0,1,0,0); c.clearRect(0,0,W,W); c.save(); c.translate(W/2,W/2); TITLE_=S.p.t; NUM_=S.p.n; shadow(c,Rr,dpr,dark); S.draw(c,Rr,S.ang,dark); c.restore();
-    if(Math.abs(S.vel)>.0004||S.front) S.raf=requestAnimationFrame(()=>frame(S)); }
-  const wake=S=>{ if(!S.raf) S.raf=requestAnimationFrame(()=>frame(S)); };
-  let pos=0; const N=R.length;
-  let k=0;   /* the roll-in, 0 hidden .. 1 shelf in place */
-  let press=0, pressRaf=0;   /* the press, 0 at rest .. 1 chosen */
-  window.__cratePress=function(on){ const from=press, to=on?1:0; let t0=0; cancelAnimationFrame(pressRaf);
-    (function g(t){ if(!t0) t0=t; const q=clamp((t-t0)/(on?460:380),0,1); press=from+(to-from)*(on?sm(q):sm(q)); layout(); if(q<1) pressRaf=requestAnimationFrame(g); })(performance.now()); };
-  function layout(){ const W=crate.clientWidth, H=crate.clientHeight, fr=Math.round(pos), y=H/2-110; R.forEach((S,i)=>{ const d=i-pos, a=Math.abs(d); const el=S.el; el.style.zIndex=100-Math.round(a*10);
-      /* ONE RECORD ROLLS IN: Fostr rolls in from the right across the last word and parks; the others assemble behind it as the shelf settles */
-      let dx=0, dy=0, rz=0, op=1, grow=1; if(i===0&&k<1){ const roll=sm(clamp(k/.55,0,1)); dx=(1-roll)*W*.95; rz=(1-roll)*-200; } else if(k<1){ const kk=sm(clamp((k-.45)/.55,0,1)); dx=(1-kk)*(-d*60); op=kk; }
-      if(press>0&&i!==fr) dx+=(d<0?-1:1)*press*W*.9;
-      const x=W/2-110+d*230, rot=clamp(d*45,-50,50), sc=1-Math.min(a,1)*.12; el.style.transform=`translate(${(x+dx).toFixed(1)}px,${(y+dy).toFixed(1)}px) perspective(1000px) rotateY(${-rot}deg) rotate(${rz.toFixed(1)}deg) scale(${(sc*grow).toFixed(4)})`; el.style.opacity=(a>2.2?0:1)*op;
-      /* the disc detaches to the right as the record arrives in front, by how centred it is */
-      const centred=1-sm(clamp(a,0,1)); const front=i===fr&&a<.5&&k>.95; if(front!==S.front){ S.front=front; el.classList.toggle('front',front); wake(S); } el.style.setProperty('--out',(centred*(k>.95?84:0))+'px'); });
-    open.style.top=(y+220+22)+'px'; open.style.bottom='auto';
-    const rowH=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--row'))||30; chead.style.top=(y-rowH-26)+'px'; if(!chead.dataset.hold) chead.style.opacity=sm(clamp((k-.82)/.18,0,1)).toFixed(3);   /* PROJECTS fades in as the first record settles; held off while a record is opening */
-    const p=PROJECTS[R[fr].idx]; open.href=p.href; if(p.ext){ open.target='_blank'; open.rel='noopener'; } else { open.removeAttribute('target'); open.removeAttribute('rel'); } open.dataset.i=fr; }
-  /* driven by the drum's progress: 9 = NEW YORK centred, 9..10 the roll-in, then one record per step */
-  window.__crateApply=function(prog){ k=clamp(prog-9,0,1); pos=clamp(prog-10,0,N-1); crate.style.opacity=k>0?'1':'0'; crate.style.pointerEvents=prog>=9.9?'auto':'none';
-    /* the pill and the hint belong to the shelf, not the roll: they arrive once the record has parked, and the hint goes as the page moves on */
-    const settled=sm(clamp((k-.7)/.3,0,1)), leaving=sm(clamp((prog-(10+N-1))/.5,0,1)); open.style.opacity=settled; open.style.pointerEvents=settled>.5?'auto':'none'; hint.style.opacity=settled*(1-leaving); layout(); };
-  const stepPx=()=>innerHeight*.55;
-  window.__crateTo=i=>scrollTo({top:(10+clamp(i,0,N-1))*stepPx(),behavior:'smooth'});
-  /* THE RETURN. Coming back to the home (browser back, or the Back link on About) never shows the arrival again and
-     never lands where the page was left: the shelf springs back to the first record, Manus, on its own spring. */
-  const jump=y=>scrollTo({top:y,behavior:'instant'});   /* the page scrolls smoothly by default; the spring drives every frame itself */
-  window.__crateReturn=function(){ const step=stepPx(); const from=step*(10+N-1), to=step*10; jump(from);
-    let y=from, v=0, last=performance.now(); const k=34, c=2*Math.sqrt(k)*.78;      /* a little under-damped: it settles with one soft overshoot */
-    html_=document.documentElement; html_.classList.add('returning');
-    (function f(now){ const dt=Math.min(.05,(now-last)/1000); last=now; v+=((to-y)*k-v*c)*dt; y+=v*dt; jump(y); if(Math.abs(to-y)>.5||Math.abs(v)>2) requestAnimationFrame(f); else { jump(to); html_.classList.remove('returning'); } })(last); };
-  let html_;
-  /* swipe: horizontal drag moves along the shelf, a short press on the front record opens it */
-  let down=null, moved=false, v=0, raf=0; const px=200;
-  const glide=target=>{ const from=pos; let t0=0; cancelAnimationFrame(raf); (function g(t){ if(!t0) t0=t; const k=sm(clamp((t-t0)/420,0,1)); pos=from+(target-from)*k; layout(); if(k<1) raf=requestAnimationFrame(g); })(performance.now()); };
-  crate.addEventListener('pointerdown',e=>{ down={x:e.clientX,y:e.clientY,pos,t:e.target}; moved=false; v=0; cancelAnimationFrame(raf); });
-  crate.addEventListener('pointermove',e=>{ if(!down) return; const dx=e.clientX-down.x, dy=e.clientY-down.y; if(!moved&&Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>6){ down=null; return; } if(Math.abs(dx)>6){ moved=true; crate.setPointerCapture(e.pointerId); v=dx; } });
-  const go=i=>window.scrollTo({top:(10+clamp(i,0,N-1))*stepPx(),behavior:'smooth'});
-  const up=e=>{ if(!down) return; const t=down.t; down=null; if(!moved){ const rec=t.closest&&t.closest('.rec'); if(rec){ const i=+rec.dataset.i; if(i===Math.round(pos)) openFront(); else go(i); } return; } go(Math.round(pos)+(v<0?1:-1)); };   /* a swipe moves one record along */
-  crate.addEventListener('pointerup',up); crate.addEventListener('pointercancel',up);
-  function openFront(){ const a=rows.querySelector(`li[data-i="${R[Math.round(pos)].idx}"] a`); if(!a) return;
-    const h=a.getAttribute('href')||''; if(!h.startsWith('/work/')){ a.click(); return; }       /* external work goes straight there */
-    const slug=h.replace('/work/','').replace('.html',''); const ready=window.__sheetWarm?window.__sheetWarm(slug):Promise.resolve();
-    window.__crateBall(true,()=>ready.then(()=>a.click())); }
-  const SPRING='cubic-bezier(0.175,0.885,0.32,1.1)', EASE='cubic-bezier(.22,1,.36,1)';
-  /* the case study's own Back label (inside the frame) asks the home to close the sheet */
-  addEventListener('message',e=>{ if(e.data&&e.data.sheet==='close'){ const x=document.getElementById('sheet-close'); if(x) x.click(); } });
-  const loading=document.createElement('div'); loading.id='loading'; loading.innerHTML='loading<i></i>'; document.body.appendChild(loading); let dots=0, dotT=0;
-  /* THE OPEN. The cover is thrown off to the side, spinning away; the record slides to the middle of the screen and
-     keeps rolling; "loading..." counts its dots beneath it; the case study blurs in over it. Close runs it back:
-     the case study blurs out, the record is still rolling in the middle, the cover flies back and the record
-     slides home into it. */
-  window.__crateBall=function(on,then){ const F=R[Math.round(pos)], el=F.el, disc=el.querySelector('.disc'), sl=el.querySelector('.sl');
-    const dr=disc.getBoundingClientRect(), dcx=dr.left+dr.width/2, dcy=dr.top+dr.height/2, dx=innerWidth/2-dcx, dy=innerHeight/2-dcy;
-    if(on){ el.classList.add('going'); window.__cratePress(true); F.front=true; F.vel=.06; wake(F); chead.style.transition='opacity .3s ease'; chead.style.opacity='0'; chead.dataset.hold='1';
-      /* the cover: tossed off to the left, turning as it goes */
-      sl.getAnimations().forEach(a=>a.cancel()); sl.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate(-120px,-60px) rotate(-18deg)',opacity:1,offset:.5},{transform:'translate(-420px,-40px) rotate(-40deg)',opacity:0}],{duration:620,easing:'cubic-bezier(.3,.6,.4,1)',fill:'forwards'});
-      /* the record: to the middle, rolling */
-      disc.getAnimations().forEach(a=>a.cancel()); disc.animate([{transform:'translateX(84px)'},{transform:`translate(${(84+dx).toFixed(0)}px,${dy.toFixed(0)}px)`}],{duration:560,delay:100,easing:EASE,fill:'forwards'});   /* no overshoot: it lands dead centre and stays */
-      setTimeout(()=>{ loading.style.opacity=1; dots=0; clearInterval(dotT); dotT=setInterval(()=>{ dots=(dots+1)%4; loading.querySelector('i').textContent='.'.repeat(dots); },320); },680);
-      document.documentElement.classList.add('sheet-full'); const fb=document.getElementById('sheet-full'); if(fb){ fb.setAttribute('aria-pressed','true'); fb.title=fb.ariaLabel='Collapse'; }
-      /* the case study blurs in once the roll has played AND the page is in; the loading line stays until then */
-      setTimeout(()=>{ Promise.resolve(then&&then()).then(()=>{ setTimeout(()=>{ loading.style.opacity=0; clearInterval(dotT); },200); }); },1500); }
-    else { loading.style.opacity=0; clearInterval(dotT); F.front=true; wake(F);
-      /* the record is still there rolling; the cover comes back and the record slides home */
-      setTimeout(()=>{ sl.getAnimations().forEach(a=>a.cancel()); sl.animate([{transform:'translate(-420px,-40px) rotate(-40deg)',opacity:0},{transform:'translate(0,0) rotate(0deg)',opacity:1}],{duration:560,easing:SPRING,fill:'forwards'});
-        disc.getAnimations().forEach(a=>a.cancel()); disc.animate([{transform:`translate(${(84+dx).toFixed(0)}px,${dy.toFixed(0)}px)`},{transform:'translateX(84px)'}],{duration:560,delay:140,easing:SPRING,fill:'forwards'}); },380);
-      setTimeout(()=>{ window.__cratePress(false); el.classList.remove('going'); disc.getAnimations().forEach(a=>a.cancel()); sl.getAnimations().forEach(a=>a.cancel()); el.style.setProperty('--out','84px'); delete chead.dataset.hold; chead.style.transition=''; },1120); } };
-  open.addEventListener('click',e=>{ e.preventDefault(); openFront(); });
-  R.forEach(wake); addEventListener('resize',layout);
-  /* AFTER THE PROJECTS: two rows, Sandbox and About me, in the same boxed letters, an arrow on the right; a tap
-     plays the site's own loading bar (the seven breathing cells) and then goes. */
-  const more=document.createElement('section'); more.className='more'; more.id='more';
-  /* the sandbox: the dev server on :3000 when it is up, the live one otherwise */
-  const SB_LIVE='https://portfolio-experiments.vercel.app/sandbox'; let sbHref=SB_LIVE;
-  if(location.hostname==='localhost'||location.hostname==='127.0.0.1'){ fetch('http://localhost:3000/sandbox',{mode:'no-cors'}).then(()=>{ sbHref='http://localhost:3000/sandbox'; const a=more.querySelector('a.mrow'); if(a) a.href=sbHref; }).catch(()=>{}); }
-  more.innerHTML=`<div class="wrap"><a class="mrow" href="${SB_LIVE}"><span class="line">${boxed('SANDBOX')}</span><span class="arr">&rarr;</span></a><a class="mrow" href="/about.html"><span class="line">${boxed('ABOUT ME')}</span><span class="arr">&rarr;</span></a></div>`;
-  const foot=document.querySelector('footer'); foot.parentNode.insertBefore(more,foot);
-  function goLoad(href){ const host=document.createElement('div'); host.id='load'; host.className='go'; host.innerHTML='<div class="ld"><i class="head"></i><i class="foot"></i></div><span>loading</span>'; document.body.appendChild(host);
-    const row=host.querySelector('.ld'); const N=7, cells=[]; for(let i=0;i<N;i++){ const c=document.createElement('span'); c.className='lc'; c.style.setProperty('--d',(120+i*60)+'ms'); row.appendChild(c); cells.push(c); }
-    let deal; do{ deal=cells.map(()=>Math.random()<.5); }while(deal.filter(Boolean).length<2||deal.filter(x=>!x).length<2); deal.forEach((g,i)=>{ if(g) cells[i].classList.add('g'); });
-    const t0=performance.now(); let inked=-1;
-    (function frame(now){ const t=(now-t0)/1000; const W=row.clientWidth; let sum=0; const ws=[]; for(let i=0;i<N;i++){ const k=.5+.5*Math.sin(t*.9*Math.PI*2*.5+i*.74*1.7); const w=1+k*k*1.6; ws.push(w); sum+=w; } for(let i=0;i<N;i++) cells[i].style.width=(ws[i]/sum*W).toFixed(1)+'px';
-      const want=Math.min(N-1,Math.floor((t-.45)/.11)); while(inked<want){ inked++; cells[inked].classList.add('on'); } if(t<1.6) requestAnimationFrame(frame); })(t0);
-    setTimeout(()=>{ try{ sessionStorage.setItem('home:return','1'); }catch(e){} location.href=href; },1250); }
-  more.addEventListener('click',e=>{ const a=e.target.closest('a'); if(!a) return; e.preventDefault(); goLoad(a.href); });
-  new IntersectionObserver(es=>{ es.forEach(en=>{ if(en.isIntersecting) foot.classList.add('seen'); }); },{threshold:.4}).observe(foot);
-  /* the filters hide rows; the crate follows the same list, so a hidden row is skipped */
 })();
 </script>
 <script type="module">
@@ -1544,62 +1189,6 @@ function pressedDraw(opts){
   /* LOCKED 2026-09-23. Her eight, picked in the riso lab against frosted glass: two
      creams, two greys, a dusky mauve, a grey green, a lilac grey, a sage. */
   const SWATCH=['#dfddc8','#c7c7c7','#827a85','#9ba69c','#c4c1c8','#dfddc8','#c2beb3','#dfdac8'];
-  const cvS=document.getElementById('sheets'), phone=innerWidth<640;
-  /* THE CANVAS GROUND MUST BE THE PAGE. In dark mode the post pass grades the scene with a print
-     curve that crushes a charcoal ground to near black, so the phone hands the shader the value that
-     comes OUT as #1C1A17 (solved by inverting that curve), and the arrival sits on the page colour. */
-  const HS=mountSheets(cvS, SHEETS, SWATCH, { paper: '#FAF9F7', ground: phone?'#32302D':'#1C1A17', bleed: phone?0:220, clear: () => 0 });
-  if(phone) phoneIntro(HS, cvS);
-  if(phone) addEventListener('pageshow',e=>{ if(e.persisted&&window.__crateReturn){ document.documentElement.classList.add('intro-done'); window.__crateReturn(); } });
-
-  /* THE PHONE'S ARRIVAL. No loading bar: the twelve sheets open as the desktop hero does, take one
-     breath together, and a push from the centre blows them off every edge (Scatter, from the intro
-     lab). On the cleared paper her signature writes itself, 320 pen segments in 8 strokes in the
-     order the pen went, and that signature is row one of the drum in place of the JAZLYNN letters.
-     ?intro=pour plays the other finalist: six sheets dropped in from above, piled, sunk away. */
-  async function phoneIntro(H, cv){
-    const nav=performance.getEntriesByType('navigation')[0]; let RET=false;
-    try{ RET=(nav&&nav.type==='back_forward')||sessionStorage.getItem('home:return')==='1'; sessionStorage.removeItem('home:return'); }catch(e){}
-    const INTRO=RET?'none':(new URLSearchParams(location.search).get('intro')||'scatter');
-    const UNIT=650, html=document.documentElement;
-    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), seg=(t,a,b)=>clamp((t-a)/(b-a),0,1), inC=t=>t*t*t;
-    const bounce=t=>{const n=7.5625,d=2.75; if(t<1/d) return n*t*t; if(t<2/d) return n*(t-=1.5/d)*t+.75; if(t<2.5/d) return n*(t-=2.25/d)*t+.9375; return n*(t-=2.625/d)*t+.984375;};
-    /* the signature takes the first row */
-    const sigEl=document.createElement('div'); sigEl.className='line sig';
-    const first=lines[0].cells[0].cell.parentElement; stack.insertBefore(sigEl, first); first.remove();
-    window.__drumEls=[sigEl, ...lines.slice(1).map(L=>L.cells[0].cell.parentElement)];
-    const conn=document.createElement('span'); conn.className='conn'; stack.appendChild(conn); window.__drumConn=conn;
-    window.__drumConnWords=['', 'is a', 'is', 'is', 'is', 'is', 'designs', 'studies', 'does', 'lives in'];
-    let L=[], cue=[], total=1;
-    try{
-      const txt=await (await fetch('/jaz-signature.svg?v=ox1')).text();
-      sigEl.innerHTML=txt.replace('stroke="#340414"','stroke="currentColor"');
-      L=[...sigEl.querySelectorAll('line')]; let T=0;
-      for(let i=0;i<L.length;i++){ const a=L[i], b=L[i-1];
-        if(b&&(a.x1.baseVal.value!==b.x2.baseVal.value||a.y1.baseVal.value!==b.y2.baseVal.value)) T+=22;     /* the pen lifts */
-        T+=Math.hypot(a.x2.baseVal.value-a.x1.baseVal.value,a.y2.baseVal.value-a.y1.baseVal.value); cue.push(T); }
-      total=T;
-    }catch(e){}
-    const write=p=>{ const u=p*total; for(let i=0;i<L.length;i++) L[i].style.visibility=cue[i]<=u?'visible':'hidden'; };
-    if(window.__heroApply) window.__heroApply();
-    if(matchMedia('(prefers-reduced-motion:reduce)').matches){ write(1); html.classList.add('intro-done'); return; }
-    const place=(d,ux,uy,ur)=>{ const W=cv.clientWidth,Hh=cv.clientHeight; d.x=d.tx=(ux-.5)*W/UNIT; d.y=d.ty=(.5-uy)*Hh/UNIT; d.r=ur*W/UNIT; };
-    const D=H.discs, WRITE=1.5;
-    /* the pile is even: four sheets land on the floor, three settle into the gaps above them, all one size */
-    const floor=[.905,.905,.905,.905,.79,.79,.79], px=[.14,.38,.62,.86,.26,.5,.74], pr=[.13,.13,.13,.13,.13,.13,.13], order=[1,4,0,5,2,6,3];
-    const run={
-      scatter(t){ const br=Math.sin(clamp(t/1.1,0,1)*Math.PI)*.16, push=inC(seg(t,1.15,2.05));
-        D.forEach((d,i)=>{ const dx=d.ux0-.5, dy=d.uy-.5, l=Math.hypot(dx,dy)||1;
-          place(d, d.ux0+dx/l*push*1.1, d.uy+dy/l*push*1.1, d.ur*(1+br)); d.rot=push*(i%2?1:-1)*1.2; });
-        return {sig:seg(t,2.0,2.0+WRITE), done:t>3.9}; },
-      pour(t){ D.forEach((d,i)=>{ if(i>=7){ d.alive=0; return; } const s=order[i]*.13, p=seg(t,s,s+.9), y=-.25+(floor[i]+.25)*bounce(p), leave=seg(t,2.1+order[i]*.04,2.7);
-          place(d, px[i], y+leave*leave*.9, pr[i]); d.rot=(i%2?1:-1)*p*.8; });
-        return {sig:seg(t,2.5,2.5+WRITE), done:t>4.4}; }
-    }[INTRO]||null;
-    if(!run){ write(1); html.classList.add('intro-done'); if(RET&&window.__crateReturn) requestAnimationFrame(()=>window.__crateReturn()); return; }
-    let t0=0;
-    (function frame(ms){ if(!t0) t0=ms; const t=(ms-t0)/1000; const r=run(t); H.draw(); html.classList.add('sheets-ready'); write(r.sig);
-      if(!r.done) requestAnimationFrame(frame); else html.classList.add('intro-done'); })(performance.now());
-  }
+  mountSheets(document.getElementById('sheets'), SHEETS, SWATCH, { paper: '#FAF9F7', ground: '#1C1A17', bleed: 220, clear: () => 0 });
 </script>
 </body></html>
