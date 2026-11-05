@@ -353,7 +353,7 @@ export function mountSheets(cv, sheets, swatch, opts) {
     ux: s.x, ux0: s.x, uy: s.y, ur: s.r, moved: false,   /* unit hero coords; ux0 is the designed x, ux the fitted one */
     x: 0, y: 0, r: 0, tx: 0, ty: 0, vx: 0, vy: 0,
     rot: rnd() * Math.PI * 2, rotV: (rnd() - 0.5) * 0.010,
-    ink: (s.ink ?? i) % swatch.length,   /* a sheet may name its swatch */ op: 0.84 + rnd() * 0.38, seed: rnd() * 100,
+    ink: i % swatch.length, op: 0.84 + rnd() * 0.38, seed: rnd() * 100,
     emph: 0, alive: 1,
   }));
   /* THE CANVAS BLEEDS ABOVE THE HERO. The page can be pushed down (the line under the
