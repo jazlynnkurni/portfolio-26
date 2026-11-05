@@ -1282,17 +1282,17 @@ show(0);
   /* THE DISCS, both sides of the wall and larger, overlapping where they meet, the way the
      Columbia Jokes hero lays them: a loose ring around the centre piece, cut by the edges. */
   const SHEETS=[
-    {x:.02,y:.10,r:.150},{x:.12,y:.34,r:.125},{x:.00,y:.60,r:.140},{x:.09,y:.88,r:.120},
-    {x:.24,y:.72,r:.110},{x:.20,y:.05,r:.095},
-    {x:.70,y:.12,r:.135},{x:.86,y:.08,r:.110},{x:.98,y:.26,r:.150},
-    {x:.76,y:.44,r:.120},{x:.94,y:.58,r:.125},{x:.70,y:.78,r:.140},{x:.90,y:.90,r:.115},{x:1.02,y:.80,r:.100}
+    /* HER FORMATION 2026-11-04, arranged in the disc simulator and pasted back. ink picks the swatch. */
+    {x:0.71,y:0.56,r:0.100,ink:1},{x:0.97,y:0.46,r:0.109,ink:6},{x:0.69,y:0.09,r:0.123,ink:0},{x:0.79,y:0.33,r:0.105,ink:4},
+    {x:0.81,y:0.06,r:0.087,ink:4},{x:0.93,y:0.15,r:0.105,ink:3},{x:0.95,y:0.86,r:0.083,ink:2},{x:0.81,y:0.61,r:0.095,ink:2},
+    {x:0.96,y:0.67,r:0.090,ink:1},{x:0.82,y:0.85,r:0.095,ink:5},{x:0.69,y:0.84,r:0.100,ink:3},{x:0.66,y:0.40,r:0.083,ink:6}
   ];
 
   /* LOCKED 2026-09-23. Her eight, picked in the riso lab against frosted glass: two
      creams, two greys, a dusky mauve, a grey green, a lilac grey, a sage. */
   const SWATCH=['#dfddc8','#c7c7c7','#827a85','#9ba69c','#c4c1c8','#dfddc8','#c2beb3','#dfdac8'];
   const cvS=document.getElementById('sheets'), phone=innerWidth<640;
-  const HS=mountSheets(cvS, SHEETS, SWATCH, { paper: '#FAF9F7', ground: '#1C1A17', bleed: phone?0:220, clear: () => 0 });
+  const HS=mountSheets(cvS, SHEETS, SWATCH, { paper: '#FAF9F7', ground: '#1C1A17', bleed: phone?0:220, clear: () => (innerWidth<640 ? 0 : (window.wallClear ? window.wallClear() : 0)) });
   if(phone) phoneIntro(HS, cvS);
 
   /* THE PHONE'S ARRIVAL. No loading bar: the twelve sheets open as the desktop hero does, take one
