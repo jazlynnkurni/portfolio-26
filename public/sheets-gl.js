@@ -353,7 +353,7 @@ export function mountSheets(cv, sheets, swatch, opts) {
     ux: s.x, ux0: s.x, uy: s.y, ur: s.r, moved: false,   /* unit hero coords; ux0 is the designed x, ux the fitted one */
     x: 0, y: 0, r: 0, tx: 0, ty: 0, vx: 0, vy: 0,
     rot: rnd() * Math.PI * 2, rotV: (rnd() - 0.5) * 0.010,
-    ink: i % swatch.length, op: 0.84 + rnd() * 0.38, seed: rnd() * 100,
+    ink: (s.ink ?? i) % swatch.length,   /* a sheet may name its swatch */ op: 0.84 + rnd() * 0.38, seed: rnd() * 100,
     emph: 0, alive: 1,
   }));
   /* THE CANVAS BLEEDS ABOVE THE HERO. The page can be pushed down (the line under the
@@ -372,10 +372,11 @@ export function mountSheets(cv, sheets, swatch, opts) {
      the furthest the wall can ever reach (opts.clear, in unit x, gutter included), and
      the whole group is fitted into the column to the right of it: same shapes, same
      order, same overlaps, moved and squeezed sideways as one. */
-  const SPAN_L = Math.min(...sheets.map((d) => d.x - d.r)), SPAN_R = Math.max(...sheets.map((d) => d.x + d.r));
+  const RIGHT = sheets.filter((d) => d.x >= 0.5);   /* the span to fit is the right-hand group; left slivers frame the words and stay */
+  const SPAN_L = Math.min(...RIGHT.map((d) => d.x - d.r)), SPAN_R = Math.max(...RIGHT.map((d) => d.x + d.r));
   function fit(d) {
     const clear = typeof opts.clear === "function" ? opts.clear() : 0;
-    if (!(clear > 0)) return d.ux0;
+    if (!(clear > 0) || d.ux0 < 0.5) return d.ux0;   /* sheets that start left of centre frame the words and stay put */
     const left = clear, right = Math.max(clear + 0.25, 1.12);
     return left + (d.ux0 - SPAN_L) / (SPAN_R - SPAN_L) * (right - left);
   }
