@@ -354,8 +354,17 @@ export function mountSheets(cv, sheets, swatch, opts) {
     x: 0, y: 0, r: 0, tx: 0, ty: 0, vx: 0, vy: 0,
     rot: rnd() * Math.PI * 2, rotV: (rnd() - 0.5) * 0.010,
     ink: (s.ink ?? i) % swatch.length,   /* a sheet may name its swatch */ op: 0.84 + rnd() * 0.38, seed: rnd() * 100,
-    emph: 0, alive: 1,
+    emph: 0, alive: 1, k: i, r0: 0,
   }));
+  /* KANDINSKY (opts.motion === "kandinsky", desktop): the sheets float in and settle, then drift a few px
+     each on its own slow loop; a released one keeps the
+     hand's speed and glides, knocks whatever it runs into, and every sheet drifts back to its designed
+     place on a soft spring. Texture untouched; no ring round the one under the hand (she took it off). */
+  const KAN = opts.motion === "kandinsky", still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let visible = true, born = -1, placed = false;
+  if (KAN) {
+    new IntersectionObserver((es) => { visible = es[0].isIntersecting; if (visible) wake(); }).observe(cv);
+  }
   /* THE CANVAS BLEEDS ABOVE THE HERO. The page can be pushed down (the line under the
      name), and a canvas that stopped at the hero's top showed its edge: discs cut flat,
      paper above. So the canvas is taller than the hero by opts.bleed and hangs that far
@@ -385,20 +394,27 @@ export function mountSheets(cv, sheets, swatch, opts) {
     dpr = Math.min(2, devicePixelRatio || 1); cssW = r.width; cssH = r.height; heroH = Math.max(1, cssH - bleed);
     W = Math.round(cssW * dpr); H = Math.round(cssH * dpr); cv.width = W; cv.height = H;
     unit = UNIT_CSS;
-    for (const d of discs) { if (!d.moved) d.ux = fit(d); const [x, y] = toComp(d.ux, d.uy); d.x = d.tx = x; d.y = d.ty = y; d.r = (d.ur * cssW) / unit; d.vx = d.vy = 0; }
+    for (const d of discs) { if (!d.moved) d.ux = fit(d); const [x, y] = toComp(d.ux, d.uy); d.x = d.tx = x; d.y = d.ty = y; d.r = d.r0 = (d.ur * cssW) / unit; d.vx = d.vy = 0; }
+    if (KAN && !placed && !still) {   /* once: start each sheet a little out from where it belongs, so it floats in */
+      const cx = discs.reduce((a, d) => a + d.x, 0) / discs.length, cy = discs.reduce((a, d) => a + d.y, 0) / discs.length;
+      for (const d of discs) { const dx = d.x - cx, dy = d.y - cy, n = Math.hypot(dx, dy) || 1; d.x += dx / n * 0.07 + (rnd() - 0.5) * 0.03; d.y += dy / n * 0.07 - 0.05; }
+    }
+    placed = true;
     target = makeTarget(gl, W, H, target);
     return true;
   }
 
   /* pointer light, spring drag, hover emphasis: the reference's feel */
-  const ptr = { x: 0, y: 0.15, inside: false };
+  const ptr = { x: 0, y: 0.15, inside: false, vx: 0, vy: 0, t: 0 };
   const light = { x: 0, y: 0.15 };
   let hover = null, drag = null, grab = { x: 0, y: 0 }, lastInput = -999, now = 0;
   const at = (e) => { const r = cv.getBoundingClientRect(); return toComp((e.clientX - r.left) / r.width, (e.clientY - r.top - bleed) / heroH); };
   const pick = (x, y) => { for (let i = discs.length - 1; i >= 0; i--) { const d = discs[i], dx = x - d.x, dy = y - d.y; if (dx * dx + dy * dy <= d.r * d.r) return d; } return null; };
 
   cv.addEventListener("pointermove", (e) => {
-    const [x, y] = at(e); ptr.x = x; ptr.y = y; ptr.inside = true; lastInput = now;
+    const [x, y] = at(e), dt = Math.max(0.008, (e.timeStamp - ptr.t) / 1000);
+    if (ptr.inside) { ptr.vx = ptr.vx * 0.5 + (x - ptr.x) / dt * 0.5; ptr.vy = ptr.vy * 0.5 + (y - ptr.y) / dt * 0.5; }
+    ptr.t = e.timeStamp; ptr.x = x; ptr.y = y; ptr.inside = true; lastInput = now;
     if (drag) { drag.tx = x + grab.x; drag.ty = y + grab.y; }
     else { hover = pick(x, y); cv.dataset.grab = hover ? "1" : "0"; }
     wake();
@@ -410,13 +426,29 @@ export function mountSheets(cv, sheets, swatch, opts) {
     /* the one the hand is on comes to the top of the stack, as a sheet would */
     discs.splice(discs.indexOf(d), 1); discs.push(d);
     drag = d; grab.x = d.x - x; grab.y = d.y - y; cv.setPointerCapture(e.pointerId); lastInput = now; wake();
+    down = { x, y, t: e.timeStamp };
   });
-  const drop = () => { if (drag) { drag.ux = (drag.x * unit + cssW / 2) / cssW; drag.uy = (cssH / 2 - drag.y * unit - bleed) / heroH; drag.moved = true; } drag = null; lastInput = now; };
+  let down = null;
+  /* a tap, not a drag: the sheets puff outward from where it landed, nearer ones harder, and drift home */
+  function burst(x, y, hitD) {
+    /* she wanted them to go everywhere: a wide reach, a strong push, and each one swerved off the straight
+       line by a random angle so they scatter rather than fan out evenly */
+    for (const d of discs) { const dx = d.x - x, dy = d.y - y, dist = Math.hypot(dx, dy) || 1e-3, f = 0.45 + 0.55 * Math.exp(-dist / 1.1);
+      if (d === hitD) { const a = rnd() * Math.PI * 2; d.vx += Math.cos(a) * 1.6; d.vy += Math.sin(a) * 1.6; continue; }
+      const a = Math.atan2(dy, dx) + (rnd() - 0.5) * 1.4, m = 2.4 * f * (0.75 + rnd() * 0.5);
+      d.vx += Math.cos(a) * m; d.vy += Math.sin(a) * m; }
+  }
+  const drop = (e) => { if (drag && KAN) {
+      const tap = down && e && Math.hypot(ptr.x - down.x, ptr.y - down.y) < 0.012 && e.timeStamp - down.t < 350;
+      if (tap && !still) burst(down.x, down.y, drag); else { drag.vx = ptr.vx * 1.4; drag.vy = ptr.vy * 1.4; }
+      drag = null; down = null; lastInput = now; wake(); return; }
+    if (drag) { drag.ux = (drag.x * unit + cssW / 2) / cssW; drag.uy = (cssH / 2 - drag.y * unit - bleed) / heroH; drag.moved = true; } drag = null; lastInput = now; };
   addEventListener("pointerup", drop); addEventListener("pointercancel", drop);
 
   function step(dt) {
     const k = 58, c = 2 * Math.sqrt(58) * 0.95;
     let moving = false;
+    if (KAN) return kandinsky(dt);
     for (const d of discs) {
       d.emph += (((d === hover && !drag) || d === drag ? 1 : 0) - d.emph) * (1 - Math.exp(-dt / 0.22));
       d.vx += ((d.tx - d.x) * k - d.vx * c) * dt; d.vy += ((d.ty - d.y) * k - d.vy * c) * dt;
@@ -430,6 +462,40 @@ export function mountSheets(cv, sheets, swatch, opts) {
     return moving;
   }
 
+  function kandinsky(dt) {
+    let moving = false; const hw = cssW / 2 / unit, hh = cssH / 2 / unit;
+    if (born < 0) born = now;
+    /* the arrival: for its first 1.6 s the home spring is near-critical, so the sheets glide in and settle
+       instead of bouncing; after that it is the soft Kandinsky spring */
+    const arriving = now - born < 1.6, K = arriving ? 14 : 9, C = arriving ? 6.4 : 0.85;
+    for (const d of discs) {
+      d.emph += (((d === hover && !drag) || d === drag ? 1 : 0) - d.emph) * (1 - Math.exp(-dt / 0.22));
+      d.r = d.r0 * (1 + (still ? 0 : 0.03 * d.emph));   // it swells a little under the hand
+      if (d === drag) { d.vx += ((d.tx - d.x) * 58 - d.vx * 2 * Math.sqrt(58) * 0.95) * dt; d.vy += ((d.ty - d.y) * 58 - d.vy * 2 * Math.sqrt(58) * 0.95) * dt; }
+      else { const [hx0, hy] = toComp(d.ux, d.uy);
+        /* under the hand it comes alive: a wide sway, a bob at another rhythm (a soft figure eight), so it
+           plainly can be taken */
+        /* the drift: a few px each way on the sheet's own slow loop (8 to 12 s, never in step with another) */
+        const tx = 8 + (d.k * 1.37) % 4, ty = 9 + (d.k * 2.11) % 3.5, A = still ? 0 : 0.0115;
+        const driftX = Math.sin(now * 2 * Math.PI / tx + d.k * 1.9) * A, driftY = Math.cos(now * 2 * Math.PI / ty + d.k * 0.7) * A;
+        const hx = hx0 + driftX + (still ? 0 : Math.sin(now * 2.6 + d.k) * 0.032 * d.emph);
+        const hyb = hy + driftY + (still ? 0 : Math.sin(now * 3.9 + d.k * 1.7) * 0.016 * d.emph);
+        d.vx += ((hx - d.x) * K - d.vx * C) * dt; d.vy += ((hyb - d.y) * K - d.vy * C) * dt; }
+      d.x += d.vx * dt; d.y += d.vy * dt; d.rot += d.rotV * dt * 0.22;
+      if (d !== drag) {
+        if (d.x < -hw + d.r * 0.5) { d.x = -hw + d.r * 0.5; d.vx *= -0.85; } if (d.x > hw + d.r * 0.4) { d.x = hw + d.r * 0.4; d.vx *= -0.85; }
+        if (d.y < -hh - d.r * 0.3) { d.y = -hh - d.r * 0.3; d.vy *= -0.85; } if (d.y > hh + d.r * 0.3) { d.y = hh + d.r * 0.3; d.vy *= -0.85; }
+      }
+      if (Math.abs(d.vx) + Math.abs(d.vy) > 1e-4) moving = true;
+    }
+    /* a moving sheet hands its push on to whatever it runs into, along the line between them */
+    for (const a of discs) { const sp = Math.hypot(a.vx, a.vy); if (sp < 0.185) continue;
+      for (const b of discs) { if (a === b || b === drag) continue; const dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy) || 1e-3, near = (a.r + b.r) * 0.62;
+        if (dist < near) { const n = (near - dist) / near; b.vx += dx / dist * sp * 13.2 * dt * n; b.vy += dy / dist * sp * 13.2 * dt * n; } } }
+    const lx = ptr.inside ? ptr.x : light.x, ly = ptr.inside ? ptr.y : light.y;
+    light.x += (lx - light.x) * (1 - Math.exp(-dt * 3.4)); light.y += (ly - light.y) * (1 - Math.exp(-dt * 3.4));
+    return moving;
+  }
   const D0 = new Float32Array(MAX_DISCS * 4), D1 = new Float32Array(MAX_DISCS * 4), D2 = new Float32Array(MAX_DISCS * 4);
   function draw() {
     if (!target || !target.ok) return;
@@ -479,7 +545,7 @@ export function mountSheets(cv, sheets, swatch, opts) {
     const dt = Math.min(1 / 30, Math.max(1 / 480, prev ? now - prev : 1 / 60)); prev = now;
     const moving = step(dt);
     draw();
-    if (ptr.inside || drag || moving || now - lastInput < 4) raf = requestAnimationFrame(frame);
+    if (ptr.inside || drag || moving || now - lastInput < 4 || (KAN && visible && !still)) raf = requestAnimationFrame(frame);
     else prev = 0;
   }
   function wake() { if (!raf) raf = requestAnimationFrame(frame); }

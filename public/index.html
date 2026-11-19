@@ -3,7 +3,7 @@
 <title>Jazlynn Kurniandra</title>
 <link rel="icon" href="/favicon.png" type="image/png"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta property="og:image" content="https://jazlynnwashere.com/og.png"><meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;600;700&display=swap" rel="stylesheet">
 <script src="/site-mark.js?v=sig14"></script>
 <style>
 :root{
@@ -107,11 +107,12 @@ p{text-wrap:pretty}
    pill is a shadow, not a border: the outline is the 10% image rule, not a frame. */
 nav{position:fixed;top:0;left:0;right:0;z-index:60;pointer-events:none}
 nav .in{display:flex;justify-content:space-between;align-items:center;padding-top:24px;position:relative}
-/* THE NAV HAS A GROUND. It is fixed, and headlines scroll up under it, so the mark and the pill sit
-   on a band of paper that fades out below them; the content dims into it instead of crashing. */
-nav::before{content:"";position:absolute;left:0;right:0;top:0;height:104px;pointer-events:none;
-  background:linear-gradient(var(--paper) 46%,color-mix(in srgb,var(--paper) 70%,transparent) 72%,transparent);
-  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-mask:linear-gradient(#000 50%,transparent);mask:linear-gradient(#000 50%,transparent);
+/* THE NAV GETS ITS GROUND ONLY ONCE THE PROJECTS REACH IT. At the top the discs run clean to the edge
+   (she took the feather away there); once the list scrolls up under the mark, the page colour gathers
+   under the nav so no title runs into it. His way: the plain page colour under a fixed, eased mask. */
+nav::before{content:"";position:absolute;left:0;right:0;top:0;height:124px;pointer-events:none;background:var(--paper);
+  -webkit-mask-image:linear-gradient(#000 0%,#000 46%,rgba(0,0,0,.86) 58%,rgba(0,0,0,.6) 70%,rgba(0,0,0,.3) 82%,rgba(0,0,0,.08) 93%,transparent);
+          mask-image:linear-gradient(#000 0%,#000 46%,rgba(0,0,0,.86) 58%,rgba(0,0,0,.6) 70%,rgba(0,0,0,.3) 82%,rgba(0,0,0,.08) 93%,transparent);
   opacity:0;transition:opacity .3s ease}
 nav.grounded::before{opacity:1}
 
@@ -182,6 +183,13 @@ body>.pushing{transition:transform .5s cubic-bezier(.22,1,.36,1)}
    hero. Half the height, and most of the fade happens in its lower third. */
 .work::before{content:"";position:absolute;left:0;right:0;top:-110px;height:110px;pointer-events:none;
   background:linear-gradient(to bottom,transparent 0%,color-mix(in srgb,var(--paper) 35%,transparent) 45%,color-mix(in srgb,var(--paper) 80%,transparent) 78%,var(--paper) 100%)}
+/* DESKTOP, YICHEN'S CAP. The hero dissolves into the page over a tall, soft cap: a fixed mask
+   shape filled with the plain page colour, so it eases with the theme at the same rate as everything
+   else (a gradient background-image cannot animate and snapped ahead). */
+@media(min-width:641px){
+  .work::before{top:-12vh;height:12vh;background:var(--paper);
+    -webkit-mask-image:linear-gradient(to bottom,transparent,#000 92%);mask-image:linear-gradient(to bottom,transparent,#000 92%)}
+}
 /* THE SHEETS ARE THE VELLUM PIECE ITSELF NOW, on the GPU: see sheets-gl.js. The
    canvas is opaque and paints the page colour under the sheets, so there is no
    blend mode: the ground IS the page, and the hero edge is seamless. */
@@ -231,6 +239,12 @@ footer .in a{font-size:13px}
 /* the rail is read, not glanced at: the values in full ink, the label a step back */
 .hero-foot b{font-weight:400;color:var(--ink);font-variant-numeric:tabular-nums}
 .hero-foot .cr{color:var(--ink)}
+/* the foot's fade, his way: a fixed layer of the plain page colour shaped by a tall eased mask, so it
+   has no edge or flat band and eases with the theme like everything else. It steps aside while the
+   real footer is in view, whose links sit on this same row. */
+.hero-foot::before{content:"";position:fixed;left:0;right:0;bottom:0;height:150px;z-index:-1;pointer-events:none;background:var(--paper);
+  -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,0.0) 0%,rgba(0,0,0,0.012) 8.1%,rgba(0,0,0,0.044) 15.5%,rgba(0,0,0,0.094) 22.5%,rgba(0,0,0,0.158) 29%,rgba(0,0,0,0.233) 35.3%,rgba(0,0,0,0.317) 41.2%,rgba(0,0,0,0.405) 47.1%,rgba(0,0,0,0.495) 52.9%,rgba(0,0,0,0.583) 58.8%,rgba(0,0,0,0.667) 64.7%,rgba(0,0,0,0.742) 71%,rgba(0,0,0,0.806) 77.5%,rgba(0,0,0,0.856) 84.5%,rgba(0,0,0,0.888) 91.9%,rgba(0,0,0,0.9) 100%);mask-image:linear-gradient(to bottom,rgba(0,0,0,0.0) 0%,rgba(0,0,0,0.012) 8.1%,rgba(0,0,0,0.044) 15.5%,rgba(0,0,0,0.094) 22.5%,rgba(0,0,0,0.158) 29%,rgba(0,0,0,0.233) 35.3%,rgba(0,0,0,0.317) 41.2%,rgba(0,0,0,0.405) 47.1%,rgba(0,0,0,0.495) 52.9%,rgba(0,0,0,0.583) 58.8%,rgba(0,0,0,0.667) 64.7%,rgba(0,0,0,0.742) 71%,rgba(0,0,0,0.806) 77.5%,rgba(0,0,0,0.856) 84.5%,rgba(0,0,0,0.888) 91.9%,rgba(0,0,0,0.9) 100%);transition:opacity .3s ease}
+html.foot-in .hero-foot::before{opacity:0}
 @media(max-width:640px){.hero-foot{font-size:12px}}
 .hint:hover{color:var(--touch)}
 /* the negative space only exists on a wide screen. Below this the grid fills the width
@@ -584,7 +598,8 @@ html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
 /* ---------- the wall, at the foot of the home: the latest marks, and the way to leave one ---------- */
 .marks{position:relative;z-index:2;background:var(--paper);padding:40px 0 72px}
 .marks .head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
-.marks h2{font:500 clamp(22px,2.6vw,30px)/1.2 var(--jak);letter-spacing:-.012em;margin:12px 0 0;max-width:22ch}
+.marks h2{font:300 clamp(22px,2.6vw,30px)/1.2 var(--jak);   /* light, to sit with the thin project names above it; Jakarta still marks it as a new section */
+  letter-spacing:-.012em;margin:12px 0 0;max-width:22ch}
 .marks .go{font:500 13.5px var(--jak);color:var(--ink);text-decoration:none;border:1px solid var(--hair);border-radius:999px;padding:10px 16px;transition:background .16s ease,color .16s ease,border-color .16s ease;white-space:nowrap}
 .marks .go:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .marks .belt{margin-top:28px;padding:14px 0;overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
@@ -679,7 +694,6 @@ html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
      column of titles, and a preview on the right that swaps on hover. The list is the
      interface; the preview is what a title means. -->
 <section class="work" id="work"><div class="wrap">
-  <div class="label">Projects</div>
   <div class="tags" id="tags"></div>
   <div class="panel">
     <div class="crate" id="crate"></div>
@@ -695,7 +709,7 @@ html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
 <!-- THE WALL, AT THE FOOT. The gallery is the site's best interaction and it was behind a tab; the
      latest six marks are shown here, live, with the door to leave one. -->
 <section class="marks" id="marks"><div class="wrap">
-  <div class="head"><div><div class="label">Art gallery</div><h2>Everyone has an artist inside of them.</h2></div>
+  <div class="head"><div><h2>Everyone has an artist inside of them.</h2></div>
     <a class="go" href="/art-gallery.html">Leave your mark &rarr;</a></div>
   <div class="belt"><div class="row" id="marks-row"></div></div>
 </div></section>
@@ -706,6 +720,8 @@ html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
     <span><a href="mailto:jazkurnz06@gmail.com">Email</a><a href="https://www.linkedin.com/in/jazlynn-kurniandra-a456292a8/" target="_blank" rel="noopener">LinkedIn</a><a href="https://x.com/jazlynnkurni" target="_blank" rel="noopener">X</a></span>
   </div>
 </div></footer>
+<script>/* the foot's fade steps aside while the real footer is in view */
+  new IntersectionObserver(es=>es.forEach(en=>document.documentElement.classList.toggle('foot-in',en.isIntersecting))).observe(document.querySelector('footer'));</script>
 
 <script>
 /* the sandbox is another origin, so the colour mode travels in the URL */
@@ -846,7 +862,10 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{ if((ma
 })();
 
 /* ---------- HERO letter grid, locked values ---------- */
-const WORDS=["JAZLYNN","DESIGNER","PASSIONATE","CURIOUS","CHARMING","PLAYFUL","INTERACTION","COGNITION","ENGINEERING","NEWYORK"];
+const ALL_WORDS=["JAZLYNN","DESIGNER","PASSIONATE","CURIOUS","CHARMING","PLAYFUL","INTERACTION","COGNITION","ENGINEERING","NEWYORK"];
+/* the desktop wall: the self, then what she does (INTERACTION) and where she comes from (COGNITION);
+   ENGINEERING and NEWYORK are left off for air. The phone drum still turns through all ten */
+const WORDS=matchMedia('(max-width:640px)').matches?ALL_WORDS:ALL_WORDS.slice(0,8);
 const SPEED=.23, DRIFT=.74;
 /* FS follows the CSS row (0.85 of it) so the measured widths match what is drawn; the
    locked stretch of 84 at a 34px letter is kept as a ratio, 2.47 letters' worth */
@@ -859,9 +878,9 @@ function measure(){
      Without this cap eleven rows swallowed the hero and the split had nothing to split;
      at the strict golden share (61.8%) the letters fell to the floor and looked lost.
      Rows stay between 38 and 72px. 70% and 80% both read as too small. */
-  const N=WORDS.length, free=innerHeight-72-96-120;         /* hero min-height minus its paddings */
+  const N=ALL_WORDS.length, free=innerHeight-72-96-120;     /* sized for all ten, so the rows that stay keep their size */
   /* on a narrow screen the longest word decides the row: its letters must fit the width at rest */
-  const longest=Math.max(...WORDS.map(w=>w.length)), wide=(stack.getBoundingClientRect().width||innerWidth-60);
+  const longest=Math.max(...ALL_WORDS.map(w=>w.length)), wide=(stack.getBoundingClientRect().width||innerWidth-60);
   const narrow=innerWidth<640; const per=narrow?0.93:0.62;   /* a letter's share of the row at full breath, so a phone row never spills */
   const fitPx=(wide-4*longest)/(longest*per)/0.9;
   /* the drum shows one row at a time, so on a phone only the width decides the row */
@@ -897,8 +916,22 @@ const lines=WORDS.map((w,li)=>{
     const o={cell:c, glyph:s, ch, base:0, ci, next:2+Math.random()*22, until:0, lit:false, col:''};
     fit(o); return o;
   });
-  stack.appendChild(el); return {cells, seed:li};
+  stack.appendChild(el); return {cells, seed:li, s:1};
 });
+/* NO ROW REACHES PAST PASSIONATE. A long word breathing at full stretch ran out over the discs,
+   where the hairlines vanish and a lone letter sat in the paint. Each row may stretch only as far
+   as PASSIONATE can at its fullest; shorter rows are untouched (s = 1). Desktop only. */
+function reach(){
+  /* the furthest each row really gets over one breathing cycle (the cells never all peak at once) */
+  const period=1/SPEED, peak=L=>{ let m=0; for(let n=0;n<240;n++){ const t=(n/240)*period; let q=0;
+    for(const c of L.cells){ const k=.5+.5*Math.sin(t*SPEED*Math.PI*2+L.seed*DRIFT+c.ci*DRIFT*1.7); q+=k*k; } if(q>m) m=q; } return m; };
+  const ref=lines.find(L=>L.cells.map(c=>c.ch).join('')==='PASSIONATE'), base=L=>L.cells.reduce((a,c)=>a+c.base,0);
+  lines.forEach(L=>{ L.s=1; });
+  if(innerWidth<640||!ref) return;
+  const cap=base(ref)+peak(ref)*STRETCH;
+  lines.forEach(L=>{ const far=base(L)+peak(L)*STRETCH; if(far>cap) L.s=Math.max(0,(cap-base(L))/(peak(L)*STRETCH)); });
+}
+reach();
 /* THE FURTHEST THE WALL CAN REACH. The cells breathe on their own phases, so the ragged
    edge is a range, not a place. One period of the cycle is sampled and the widest row kept,
    as unit x of the hero, plus a gutter. The sheets are laid out to the right of it. */
@@ -907,11 +940,11 @@ window.wallClear=function(){
   const hw=hero.getBoundingClientRect().width||innerWidth, sl=stack.getBoundingClientRect().left-hero.getBoundingClientRect().left;
   const period=1/SPEED; let widest=0;
   for(let n=0;n<120;n++){ const t=(n/120)*period;
-    for(const L of lines){ let x=0; for(const c of L.cells){ const k=.5+.5*Math.sin(t*SPEED*Math.PI*2+L.seed*DRIFT+c.ci*DRIFT*1.7); x+=c.base+k*k*STRETCH; } if(x>widest) widest=x; } }
+    for(const L of lines){ let x=0; for(const c of L.cells){ const k=.5+.5*Math.sin(t*SPEED*Math.PI*2+L.seed*DRIFT+c.ci*DRIFT*1.7); x+=c.base+k*k*STRETCH*L.s; } if(x>widest) widest=x; } }
   return (sl+widest+28)/hw;
 };
 let rz=0; addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout(()=>{ measure();
-  lines.forEach(L=>L.cells.forEach(fit)); },120); });
+  lines.forEach(L=>L.cells.forEach(fit)); reach(); },120); });
 /* ============ INK: TWO BEHAVIOURS, ONE MECHANIC ==================================
  * A cell fills with gold or oxblood and its letter knocks out to paper. That part is
  * fixed: gold is 1.6:1 on this ground, so a gold LETTER would be invisible and the
@@ -984,7 +1017,7 @@ function ink(c, on) {
          long its letters make it: the varying line lengths ARE the composition. The
          justified version (every row the container's width) was tried and dropped. */
       const k=.5+.5*Math.sin(t*SPEED*Math.PI*2 + L.seed*DRIFT + c.ci*DRIFT*1.7);
-      const w = c.base + (k*k*(1-calm) + 0.25*calm)*STRETCH;
+      const w = c.base + (k*k*(1-calm) + 0.25*calm)*STRETCH*L.s;
       c.cell.style.width = w.toFixed(1)+'px';
 
       if(drumQuiet){ if(c.lit){ ink(c,false); litNow--; } x += w; continue; }
@@ -1336,7 +1369,7 @@ show(0);
     const p=Math.max(0,Math.min(1,(scrollY-h*.55)/(h*.45)));
     const e=p*p*(3-2*p);
     const ph=Math.max(0,Math.min(1,scrollY/(h*.66)));   /* the hint keeps its own, earlier clock */
-    document.querySelector('nav').classList.toggle('grounded',scrollY>h*.35);
+    document.querySelector('nav').classList.toggle('grounded',document.querySelector('.work').getBoundingClientRect().top<120);   /* only once the list reaches the nav */
     sheets.style.opacity=(1-e).toFixed(3);
     stack.style.opacity=(1-e).toFixed(3);
     stack.style.transform=`translateY(${(-e*48).toFixed(1)}px)`;
@@ -1559,7 +1592,7 @@ function pressedDraw(opts){
   /* THE CANVAS GROUND MUST BE THE PAGE. In dark mode the post pass grades the scene with a print
      curve that crushes a charcoal ground to near black, so the phone hands the shader the value that
      comes OUT as #1C1A17 (solved by inverting that curve), and the arrival sits on the page colour. */
-  const HS=mountSheets(cvS, SHEETS, SWATCH, { paper: '#FAF9F7', ground: phone?'#32302D':'#1C1A17', bleed: phone?0:220, clear: () => 0 });
+  const HS=mountSheets(cvS, SHEETS, SWATCH, { paper: '#FAF9F7', ground: phone?'#32302D':'#1C1A17', bleed: phone?0:220, clear: () => 0, motion: phone?'':'kandinsky' });
   if(phone) phoneIntro(HS, cvS);
   if(phone) addEventListener('pageshow',e=>{ if(e.persisted&&window.__crateReturn){ document.documentElement.classList.add('intro-done'); window.__crateReturn(); } });
 
