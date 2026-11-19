@@ -4,7 +4,7 @@
 <link rel="icon" href="/favicon.png" type="image/png"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta property="og:image" content="https://jazlynnwashere.com/og.png"><meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="/site-mark.js?v=sig12"></script>
+<script src="/site-mark.js?v=sig14"></script>
 <style>
 :root{--jak:"Plus Jakarta Sans",sans-serif;--hel:"Helvetica Neue",Helvetica,Arial,sans-serif;
   --gold:#A99939;--oxblood:#340414;--charcoal:#1C1A17}
@@ -112,6 +112,8 @@ html.theming #theme svg{transform:rotate(90deg) scale(.6);opacity:0}
    so the page's own quick transitions come back the moment it is over. */
 html.theming,html.theming *{transition:background-color .5s ease,color .5s ease,border-color .5s ease,outline-color .5s ease,box-shadow .5s ease,fill .5s ease,stroke .5s ease!important}
 @media(prefers-reduced-motion:reduce){html.theming,html.theming *{transition:none!important}}
+html.vt-theme,html.vt-theme *{transition:none!important}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.5s;animation-timing-function:ease}
 
 /* ---------- the case study ----------
    Two materials, same as the home: TEXT lives in sharp hairline CELLS (the hero grid's
@@ -547,9 +549,12 @@ if(t!=='light'&&t!=='dark') t='dark';   /* first landing is dark; the toggle rem
     const cur=document.documentElement.getAttribute('data-theme'); const t=cur==='dark'?'light':'dark';
     const apply=()=>{ document.documentElement.setAttribute('data-theme',t); try{localStorage.setItem('theme',t);}catch(err){}
       dispatchEvent(new CustomEvent('themechange',{detail:{theme:t}})); };
-    document.documentElement.classList.add('theming');
-    setTimeout(()=>document.documentElement.classList.remove('theming'),560);
-    apply();
+    /* one picture: where the browser can, it cross-fades the whole page from the old mode to the
+       new, gradients and canvases included, so no part changes at its own pace */
+    const root=document.documentElement, still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(document.startViewTransition&&!still){ root.classList.add('vt-theme'); document.startViewTransition(apply).finished.finally(()=>root.classList.remove('vt-theme')); }
+    else if(still) apply();
+    else { root.classList.add('theming'); setTimeout(()=>root.classList.remove('theming'),560); apply(); }
   },{capture:true});
 })();
 

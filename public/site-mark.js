@@ -54,9 +54,9 @@
     var href = el.getAttribute('href');
     var inner = img('ink', 'jaz-signature.svg') + img('paper', 'jaz-signature-paper.svg');
     /* four facts, four rows: what she does, where she is, where she was, where she studies */
-    var blurb = '<p class="sm-blurb"><b><span style="color:#A99939">Design engineer</span> who creates <span style="color:#A99939">charming products</span>.</b>' +
-      '<span>Prev @ Manus AI.</span>' +
-      '<span>HCI @ Columbia University \u201927.</span></p>';
+    var blurb = '<p class="sm-blurb"><b><span style="color:#A99939">Design engineer</span> who creates <span style="color:#A99939">charming products</span></b>' +
+      '<span>Prev @ Manus AI, Lovable</span>' +
+      '<span>HCI @ Columbia University \u201927</span></p>';
     return href
       ? '<a class="sm" href="' + href + '" aria-label="Home, Jazlynn">' + inner + '</a>' + blurb
       : '<span class="sm" role="img" aria-label="Jazlynn">' + inner + '</span>' + blurb;
