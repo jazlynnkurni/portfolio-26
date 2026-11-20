@@ -3,7 +3,7 @@
 <title>Art Gallery · Jazlynn Kurniandra</title>
 <link rel="icon" href="/favicon.png" type="image/png"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta property="og:image" content="https://jazlynnwashere.com/og.png"><meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;600;700&display=swap" rel="stylesheet">
 <script src="/site-mark.js?v=sig15"></script>
 <style>
 :root{--jak:"Plus Jakarta Sans",sans-serif;--hel:"Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -320,6 +320,8 @@ html.sheet body{background:transparent}
 /* the case study's head is a two column grid; this one is a stack */
 .gal .head{display:block}
 .gal .head h1{font-size:clamp(28px,4vw,44px);line-height:1.12;max-width:22ch;margin-top:12px}
+.gal .head h1:first-child{margin-top:0}
+#intro .head h1{font-weight:300}   /* light, like the home page's gallery headline */
 .gal .head p{font-size:17px;line-height:1.62;color:var(--ink2);margin-top:16px;max-width:52ch}
 /* ---- the desk: name, card colour, the canvas ---- */
 .desk{margin-top:48px;display:grid;grid-template-columns:680px 1fr;gap:48px;align-items:start}
@@ -347,9 +349,6 @@ html.sheet body{background:transparent}
 .acts button.go{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .acts button.go:disabled{background:transparent;color:var(--ink3);border-color:var(--hair);cursor:not-allowed}
 .gal .err{font-size:13px;color:var(--touch);margin-top:12px}
-/* a returning visitor's way past the desk: a quiet line under the buttons, on the cell's own rhythm */
-.gal .skip{display:block;margin-top:16px;font:500 12px var(--jak);letter-spacing:.01em;color:var(--ink3);text-decoration:none;width:fit-content;border-bottom:1px solid var(--hair);padding-bottom:1px;transition:color .16s ease}
-.gal .skip:hover{color:var(--ink);border-color:var(--ink3)}
 /* ---- the wall: the grid's own cells, three across ---- */
 .wall{margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr)}
 /* every slot draws all four sides and the shared ones overlap, so a card is a box whether or
@@ -437,22 +436,19 @@ if(t!=='light'&&t!=='dark') t='dark';   /* first landing is dark; the toggle rem
   <div class="gate" id="gate" hidden><div><div class="label">Art gallery</div><p style="margin-top:12px">The gallery is a drawing experience, and drawing wants a desk. Come back on a bigger screen to leave your mark.</p><a href="/">&larr; Back to home</a></div></div>
 
   <section id="intro">
-    <div class="head"><div class="label">Art gallery</div>
-      <h1>Everyone has an artist inside of them.</h1>
-      <p>Leave your mark and we&rsquo;ll give it a wall.</p></div>
+    <div class="head"><h1>Leave your mark and we&rsquo;ll give it a wall.</h1></div>
     <div class="desk">
       <div class="plate" id="padPlate"><canvas id="pad" width="680" height="380"></canvas><span class="mono" id="mono">JK</span></div>
       <div class="side">
         <div class="cell"><div class="label">Name</div><input id="name" type="text" maxlength="60" placeholder="Your name here" autocomplete="off"></div>
         <div class="cell"><div class="label">Card</div><div class="sw"><button type="button" data-c="gold" aria-label="gold card" aria-pressed="true" style="background:#A99939"></button><button type="button" data-c="oxblood" aria-label="oxblood card" aria-pressed="false" style="background:#340414"></button><button type="button" data-c="charcoal" aria-label="charcoal card" aria-pressed="false" style="background:#1C1A17"></button><button type="button" data-c="paper" aria-label="paper card" aria-pressed="false" style="background:#FAF9F7;outline:1px solid var(--hair)"></button></div></div>
-        <div class="cell"><div class="label">Then</div><div class="acts"><button type="button" id="clear">Clear</button><button type="button" id="go" class="go" disabled>Enter &rarr;</button></div><p class="err" id="err"></p></div>
+        <div class="cell"><div class="label">Then</div><div class="acts"><button type="button" id="clear">Clear</button><button type="button" id="go" class="go" disabled>Enter</button><button type="button" id="skip">Skip</button></div><p class="err" id="err"></p></div>
       </div>
     </div>
   </section>
 
   <section id="wall" hidden>
-    <div class="head"><div class="label">The wall</div>
-      <h1>Welcome to Jazlynn&rsquo;s Art Exhibit.</h1>
+    <div class="head"><h1>Welcome to Jazlynn&rsquo;s Art Exhibit.</h1>
       <p>Thanks for being a part of it. Enjoy the rest of your stay!</p></div>
     <div class="wall" id="grid"></div>
     <div class="works"><div class="label">Works</div><div class="cols"><div class="col"><div class="plate"><img src="/images/trim/works/ceramic-mask.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/anime-action.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/die-character-sheet.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/angel.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/spider-verse.jpg" alt="" loading="lazy"></div><div class="plate"><video src="/videos/art-gallery/process-reel-2.mp4" muted loop playsinline preload="metadata" data-io></video></div></div><div class="col"><div class="plate"><img src="/images/trim/works/izakaya-sushi.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/sunflower-collage.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/green-alien.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/cat.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/tsk-art.jpg" alt="" loading="lazy"></div><div class="plate"><video src="/videos/art-gallery/process-reel-1.mp4" muted loop playsinline preload="metadata" data-io></video></div><div class="plate"><video src="/videos/art-gallery/animation-loop.mp4" muted loop playsinline preload="metadata" data-io></video></div></div><div class="col"><div class="plate"><img src="/images/trim/works/metropolis-hands.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/fallen-angel.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/goggle-girl.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/police.jpg" alt="" loading="lazy"></div><div class="plate"><img src="/images/trim/works/yourclothes.jpg" alt="" loading="lazy"></div></div></div></div>
@@ -656,12 +652,12 @@ document.querySelectorAll('video[data-io]').forEach(v=>io.observe(v));})();
   function fetchCards(){ cardsAhead=fetch('/api/gallery/cards',{cache:'no-store'}).then(r=>r.json()).then(j=>Array.isArray(j.cards)?j.cards:[]).catch(()=>[]); return cardsAhead; }
   fetchCards();
   async function hang(mine){
-    grid.innerHTML=''; grid.appendChild(card(mine,true));
+    grid.innerHTML=''; if(mine) grid.appendChild(card(mine,true));
     let others=[];
-    try{ const list=await (cardsAhead||fetchCards()); others=list.filter(c=>c&&c.id!==mine.id).slice(0,GRID-1); }catch(e){}
+    try{ const list=await (cardsAhead||fetchCards()); others=list.filter(c=>c&&(!mine||c.id!==mine.id)).slice(0,mine?GRID-1:GRID); }catch(e){}
     let hung=0;
     others.forEach((c,i)=>{ try{ const el=card(c,false); el.classList.add('in'); el.style.animationDelay=(250+i*40)+'ms'; grid.appendChild(el); hung++; }catch(e){} });
-    for(let i=1+hung;i<GRID;i++){ const e=document.createElement('div'); e.className='slot empty'; grid.appendChild(e); }
+    for(let i=(mine?1:0)+hung;i<GRID;i++){ const e=document.createElement('div'); e.className='slot empty'; grid.appendChild(e); }
   }
   function showWall(mine, from){
     hang(mine).then(()=>{
@@ -679,8 +675,11 @@ document.querySelectorAll('video[data-io]').forEach(v=>io.observe(v));})();
   }
 
   /* ---------- the memory layer ---------- */
-  /* the desk comes first for everyone; a returning visitor also gets a way straight to the wall */
-  try{ const j=localStorage.getItem(CARD_KEY); if(j){ const mine=JSON.parse(j); const a=document.createElement('a'); a.href='#'; a.className='skip'; a.textContent='I already hung one, take me to the wall →'; a.addEventListener('click',e=>{e.preventDefault(); showWall(mine,null);}); (err.parentNode||document.body).insertBefore(a,err); } }catch(e){}
+  /* the desk comes first for everyone; Skip is the way straight to the wall */
+  /* Skip goes straight to the wall: with your card if you hung one before, without it if not */
+  let skipTo=null;
+  try{ const j=localStorage.getItem(CARD_KEY); if(j) skipTo=JSON.parse(j); }catch(e){}
+  $('#skip').addEventListener('click',()=>showWall(skipTo,null));
 
   go.addEventListener('click', async ()=>{
     if(go.disabled) return; go.disabled=true; go.textContent='Hanging your art\u2026'; err.textContent='';
@@ -691,7 +690,7 @@ document.querySelectorAll('video[data-io]').forEach(v=>io.observe(v));})();
       const {card:mine}=await r.json();
       try{ localStorage.setItem(CARD_KEY,JSON.stringify(mine)); localStorage.setItem(SEEN_KEY,'true'); }catch(e){}
       showWall(mine, from);
-    }catch(e){ err.textContent=e.message||'Something went wrong.'; go.disabled=false; go.textContent='Enter \u2192'; }
+    }catch(e){ err.textContent=e.message||'Something went wrong.'; go.disabled=false; go.textContent='Enter'; }
   });
 })();
 </script></body></html>
