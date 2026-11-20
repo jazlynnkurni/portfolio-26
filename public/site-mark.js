@@ -33,7 +33,7 @@
       'site-mark:hover img{transform:scale(.9)}' +
       /* it drops over the wall, so it sits on the nav's own pill: paper lifted, the same
          shadow as the links, never a border */
-      'site-mark .sm-blurb{position:absolute;left:-14px;top:calc(100% + 8px);width:max-content;max-width:min(44ch,calc(100vw - 60px));margin:0;' +
+      'site-mark .sm-blurb{position:absolute;left:0;top:calc(100% + 8px);width:max-content;max-width:min(44ch,calc(100vw - 60px));margin:0;' +
         'padding:12px 16px;border-radius:14px;background:var(--pill,#fff);box-shadow:var(--pill-shadow,0 6px 20px rgba(20,23,27,.07));' +
         'font:400 13.5px/1.55 "Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--ink2,rgba(20,23,27,.66));pointer-events:none;' +
         'opacity:0;transform:translateY(-8px);clip-path:inset(0 0 100% 0);' +
