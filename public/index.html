@@ -342,6 +342,14 @@ html.foot-in .hero-foot::before{opacity:0}
 .leader-yr{position:absolute;font:500 12px var(--jak);letter-spacing:.03em;color:var(--ink3);transform:translate(-100%,-50%);
   opacity:0;transition:opacity .2s ease .16s;pointer-events:none;white-space:nowrap}
 .rows.hot~.leader{opacity:1}.rows.hot~.leader-yr{opacity:1}
+/* THE LEADER IS VELLUM NOW (pipe-gl.js): a thin pipe in the discs' own frosted material, sage then mauve
+   down the list. The canvas hangs 40px past the panel and is screened onto the page (multiplied in light),
+   so where it holds no pipe it changes nothing. The dotted SVG stays as the fallback without WebGL. */
+.leader-gl{position:absolute;left:-40px;top:-40px;width:calc(100% + 80px);height:calc(100% + 80px);pointer-events:none;
+  mix-blend-mode:screen;opacity:0;transition:opacity .16s ease}
+html:not([data-theme="dark"]) .leader-gl{mix-blend-mode:multiply}
+.rows.hot~.leader-gl{opacity:1}
+.panel.pipe .leader{display:none}
 .rows{list-style:none;margin:0;padding:0}
 .rows a{display:inline-block;padding:2px 0;text-decoration:none;font:300 44px/1.15 var(--hel);letter-spacing:-.015em;
   color:var(--ink);transition:color .18s ease}
@@ -391,7 +399,7 @@ html.foot-in .hero-foot::before{opacity:0}
 .pv-cap b{font:500 15px var(--jak);color:var(--ink)}
 .pv-cap i{font:500 11.5px var(--jak);font-style:normal;letter-spacing:.02em;color:var(--ink3);margin:1px 0 3px}
 .pv-cap span{font:300 12.5px/1.5 var(--hel);color:var(--ink2);max-width:36ch}
-@media(max-width:900px){.panel{grid-template-columns:1fr}.preview,.leader,.leader-yr{display:none}}
+@media(max-width:900px){.panel{grid-template-columns:1fr}.preview,.leader,.leader-yr,.leader-gl{display:none}}
 /* PHONES HAVE NO HOVER. The preview card only ever appears under a pointer, so below 900px each
    title carries its own poster card instead: the same plate, the same 12px inset on all four sides. */
 
@@ -402,7 +410,7 @@ html.foot-in .hero-foot::before{opacity:0}
    spinning and its vellum window clear; tap it to open. Built from the labs on :6320 / :6340 / :6360. */
 .crate{display:none}
 @media(max-width:640px){
-  .rows,.leader,.leader-yr{display:none!important}
+  .rows,.leader,.leader-yr,.leader-gl{display:none!important}
   .crate{display:block;position:absolute;left:0;right:0;top:0;height:100vh;margin:0;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;opacity:0;pointer-events:none;z-index:3}
   .crate .rec .disc{transition:none}
   .work>.wrap{display:none}
@@ -703,6 +711,7 @@ html.sheet-open .sheet-tabs{opacity:1;transform:none;pointer-events:auto}
       <div class="pv-cap"><b id="pv-t"></b><i id="pv-r"></i><span id="pv-s"></span></div></div>
     <svg class="leader" id="leader" aria-hidden="true"><g class="leader-clip" id="leader-clip"><path id="leader-path" d=""/></g></svg>
     <span class="leader-yr" id="leader-yr" aria-hidden="true"></span>
+    <canvas class="leader-gl" id="leader-gl" aria-hidden="true"></canvas>
   </div>
 </div></section>
 
@@ -1151,8 +1160,9 @@ function lead(i,draw){
   const cy=Math.max(top+26,Math.min(bot-26,y));
   const yrX=cx-14; lyr.textContent=PROJECTS[i].y; lyr.style.left=yrX+'px'; lyr.style.top=cy+'px';
   const x1=Math.min(yrX-lyr.offsetWidth-12, P.width-8);
-  if(x1<=x0+12){ lpath.setAttribute('d',''); return; }
+  if(x1<=x0+12){ lpath.setAttribute('d',''); if(window.__leaderPipe) __leaderPipe.show(null); return; }
   lpath.setAttribute('d', `M${x0} ${y}L${x1} ${cy}`);
+  if(window.__leaderPipe) __leaderPipe.show({x0,y,x1,cy}, [...rows.children].filter(r=>!r.classList.contains('off')).indexOf(li), draw);
   if(draw){ lclip.style.transition='none'; lclip.style.clipPath=`inset(-8px calc(100% - ${x0}px) -8px -8px)`; lclip.getBoundingClientRect();
     lclip.style.transition=''; }
   lclip.style.clipPath='inset(-8px -8px -8px -8px)';
@@ -1574,6 +1584,10 @@ function pressedDraw(opts){
   /* the vellum discs, laid across the hero. Everything above this layer is
      pointer transparent, so a drag started anywhere reaches the sheets. */
   import { mountSheets } from './sheets-gl.js';
+  import { mountLeaderPipe } from './pipe-gl.js';
+  /* the project leader, in the discs' material; without WebGL2 the dotted line stays */
+  if(innerWidth>900){ const lp=mountLeaderPipe(document.getElementById('leader-gl')); if(lp){ window.__leaderPipe=lp; document.querySelector('.panel').classList.add('pipe');
+    if(leadFor>=0) lead(leadFor,false); } }   /* the first row was measured before this module ran */
   /* TWELVE. The leftmost column of the sixteen sat under the wall by design and the wall
      grew into it; those four are gone, and the rest are fitted right of the wall's furthest
      reach at whatever window this is (see sheets-gl.js). */

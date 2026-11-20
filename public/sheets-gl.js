@@ -556,3 +556,6 @@ export function mountSheets(cv, sheets, swatch, opts) {
   wake();
   return { discs, draw, P, setStyle(n) { P.style = Math.max(0, Math.min(4, n | 0)); draw(); } };
 }
+
+/* the shader sources, so pipe-gl.js can draw the project leader in the discs' own material */
+export { VERT, FRAG_SCENE, FRAG_POST, buildProgram, makeTarget, hexLin, pigment };
