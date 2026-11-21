@@ -323,6 +323,7 @@ html.sheet body{background:transparent}
 .ab .hello .bio p+p{margin-top:16px}
 .ab .hello .bio b{font-weight:400;color:var(--ink)}
 @media(max-width:900px){.ab .hello{grid-template-columns:1fr;gap:40px}}
+@media(min-width:901px){.ab .phone{top:36px}}   /* side by side, the phone's centre sits on the text's centre */
 /* THE DIE. CSS 3D, six faces, --s in px set by the page so translateZ has a length. */
 .die-wrap{aspect-ratio:1;display:grid;place-items:center;perspective:1400px;touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none}
 .die-wrap:active{cursor:grabbing}
