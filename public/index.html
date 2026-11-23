@@ -127,8 +127,7 @@ nav .links{pointer-events:auto;display:flex;align-items:center;gap:8px;backgroun
    at Regular rather than Light so 14px holds up on the white pill */
 nav a{font-family:var(--hel);font-weight:400;font-size:14.5px;letter-spacing:0;color:var(--ink);text-decoration:none;
       padding:10px 16px;border-radius:999px;transition:color .18s ease,background .18s ease}
-nav a:hover{color:var(--touch);background:color-mix(in srgb,var(--ink) 6%,transparent)}
-nav a:active{transform:scale(.96)}
+nav a:hover{color:var(--touch)}
 /* the mode icon: a sun in light, a moon in dark, 36px so it clears the hit-area floor */
 /* THE TIN TOGGLE. It sat in a free corner first and read as bolted on, because a made
    object needs something to sit beside. It belongs on the rail with the clock: big enough
@@ -505,18 +504,19 @@ footer a{color:var(--ink2);text-decoration:none;font-size:12.5px}
 footer a:hover{color:var(--touch)}
 .rule{height:1px;background:var(--hair);margin-bottom:26px}
 /* ---------- the nav highlight ----------
-   One drop of ink under the glass. It travels to whatever the pointer is over on a soft
-   spring (a hair of overshoot, then it settles), and on leaving the pill it draws back into
-   its own centre and fades. Nothing else: no stretch, no trail. */
+   One drop of ink under the glass, and the only hover layer in the pill. It moves to whatever
+   the pointer or the keyboard is on in 160ms on a plain ease-out, so it is already there when
+   the eye arrives: no spring, no overshoot, no trail. On leaving the pill it draws back into
+   its own centre and fades. The cursor dot hides over the pill, so it never sits on top as a
+   second shape, and the links carry no hover fill of their own. */
 nav .links{position:relative;isolation:isolate}
 nav .links .drop{position:absolute;top:4px;bottom:4px;left:0;width:0;border-radius:999px;pointer-events:none;z-index:0;
   background:color-mix(in srgb,var(--ink) 8%,transparent);opacity:0;will-change:transform,width;
-  transition:transform .46s cubic-bezier(.33,1.18,.37,1),width .46s cubic-bezier(.33,1.18,.37,1),opacity .46s cubic-bezier(.33,1.18,.37,1)}
-/* leaving: the spring's overshoot would push a width that is heading to zero below zero,
-   which pops. Retract on a plain ease-out instead, same length. */
-nav .links .drop.out{transition-timing-function:cubic-bezier(.22,1,.36,1)}
+  transition:transform .16s cubic-bezier(.2,.8,.1,1),width .16s cubic-bezier(.2,.8,.1,1),opacity .16s cubic-bezier(.2,.8,.1,1)}
 nav .links .drop.on{opacity:1}
 nav .links>a,nav .links>button{position:relative;z-index:1}
+nav .links>a:hover,nav .links>button:hover{background:transparent}
+nav .links>a:focus-visible,nav .links>button:focus-visible{outline:none}
 nav a.l:hover{color:var(--ink)}
 #theme:hover{background:transparent}
 #theme svg{transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .3s ease}
@@ -559,6 +559,7 @@ html.vt-theme,html.vt-theme *{transition:none!important}
   #cur.fine i{transform:scale(.46);opacity:.95}
   #cur.fine.down i{transform:scale(.34)}
   #cur.text{opacity:0}
+  #cur.nav{opacity:0}
 }
 /* THE SHEET. A case study opens over the home rather than as another page: the home dims
    and softens behind it, a row of tabs across the top names every case study so the reader
@@ -779,6 +780,8 @@ a.addEventListener('click',()=>{a.href=base+'?theme='+(document.documentElement.
     c.classList.toggle('pill',!!say);
     c.classList.toggle('hot',!!t&&!say);
     c.classList.toggle('text',!t && getComputedStyle(e.target).cursor==='text');
+    /* over the nav pill the highlight is the pointer, so the dot steps aside */
+    c.classList.toggle('nav',!!(e.target.closest && e.target.closest('nav .links')));
     if(!raf) raf=requestAnimationFrame(loop);
   },{passive:true});
   addEventListener('pointerdown',()=>c.classList.add('down'));
@@ -800,7 +803,8 @@ a.addEventListener('click',()=>{a.href=base+'?theme='+(document.documentElement.
     cx=x+w/2; drop.classList.remove('out'); set(x,w); drop.classList.add('on');
   }
   function leave(){ drop.classList.add('out'); set(cx,0); drop.classList.remove('on'); }
-  items.forEach(el=>{ el.addEventListener('pointerenter',()=>go(el)); el.addEventListener('focus',()=>go(el)); });
+  const canHover=matchMedia('(hover: hover)');
+  items.forEach(el=>{ el.addEventListener('pointerenter',()=>{ if(canHover.matches) go(el); }); el.addEventListener('focus',()=>go(el)); });
   pill.addEventListener('pointerleave',leave); pill.addEventListener('focusout',e=>{ if(!pill.contains(e.relatedTarget)) leave(); });
 })();
 /* theme: every colour eases to the other mode, his way */

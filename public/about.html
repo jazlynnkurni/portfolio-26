@@ -89,20 +89,22 @@ footer a:hover{color:var(--touch)}
   #cur.down i{transform:scale(2.1);opacity:.75}
 
   #cur.text{opacity:0}
+  #cur.nav{opacity:0}
 }
 /* ---------- the nav highlight ----------
-   One drop of ink under the glass. It travels to whatever the pointer is over on a soft
-   spring (a hair of overshoot, then it settles), and on leaving the pill it draws back into
-   its own centre and fades. Nothing else: no stretch, no trail. */
+   One drop of ink under the glass, and the only hover layer in the pill. It moves to whatever
+   the pointer or the keyboard is on in 160ms on a plain ease-out, so it is already there when
+   the eye arrives: no spring, no overshoot, no trail. On leaving the pill it draws back into
+   its own centre and fades. The cursor dot hides over the pill, so it never sits on top as a
+   second shape, and the links carry no hover fill of their own. */
 nav .links{position:relative;isolation:isolate}
 nav .links .drop{position:absolute;top:4px;bottom:4px;left:0;width:0;border-radius:999px;pointer-events:none;z-index:0;
   background:color-mix(in srgb,var(--ink) 8%,transparent);opacity:0;will-change:transform,width;
-  transition:transform .46s cubic-bezier(.33,1.18,.37,1),width .46s cubic-bezier(.33,1.18,.37,1),opacity .46s cubic-bezier(.33,1.18,.37,1)}
-/* leaving: the spring's overshoot would push a width that is heading to zero below zero,
-   which pops. Retract on a plain ease-out instead, same length. */
-nav .links .drop.out{transition-timing-function:cubic-bezier(.22,1,.36,1)}
+  transition:transform .16s cubic-bezier(.2,.8,.1,1),width .16s cubic-bezier(.2,.8,.1,1),opacity .16s cubic-bezier(.2,.8,.1,1)}
 nav .links .drop.on{opacity:1}
 nav .links>a,nav .links>button{position:relative;z-index:1}
+nav .links>a:hover,nav .links>button:hover{background:transparent}
+nav .links>a:focus-visible,nav .links>button:focus-visible{outline:none}
 nav a.l:hover{background:transparent}
 #theme:hover{background:transparent}
 #theme svg{transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .3s ease}
@@ -709,6 +711,8 @@ const ext=document.getElementById('ext');
     c.classList.toggle('pill',!!say);
     c.classList.toggle('hot',!!t&&!say);
     c.classList.toggle('text',!t && getComputedStyle(e.target).cursor==='text');
+    /* over the nav pill the highlight is the pointer, so the dot steps aside */
+    c.classList.toggle('nav',!!(e.target.closest && e.target.closest('nav .links')));
     if(!raf) raf=requestAnimationFrame(loop);
   },{passive:true});
   addEventListener('pointerdown',()=>c.classList.add('down'));
@@ -730,7 +734,8 @@ const ext=document.getElementById('ext');
     cx=x+w/2; drop.classList.remove('out'); set(x,w); drop.classList.add('on');
   }
   function leave(){ drop.classList.add('out'); set(cx,0); drop.classList.remove('on'); }
-  items.forEach(el=>{ el.addEventListener('pointerenter',()=>go(el)); el.addEventListener('focus',()=>go(el)); });
+  const canHover=matchMedia('(hover: hover)');
+  items.forEach(el=>{ el.addEventListener('pointerenter',()=>{ if(canHover.matches) go(el); }); el.addEventListener('focus',()=>go(el)); });
   pill.addEventListener('pointerleave',leave); pill.addEventListener('focusout',e=>{ if(!pill.contains(e.relatedTarget)) leave(); });
 })();
 /* theme: every colour eases to the other mode, his way */
